@@ -799,7 +799,6 @@ const STORAGE_KEYS = {
   stages: "builder-course-stages-v1",
   designLabSlug: "builder-course-design-lab-slug-v1",
   designLabSession: "builder-course-design-lab-session-v1",
-  learningContent: "builder-course-learning-content-v1",
   selectedLessonId: "builder-course-selected-lesson-v1",
   themePreset: "builder-course-theme-preset-v1",
   openSectionId: "builder-course-open-section-v1"
@@ -841,7 +840,6 @@ const state = {
   selectedUnitId: loadStorage(STORAGE_KEYS.selectedUnitId, syllabusData.units[0].id),
   unitProgress: loadStorage(STORAGE_KEYS.unitProgress, {}),
   stages: normalizeStageCollection(loadStorage(STORAGE_KEYS.stages, [])),
-  learningContent: normalizeLearningContent(loadStorage(STORAGE_KEYS.learningContent, {})),
   selectedLessonId: loadStorage(STORAGE_KEYS.selectedLessonId, ""),
   editingStageId: null,
   openSectionId: "",
@@ -1043,34 +1041,6 @@ function bindEvents() {
     }
 
     openLesson(target.dataset.lessonId);
-  });
-
-  elements.lessonEditor.addEventListener("click", (event) => {
-    const target = event.target.closest("[data-lesson-action]");
-    if (!target) {
-      return;
-    }
-
-    const action = target.dataset.lessonAction;
-    const lessonId = elements.lessonEditor.dataset.lessonId;
-
-    if (!lessonId) {
-      return;
-    }
-
-    if (action === "save") {
-      saveLessonContent(lessonId);
-      return;
-    }
-
-    if (action === "fill-scaffold") {
-      fillLessonScaffold(lessonId);
-      return;
-    }
-
-    if (action === "clear") {
-      clearLessonContent(lessonId);
-    }
   });
 
   elements.timelineGrid.addEventListener("click", (event) => {
@@ -1628,31 +1598,45 @@ function renderSelectedUnit() {
 
 function renderLearningLaunchpad(unit) {
   const pages = getLearningPagesForUnit(unit);
+  const selectedPage = getSelectedLearningPage();
+  const pageUrl = buildUnitPageUrl(unit.id, selectedPage?.pageId || "");
 
   return `
     <section class="learning-launchpad">
-      <div class="panel-title-row">
-        <h3>עמודי הלמידה של היחידה</h3>
-        <span class="count-pill">${pages.length} עמודים</span>
+      <div class="learning-launchpad-head">
+        <div class="panel-title-row">
+          <h3>עמודי הלמידה של היחידה</h3>
+          <span class="count-pill">${pages.length} חלקים</span>
+        </div>
+        <a class="micro-link" href="${escapeAttribute(buildUnitPageUrl(unit.id))}">לעמוד היחידה המלא</a>
       </div>
-      <div class="learning-launchpad-grid">
+
+      <article class="unit-page-open accent-${unit.accent}">
+        <div class="unit-page-open-copy">
+          <span class="panel-label">מה נפתח עכשיו</span>
+          <strong>${escapeHtml(selectedPage?.title || unit.title)}</strong>
+          <p>${escapeHtml(selectedPage?.description || unit.summary)}</p>
+        </div>
+        <div class="unit-page-open-actions">
+          <a class="button button-primary" href="${escapeAttribute(pageUrl)}">לפתוח עמוד לימוד</a>
+          <button type="button" class="button button-secondary" data-action="open-lesson" data-lesson-id="${escapeAttribute(selectedPage?.id || pages[0]?.id || "")}">
+            לראות preview כאן
+          </button>
+        </div>
+      </article>
+
+      <div class="lesson-link-row">
         ${pages
           .map((page) => {
-            const lessonState = state.learningContent[page.id];
-            const hasContent = Boolean(lessonState?.body?.trim() || lessonState?.resources?.trim());
-
+            const isActive = selectedPage?.id === page.id;
             return `
               <button
                 type="button"
-                class="lesson-launch-card ${hasContent ? "has-content" : ""}"
+                class="lesson-link-chip ${isActive ? "active" : ""}"
                 data-action="open-lesson"
                 data-lesson-id="${page.id}"
               >
-                <span class="panel-label">${escapeHtml(page.label)}</span>
-                <strong>${escapeHtml(page.description)}</strong>
-                <span class="lesson-launch-meta">
-                  ${hasContent ? "יש כבר חומר שמור" : "עמוד מוכן למילוי"}
-                </span>
+                <span>${escapeHtml(page.navShort || page.label)}</span>
               </button>
             `;
           })
@@ -1667,22 +1651,20 @@ function renderLessonStudio() {
   const pages = getLearningPagesForUnit(unit);
   const selectedPage = getSelectedLearningPage();
 
-  elements.lessonStudioMeta.textContent = `${pages.length} עמודים`;
+  elements.lessonStudioMeta.textContent = `${pages.length} חלקים`;
   elements.lessonPageList.innerHTML = pages
     .map((page) => {
-      const lessonState = state.learningContent[page.id];
-      const hasContent = Boolean(lessonState?.body?.trim() || lessonState?.resources?.trim());
       const isActive = selectedPage?.id === page.id;
 
       return `
         <button
           type="button"
-          class="lesson-page-button ${isActive ? "active" : ""} ${hasContent ? "has-content" : ""}"
+          class="lesson-page-button ${isActive ? "active" : ""}"
           data-lesson-id="${page.id}"
         >
-          <span class="lesson-page-label">${escapeHtml(page.label)}</span>
-          <strong>${escapeHtml(page.description)}</strong>
-          <span class="lesson-page-status">${hasContent ? "יש חומר" : "מוכן למילוי"}</span>
+          <span class="lesson-page-label">${escapeHtml(page.kicker || page.label)}</span>
+          <strong>${escapeHtml(page.label)}</strong>
+          <span class="lesson-page-status">${escapeHtml(shortenLabel(page.description, 78))}</span>
         </button>
       `;
     })
@@ -1692,84 +1674,88 @@ function renderLessonStudio() {
     elements.lessonEditor.innerHTML = `
       <div class="empty-state">
         <div>
-          <h3>בחר עמוד למידה</h3>
-          <p>כאן ייפתח העמוד של החלק שבחרת מתוך הסילבוס.</p>
+          <h3>בחר חלק מהיחידה</h3>
+          <p>כאן תראה preview נקי של החלק שבחרת ולינק לעמוד הלימוד המלא.</p>
         </div>
       </div>
     `;
-    delete elements.lessonEditor.dataset.lessonId;
     return;
   }
 
-  const lessonState = state.learningContent[selectedPage.id] || { body: "", resources: "", updatedAt: "" };
-  const previewHtml = renderLessonPreview(selectedPage, lessonState);
+  const previewHighlights = getLearningPageHighlights(selectedPage);
+  const previewVisual = renderLearningPageVisual(selectedPage);
 
-  elements.lessonEditor.dataset.lessonId = selectedPage.id;
   elements.lessonEditor.innerHTML = `
-    <div class="lesson-editor-shell">
+    <div class="lesson-preview-shell">
       <div class="detail-header">
         <div>
           <span class="eyebrow">${escapeHtml(unit.weekLabel)} · ${escapeHtml(selectedPage.label)}</span>
-          <h2>${escapeHtml(selectedPage.label)}</h2>
+          <h2>${escapeHtml(selectedPage.title || selectedPage.label)}</h2>
           <p class="detail-summary">${escapeHtml(selectedPage.description)}</p>
           <div class="detail-meta">
             <span class="meta-pill">${escapeHtml(unit.title)}</span>
             <span class="meta-pill">${escapeHtml(unit.category)}</span>
-            <span class="meta-pill">${lessonState.updatedAt ? `עודכן ${formatDate(lessonState.updatedAt)}` : "טיוטה חדשה"}</span>
+            <span class="meta-pill">${selectedPage.blocks.length} בלוקים</span>
           </div>
         </div>
       </div>
 
-      <div class="lesson-editor-actions">
-        <button type="button" class="button button-primary" data-lesson-action="save">שמור חומר</button>
-        <button type="button" class="button button-secondary" data-lesson-action="fill-scaffold">מלא בסיס מהסילבוס</button>
-        <button type="button" class="button button-ghost" data-lesson-action="clear">נקה עמוד</button>
-      </div>
-
-      <div class="lesson-editor-grid">
-        <label class="field">
-          <span>תוכן העמוד</span>
-          <textarea
-            id="lessonBodyInput"
-            rows="14"
-            placeholder="כאן תדביק את חומר הלמידה האמיתי: הסבר, דוגמאות, צ'קליסט, תרגול, הערות..."
-          >${escapeHtml(lessonState.body || "")}</textarea>
-        </label>
-
-        <label class="field">
-          <span>קישורים ומשאבים</span>
-          <textarea
-            id="lessonResourcesInput"
-            rows="8"
-            placeholder="שורה לכל משאב. פורמט מומלץ: שם המשאב | https://example.com"
-          >${escapeHtml(lessonState.resources || "")}</textarea>
-        </label>
-      </div>
-
-      <div class="lesson-preview-card">
-        <div class="panel-title-row">
-          <h3>תצוגה מקדימה</h3>
-          <span class="summary-hint">זה מה שיופיע כעמוד הלמידה של החלק הזה</span>
+      <div class="lesson-preview-grid">
+        <div class="lesson-preview-card">
+          <div class="panel-title-row">
+            <h3>מה מחכה בפנים</h3>
+            <span class="summary-hint">עמוד לימוד אמיתי, לא סיכום דחוס</span>
+          </div>
+          <p class="lesson-preview-summary">${escapeHtml(selectedPage.description)}</p>
+          <div class="lesson-preview-highlights">
+            ${previewHighlights
+              .map((item) => `<span class="lesson-highlight-chip">${escapeHtml(item)}</span>`)
+              .join("")}
+          </div>
+          <div class="lesson-editor-actions">
+            <a class="button button-primary" href="${escapeAttribute(selectedPage.url)}">לפתוח את החלק הזה</a>
+            <a class="button button-secondary" href="${escapeAttribute(buildUnitPageUrl(unit.id))}">לפתוח את כל היחידה</a>
+          </div>
         </div>
-        ${previewHtml}
+
+        <aside class="lesson-preview-visual">
+          ${previewVisual}
+        </aside>
       </div>
     </div>
   `;
 }
 
 function getLearningPagesForUnit(unit) {
-  return learningPageBlueprints.map((page) => {
-    const sourceValue = unit[page.source];
-    return {
-      id: `${unit.id}::${page.key}`,
+  const catalog = getUnitPagesCatalog();
+  if (catalog) {
+    return catalog.getUnitParts(unit.id).map((page) => ({
+      id: `${unit.id}::${page.id}`,
+      pageId: page.id,
       unitId: unit.id,
-      key: page.key,
       label: page.label,
-      description: page.description,
-      scaffoldType: page.scaffoldType,
-      sourceValue
-    };
-  });
+      navShort: page.navShort || page.label,
+      title: page.title || page.label,
+      description: page.description || "",
+      kicker: page.kicker || "",
+      blocks: Array.isArray(page.blocks) ? page.blocks : [],
+      url: page.url || buildUnitPageUrl(unit.id, page.id)
+    }));
+  }
+
+  return learningPageBlueprints.map((page) => ({
+    id: `${unit.id}::${page.key}`,
+    pageId: page.key,
+    unitId: unit.id,
+    key: page.key,
+    label: page.label,
+    navShort: page.label,
+    title: page.label,
+    description: page.description,
+    kicker: unit.weekLabel,
+    blocks: [],
+    url: buildUnitPageUrl(unit.id, page.key)
+  }));
 }
 
 function getSelectedLearningPage() {
@@ -1805,124 +1791,149 @@ function openLesson(lessonId, shouldScroll = false) {
   }
 }
 
-function saveLessonContent(lessonId) {
-  const body = document.querySelector("#lessonBodyInput")?.value?.trim?.() || "";
-  const resources = document.querySelector("#lessonResourcesInput")?.value?.trim?.() || "";
-
-  state.learningContent = {
-    ...state.learningContent,
-    [lessonId]: {
-      body,
-      resources,
-      updatedAt: new Date().toISOString()
-    }
-  };
-
-  saveStorage(STORAGE_KEYS.learningContent, state.learningContent);
-  renderSelectedUnit();
-  renderLessonStudio();
-}
-
-function fillLessonScaffold(lessonId) {
-  const page = getSelectedLearningPage();
-  if (!page || page.id !== lessonId) {
-    return;
+function getUnitPagesCatalog() {
+  if (
+    window.unitPagesCatalog &&
+    typeof window.unitPagesCatalog.getUnitParts === "function" &&
+    typeof window.unitPagesCatalog.buildUnitPageUrl === "function"
+  ) {
+    return window.unitPagesCatalog;
   }
 
-  state.learningContent = {
-    ...state.learningContent,
-    [lessonId]: {
-      body: buildLessonScaffold(page),
-      resources: state.learningContent[lessonId]?.resources || "",
-      updatedAt: new Date().toISOString()
+  return null;
+}
+
+function buildUnitPageUrl(unitId, pageId = "") {
+  const catalog = getUnitPagesCatalog();
+  if (catalog) {
+    return catalog.buildUnitPageUrl(unitId, pageId);
+  }
+
+  const params = new URLSearchParams();
+  params.set("unit", unitId);
+  if (pageId) {
+    params.set("page", pageId);
+  }
+  return `./unit-page.html?${params.toString()}`;
+}
+
+function getLearningPageHighlights(page) {
+  const highlights = [];
+
+  page.blocks.forEach((block) => {
+    if (block.type === "bullet-list") {
+      highlights.push(...(block.items || []).slice(0, 2));
+      return;
     }
-  };
 
-  saveStorage(STORAGE_KEYS.learningContent, state.learningContent);
-  renderSelectedUnit();
-  renderLessonStudio();
+    if (block.type === "analogy-grid") {
+      highlights.push(...(block.items || []).slice(0, 2).map((item) => item.title));
+      return;
+    }
+
+    if (block.type === "stack-map") {
+      highlights.push(...(block.layers || []).slice(0, 2).map((layer) => layer.name));
+      return;
+    }
+
+    if (block.type === "tool-grid") {
+      highlights.push(...(block.items || []).slice(0, 2).map((item) => item.title));
+      return;
+    }
+
+    if (block.type === "sequence") {
+      highlights.push(`${(block.items || []).length} תחנות ב-flow אחד`);
+      return;
+    }
+
+    if (block.type === "scenario-quiz") {
+      highlights.push("תרחיש עם תשובה מוסתרת");
+    }
+  });
+
+  const compactHighlights = highlights.filter(Boolean).slice(0, 4);
+  return compactHighlights.length ? compactHighlights : [page.kicker || "עמוד לימוד ייעודי"];
 }
 
-function clearLessonContent(lessonId) {
-  const nextLearningContent = { ...state.learningContent };
-  delete nextLearningContent[lessonId];
-  state.learningContent = nextLearningContent;
-  saveStorage(STORAGE_KEYS.learningContent, state.learningContent);
-  renderSelectedUnit();
-  renderLessonStudio();
-}
+function renderLearningPageVisual(page) {
+  const analogyBlock = page.blocks.find((block) => block.type === "analogy-grid");
+  if (analogyBlock) {
+    return `
+      <div class="lesson-visual-stack">
+        ${(analogyBlock.items || [])
+          .slice(0, 3)
+          .map(
+            (item) => `
+              <article class="lesson-visual-card">
+                <span class="lesson-visual-pill">${escapeHtml(item.tag || "")}</span>
+                <strong>${escapeHtml(item.title || "")}</strong>
+              </article>
+            `
+          )
+          .join("")}
+      </div>
+    `;
+  }
 
-function buildLessonScaffold(page) {
-  const baseText = Array.isArray(page.sourceValue) ? page.sourceValue.join("\n- ") : String(page.sourceValue || "");
-  const formattedBaseText = Array.isArray(page.sourceValue) ? `- ${baseText}` : baseText;
+  const stackBlock = page.blocks.find((block) => block.type === "stack-map");
+  if (stackBlock) {
+    return `
+      <div class="lesson-visual-stack">
+        ${(stackBlock.layers || [])
+          .slice(0, 4)
+          .map(
+            (layer) => `
+              <article class="lesson-visual-card lesson-visual-card-layer">
+                <strong>${escapeHtml(layer.name || "")}</strong>
+              </article>
+            `
+          )
+          .join("")}
+      </div>
+    `;
+  }
 
-  return [
-    `# ${page.label}`,
-    "",
-    "## מה יש בעמוד הזה",
-    page.description,
-    "",
-    "## בסיס מהסילבוס",
-    formattedBaseText,
-    "",
-    "## מה נרצה להוסיף בהמשך",
-    "- הסבר פשוט בעברית",
-    "- דוגמה אמיתית מהמוצר שלך",
-    "- anti-pattern או טעות נפוצה",
-    "- צ'קליסט קצר לבדיקה עצמית"
-  ].join("\n");
-}
+  const sequenceBlock = page.blocks.find((block) => block.type === "sequence");
+  if (sequenceBlock) {
+    return `
+      <div class="lesson-preview-steps">
+        ${(sequenceBlock.items || [])
+          .slice(0, 4)
+          .map(
+            (item) => `
+              <div class="lesson-step-chip">
+                <span>${escapeHtml(item.step || "")}</span>
+                <strong>${escapeHtml(item.title || "")}</strong>
+              </div>
+            `
+          )
+          .join("")}
+      </div>
+    `;
+  }
 
-function renderLessonPreview(page, lessonState) {
-  const body = lessonState.body?.trim() || buildLessonScaffold(page);
-  const resources = parseLessonResources(lessonState.resources || "");
+  const quizBlock = page.blocks.find((block) => block.type === "scenario-quiz");
+  if (quizBlock) {
+    return `
+      <div class="lesson-visual-stack">
+        <article class="lesson-visual-card">
+          <span class="lesson-visual-pill">Scenario</span>
+          <strong>שיפוט ארכיטקטורה</strong>
+          <p>${escapeHtml(shortenLabel(quizBlock.question || "", 84))}</p>
+        </article>
+      </div>
+    `;
+  }
 
   return `
-    <article class="lesson-preview-shell">
-      <div class="lesson-preview-copy">
-        <pre class="lesson-preview-text">${escapeHtml(body)}</pre>
-      </div>
-      ${
-        resources.length
-          ? `
-            <div class="lesson-resource-list">
-              ${resources
-                .map(
-                  (resource) => `
-                    <a class="lesson-resource-chip" href="${escapeAttribute(resource.url)}" target="_blank" rel="noreferrer">
-                      ${escapeHtml(resource.label)}
-                    </a>
-                  `
-                )
-                .join("")}
-            </div>
-          `
-          : '<p class="inline-note">עדיין אין קישורים שמורים לעמוד הזה.</p>'
-      }
-    </article>
+    <div class="lesson-visual-stack">
+      <article class="lesson-visual-card">
+        <span class="lesson-visual-pill">Unit Page</span>
+        <strong>${escapeHtml(page.label)}</strong>
+        <p>${escapeHtml(shortenLabel(page.description || "", 96))}</p>
+      </article>
+    </div>
   `;
-}
-
-function parseLessonResources(value) {
-  return String(value || "")
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line) => {
-      const [labelPart, urlPart] = line.includes("|") ? line.split("|") : [line, line];
-      const label = String(labelPart || "").trim();
-      const url = String(urlPart || "").trim();
-
-      if (!url) {
-        return null;
-      }
-
-      return {
-        label: label || url,
-        url
-      };
-    })
-    .filter(Boolean);
 }
 
 function renderTimeline() {
@@ -2579,26 +2590,6 @@ function normalizeStage(stage) {
     createdAt: String(stage.createdAt || new Date().toISOString()),
     updatedAt: String(stage.updatedAt || new Date().toISOString())
   };
-}
-
-function normalizeLearningContent(value) {
-  if (!value || typeof value !== "object" || Array.isArray(value)) {
-    return {};
-  }
-
-  return Object.entries(value).reduce((collection, [key, entry]) => {
-    if (!entry || typeof entry !== "object") {
-      return collection;
-    }
-
-    collection[key] = {
-      body: String(entry.body || ""),
-      resources: String(entry.resources || ""),
-      updatedAt: String(entry.updatedAt || "")
-    };
-
-    return collection;
-  }, {});
 }
 
 function renderList(items, className) {
