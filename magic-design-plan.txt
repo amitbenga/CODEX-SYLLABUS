@@ -1,0 +1,25 @@
+Based on `magic` inspiration (`saas hero`, `bento stats`, `accordion cards`, `roadmap timeline`), I’d take it in one direction:
+
+1. Visual direction  
+`Editorial Command Center`: a warm, premium SaaS landing page with a sticky translucent top bar, oversized Hebrew headline, one strong product mockup, and crisp rounded bento cards. Keep the current warm tone, but reduce the “every section is the same glass slab” feeling.
+
+2. Hero structure  
+RTL two-column hero: on the right, headline, short promise, and 2 CTAs; on the left, a framed product preview showing unit list + selected unit + mini `16-week` rail. Under it, add a 3-card proof strip: `16 שבועות`, `5 pillars`, `יומן שלבים מקומי`.
+
+3. Section hierarchy  
+`Hero + proof strip` -> `How the syllabus works` bento overview -> `Syllabus navigator` -> `16-week roadmap` -> `Learning system / toolkit` -> `Personal build log`. Keep `#stages` last and initially condensed so the page reads like a landing page first, workspace second.
+
+4. Progressive disclosure  
+Use a sticky pill subnav, single-open accordion cards for units, and a phase-first roadmap that expands into week cards on click. Hide secondary detail in drawers/details/sheets; hover can decorate, but every reveal must work by tap/click.
+
+5. Color and typography  
+Palette: `#F6F0E6` background, `#FFF9F1` surface, `#16202A` ink, `#5D6B78` muted, `#0F766E` primary, `#C96A3D` accent, `#D9B36A` highlight. Typography: `Secular One` for hero/section titles, `Assistant` for body/UI, with tabular numerals for weeks and stats.
+
+6. 5 concrete component ideas  
+- Sticky blur nav with active section chip and scroll progress.  
+- Hero preview frame combining navigator + detail pane + mini roadmap.  
+- Asymmetrical bento proof cards for pillars, outcomes, and delivery style.  
+- Card-based syllabus accordion with week badge, summary, goals, and deliverable reveal.  
+- Clickable `16-week` roadmap rail with milestone dots and inline week drawer.
+
+Implementation-wise, this is mostly `index.html` restructuring, `styles.css` token/type updates, and light `app.js` state for sticky nav, accordions, and the roadmap rail.

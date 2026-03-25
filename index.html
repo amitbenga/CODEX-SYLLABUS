@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>מסלול Technical Product Builder</title>
+    <meta
+      name="description"
+      content="מערכת אינטראקטיבית למסלול Technical Product Builder עם סילבוס, מפת שבועות, תוצרים וניהול שלבים אישי."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&family=Secular+One&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body id="top">
+    <div class="background-orb orb-a"></div>
+    <div class="background-orb orb-b"></div>
+    <div class="background-grid"></div>
+
+    <main class="app-shell">
+      <nav class="topbar" aria-label="ניווט עמוד">
+        <a class="brand-lockup" href="#top">
+          <span class="brand-mark">TPB</span>
+          <span class="brand-copy">
+            <strong>Technical Product Builder</strong>
+            <span>סילבוס אינטראקטיבי לבנייה, שיפוט וניהול delivery</span>
+          </span>
+        </a>
+
+        <div id="sectionNav" class="section-nav"></div>
+
+        <div class="topbar-progress" aria-hidden="true">
+          <span id="scrollProgress"></span>
+        </div>
+      </nav>
+
+      <header class="hero">
+        <canvas id="heroShaderCanvas" class="hero-shader-canvas" aria-hidden="true"></canvas>
+        <div class="hero-shader-mask" aria-hidden="true"></div>
+        <div class="hero-light hero-light-a" aria-hidden="true"></div>
+        <div class="hero-light hero-light-b" aria-hidden="true"></div>
+
+        <div class="hero-layout">
+          <div class="hero-copy">
+            <span class="hero-badge">מסלול Technical Product Builder</span>
+            <p class="hero-kicker">הכשרה לבנייה, judgment ו-delivery</p>
+            <h1>
+              <span>לומדים לבנות</span>
+              <span class="hero-title-accent">מוצר טכני</span>
+              <span>בלי ללכת לאיבוד בקוד</span>
+            </h1>
+            <p class="hero-text">
+              מסלול חי שמציג לך רק את הדבר הבא: להבין מערכות, לשפוט קוד, להוביל עבודה עם סוכנים ולשלוח לפרודקשן.
+            </p>
+
+            <div class="hero-actions">
+              <a class="button button-primary" href="#navigator">לפתוח את היחידה הבאה</a>
+              <a class="button button-secondary" href="#timeline">לראות את מפת 16 השבועות</a>
+            </div>
+
+            <div id="heroNextActions" class="hero-next-actions"></div>
+          </div>
+
+          <div class="hero-console">
+            <article class="hero-console-card hero-console-card-primary">
+              <div class="hero-console-head">
+                <span class="panel-label panel-label-inline">הפוקוס שלך עכשיו</span>
+                <a class="micro-link micro-link-light" href="#navigator">ליחידה המלאה</a>
+              </div>
+              <div id="heroFocusCard" class="hero-focus-shell"></div>
+              <div id="heroProofGrid" class="hero-proof-grid"></div>
+            </article>
+
+            <article class="hero-console-card">
+              <div class="hero-console-head">
+                <span class="panel-label panel-label-inline">גישה מהירה</span>
+                <a class="micro-link micro-link-light" href="#navigator">כל היחידות</a>
+              </div>
+              <div id="heroUnitPreviewList" class="hero-mini-unit-list"></div>
+            </article>
+
+            <article class="hero-console-card">
+              <div class="hero-console-head">
+                <span class="panel-label panel-label-inline">מפת שבועות</span>
+                <a class="micro-link micro-link-light" href="#timeline">ללו״ז המלא</a>
+              </div>
+              <div id="heroRoadmap" class="hero-roadmap"></div>
+            </article>
+          </div>
+        </div>
+      </header>
+
+      <section class="section-block section-block-contrast" id="design-lab">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">21ST Design Lab</span>
+            <h2>שכבת API אמיתית ל־21ST Agents</h2>
+          </div>
+          <p>
+            כאן אפשר לדבר עם agent של 21ST מתוך הפרויקט עצמו. המפתח נשאר בשרת המקומי,
+            ומהדפדפן נשלחים רק ה־slug והפרומפט שלך.
+          </p>
+        </div>
+
+        <div class="lab-layout">
+          <form id="anForm" class="lab-form">
+            <div class="field-grid">
+              <label class="field">
+                <span>Agent slug</span>
+                <input id="anSlug" type="text" placeholder="לדוגמה: syllabus-designer" autocomplete="off" />
+              </label>
+
+              <div class="lab-status-card">
+                <span class="panel-label">מצב חיבור</span>
+                <p id="anStatus">בודק אם השרת מחובר ל־21ST...</p>
+              </div>
+            </div>
+
+            <label class="field">
+              <span>מה לבקש מהסוכן</span>
+              <textarea
+                id="anPrompt"
+                rows="7"
+                placeholder="לדוגמה: הצע לי 3 וריאציות ל-hero editorial בעברית, עם דגש על progressive disclosure, proof strip ו-roadmap."
+              ></textarea>
+            </label>
+
+            <div class="form-actions">
+              <button id="anSubmit" type="submit" class="button button-primary">שלח ל־21ST</button>
+              <button id="anReset" type="button" class="button button-secondary">אפס session</button>
+            </div>
+
+            <p class="lab-footnote">
+              אם ה־agent שלך כבר רץ, השרת ישמור את ה־sandbox וה־thread כדי שתוכל להמשיך
+              את אותה שיחה גם בהודעות הבאות.
+            </p>
+          </form>
+
+          <div class="lab-panel">
+            <div class="lab-panel-head">
+              <div>
+                <span class="panel-label">תשובת הסוכן</span>
+                <h3>Live design feedback</h3>
+              </div>
+              <div id="anSessionMeta" class="stage-summary"></div>
+            </div>
+
+            <div id="anResponse" class="lab-response">
+              <div class="empty-state">
+                <div>
+                  <h3>עדיין אין תגובה</h3>
+                  <p>הזן slug, כתוב בריף קצר ושלח. התשובה תופיע כאן.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-block" id="overview">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Overview</span>
+            <h2>איך המסלול הזה עובד בפועל</h2>
+          </div>
+          <p>
+            במקום לקרוא את כל הסילבוס ברצף, אתה מקבל מבט על ההיקף, על חמשת עמודי
+            התווך ועל מצב ההתקדמות שלך בתוך המסלול.
+          </p>
+        </div>
+
+        <div class="overview-layout">
+          <div id="statsGrid" class="stats-grid"></div>
+          <div id="pillarsGrid" class="pillars-grid"></div>
+        </div>
+      </section>
+
+      <section class="section-block" id="navigator">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Syllabus Navigator</span>
+            <h2>מפת היחידות</h2>
+          </div>
+          <p>
+            כאן המסלול הופך לכלי עבודה: חיפוש, סינון, בחירת יחידה אחת בפוקוס,
+            ואקורדיונים שחושפים רק את המטרות, התוצר או הדגלים האדומים שאתה צריך עכשיו.
+          </p>
+        </div>
+
+        <div class="toolbar">
+          <div id="filterChips" class="filter-chips"></div>
+
+          <label class="search-field">
+            <span>חיפוש מהיר</span>
+            <input
+              id="unitSearch"
+              type="search"
+              placeholder="חפש יחידה, מושג או נושא"
+              autocomplete="off"
+            />
+          </label>
+        </div>
+
+        <div class="navigator-layout">
+          <aside class="units-panel">
+            <div class="panel-title-row">
+              <h3>יחידות הקורס</h3>
+              <span id="visibleCount" class="count-pill"></span>
+            </div>
+            <div id="unitsList" class="units-list"></div>
+          </aside>
+
+          <article id="unitDetail" class="detail-panel"></article>
+        </div>
+      </section>
+
+      <section class="section-block" id="lesson-studio">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Learning Pages</span>
+            <h2>עמודי הלמידה של כל שבוע</h2>
+          </div>
+          <p>
+            כאן כל חלק בסילבוס הופך לעמוד עבודה אמיתי. בהמשך נעלה לכאן חומרי לימוד,
+            דוגמאות, קישורים ותרגילים לכל חלק בנפרד.
+          </p>
+        </div>
+
+        <div class="lesson-studio-layout">
+          <aside class="lesson-page-rail">
+            <div class="panel-title-row">
+              <h3>עמודי היחידה</h3>
+              <span id="lessonStudioMeta" class="count-pill"></span>
+            </div>
+            <div id="lessonPageList" class="lesson-page-list"></div>
+          </aside>
+
+          <article id="lessonEditor" class="lesson-editor"></article>
+        </div>
+      </section>
+
+      <section class="section-block" id="timeline">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">16 Week Plan</span>
+            <h2>מפת 16 השבועות</h2>
+          </div>
+          <p>
+            תרגום של הסילבוס ללוח עבודה אמיתי. כל כרטיס מייצג שבוע אחד, עם פוקוס ברור
+            וכניסה מהירה ליחידה הרלוונטית.
+          </p>
+        </div>
+
+        <div id="timelineGrid" class="timeline-grid"></div>
+      </section>
+
+      <section class="section-block" id="toolkit">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Learning System</span>
+            <h2>רוטינת העבודה והכלים שילוו אותך</h2>
+          </div>
+          <p>
+            מבנה שבועי קבוע, חומרי הלימוד שבאמת שווים זמן, והגדרה ברורה של מה מודדים
+            ומה לא לומדים עכשיו.
+          </p>
+        </div>
+
+        <div class="resource-layout">
+          <div class="resource-column">
+            <div class="resource-card">
+              <h3>רוטינת עבודה שבועית</h3>
+              <div id="weeklyRhythm" class="rhythm-list"></div>
+            </div>
+
+            <div class="resource-card">
+              <h3>מה לא לומדים עכשיו</h3>
+              <ul id="avoidList" class="simple-list"></ul>
+            </div>
+          </div>
+
+          <div class="resource-column">
+            <div class="resource-card">
+              <h3>ערכת הלימוד שצריך לבנות</h3>
+              <div id="learningAssets" class="asset-grid"></div>
+            </div>
+
+            <div class="resource-card">
+              <h3>איך מודדים הצלחה</h3>
+              <div id="successLevels" class="success-grid"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-block" id="stages">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Build Log</span>
+            <h2>מרחב השלבים האישי שלך</h2>
+          </div>
+          <p>
+            אחרי שהעמוד מתנהג כמו landing page ברור, כאן אתה עובר למצב עבודה: שמירת
+            שלבים, תוצרים, notes ו-checkpoints משלך עם ייבוא וייצוא מקומי.
+          </p>
+        </div>
+
+        <div class="stages-layout">
+          <form id="stageForm" class="stage-form">
+            <div class="panel-title-row">
+              <h3 id="formTitle">שלב חדש</h3>
+              <span id="formHint" class="form-hint">שמור שלבים לפי שבוע, יחידה או תוצר.</span>
+            </div>
+
+            <label class="field">
+              <span>כותרת</span>
+              <input id="stageTitle" name="title" type="text" placeholder="לדוגמה: לפרק את יחידה 3 למסמך ERD" required />
+            </label>
+
+            <div class="field-grid">
+              <label class="field">
+                <span>שבוע</span>
+                <select id="stageWeek" name="week"></select>
+              </label>
+
+              <label class="field">
+                <span>סטטוס</span>
+                <select id="stageStatus" name="status">
+                  <option value="planned">בתכנון</option>
+                  <option value="active">בתהליך</option>
+                  <option value="review">ממתין לריוויו</option>
+                  <option value="done">הושלם</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="field-grid">
+              <label class="field">
+                <span>סוג שלב</span>
+                <select id="stageType" name="type">
+                  <option value="checkpoint">Checkpoint</option>
+                  <option value="deliverable">תוצר</option>
+                  <option value="session">מפגש</option>
+                  <option value="note">הערה</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span>יחידה מקושרת</span>
+                <select id="stageUnit" name="unitId"></select>
+              </label>
+            </div>
+
+            <label class="field">
+              <span>הערות / פירוט</span>
+              <textarea
+                id="stageNotes"
+                name="notes"
+                rows="6"
+                placeholder="מה המטרה, מה צריך לבדוק, מה ה-risk, מה הצעד הבא..."
+              ></textarea>
+            </label>
+
+            <div class="form-actions">
+              <button type="submit" class="button button-primary">שמור שלב</button>
+              <button id="cancelEdit" type="button" class="button button-ghost hidden">בטל עריכה</button>
+              <button id="prefillFromUnit" type="button" class="button button-secondary">משוך מהיחידה הנבחרת</button>
+            </div>
+          </form>
+
+          <div class="stages-panel">
+            <div class="stage-toolbar">
+              <div id="stageSummary" class="stage-summary"></div>
+              <div class="stage-import-export">
+                <button id="exportStages" type="button" class="button button-secondary">ייצוא JSON</button>
+                <button id="importStages" type="button" class="button button-secondary">ייבוא JSON</button>
+                <input id="stageImportInput" type="file" accept=".json" hidden />
+              </div>
+            </div>
+
+            <div id="stagesList" class="stages-list"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
