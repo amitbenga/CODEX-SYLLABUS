@@ -1841,6 +1841,26 @@ function getLearningPageHighlights(page) {
       return;
     }
 
+    if (block.type === "card-grid") {
+      highlights.push(...(block.items || []).slice(0, 2).map((item) => item.title));
+      return;
+    }
+
+    if (block.type === "table") {
+      highlights.push(`${(block.rows || []).length} שורות עבודה`);
+      return;
+    }
+
+    if (block.type === "zone-diagram") {
+      highlights.push(...(block.zones || []).slice(0, 2).map((zone) => zone.label));
+      return;
+    }
+
+    if (block.type === "code-block") {
+      highlights.push(`תבנית ${block.language || "copy-ready"}`);
+      return;
+    }
+
     if (block.type === "sequence") {
       highlights.push(`${(block.items || []).length} תחנות ב-flow אחד`);
       return;
@@ -1908,6 +1928,51 @@ function renderLearningPageVisual(page) {
             `
           )
           .join("")}
+      </div>
+    `;
+  }
+
+  const zoneBlock = page.blocks.find((block) => block.type === "zone-diagram");
+  if (zoneBlock) {
+    return `
+      <div class="lesson-visual-stack">
+        ${(zoneBlock.zones || [])
+          .slice(0, 3)
+          .map(
+            (zone) => `
+              <article class="lesson-visual-card">
+                <span class="lesson-visual-pill">${escapeHtml(zone.label || "")}</span>
+                <strong>${escapeHtml((zone.items || []).slice(0, 2).join(" · "))}</strong>
+              </article>
+            `
+          )
+          .join("")}
+      </div>
+    `;
+  }
+
+  const tableBlock = page.blocks.find((block) => block.type === "table");
+  if (tableBlock) {
+    return `
+      <div class="lesson-visual-stack">
+        <article class="lesson-visual-card">
+          <span class="lesson-visual-pill">Table</span>
+          <strong>${escapeHtml(tableBlock.title || page.label)}</strong>
+          <p>${escapeHtml(`${(tableBlock.rows || []).length} שורות · ${(tableBlock.columns || []).length} עמודות`)}</p>
+        </article>
+      </div>
+    `;
+  }
+
+  const codeBlock = page.blocks.find((block) => block.type === "code-block");
+  if (codeBlock) {
+    return `
+      <div class="lesson-visual-stack">
+        <article class="lesson-visual-card">
+          <span class="lesson-visual-pill">${escapeHtml(codeBlock.language || "Template")}</span>
+          <strong>${escapeHtml(codeBlock.title || "תבנית")}</strong>
+          <p>${escapeHtml(codeBlock.note || "מוכן להעתקה ולעבודה עם סוכן או מפתח.")}</p>
+        </article>
       </div>
     `;
   }

@@ -278,6 +278,79 @@ function renderBlock(block) {
         </section>
       `;
 
+    case "card-grid":
+      return `
+        <section class="lesson-block">
+          <h3 class="block-title">${escapeHtml(block.title || "")}</h3>
+          <div class="card-grid columns-${escapeAttribute(String(block.columns || 3))}">
+            ${(block.items || [])
+              .map(
+                (item) => `
+                  <article class="info-card">
+                    ${item.eyebrow ? `<span class="info-card-eyebrow">${escapeHtml(item.eyebrow)}</span>` : ""}
+                    <h4>${escapeHtml(item.title || "")}</h4>
+                    <p>${escapeHtml(item.body || "")}</p>
+                    ${item.footnote ? `<span class="info-card-footnote">${escapeHtml(item.footnote)}</span>` : ""}
+                  </article>
+                `
+              )
+              .join("")}
+          </div>
+        </section>
+      `;
+
+    case "table":
+      return `
+        <section class="lesson-block">
+          <h3 class="block-title">${escapeHtml(block.title || "")}</h3>
+          ${block.note ? `<p class="block-copy">${escapeHtml(block.note)}</p>` : ""}
+          <div class="table-shell">
+            <table class="rich-table">
+              <thead>
+                <tr>
+                  ${(block.columns || []).map((column) => `<th>${escapeHtml(column)}</th>`).join("")}
+                </tr>
+              </thead>
+              <tbody>
+                ${(block.rows || [])
+                  .map(
+                    (row) => `
+                      <tr>
+                        ${row.map((cell) => `<td>${renderTableCell(cell)}</td>`).join("")}
+                      </tr>
+                    `
+                  )
+                  .join("")}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      `;
+
+    case "zone-diagram":
+      return `
+        <section class="lesson-block">
+          <h3 class="block-title">${escapeHtml(block.title || "")}</h3>
+          ${block.note ? `<p class="block-copy">${escapeHtml(block.note)}</p>` : ""}
+          <div class="zone-diagram">
+            ${(block.zones || [])
+              .map(
+                (zone) => `
+                  <article class="zone-card">
+                    <span class="zone-label">${escapeHtml(zone.label || "")}</span>
+                    <div class="zone-items">
+                      ${(zone.items || [])
+                        .map((item) => `<span class="zone-item">${escapeHtml(item)}</span>`)
+                        .join("")}
+                    </div>
+                  </article>
+                `
+              )
+              .join("")}
+          </div>
+        </section>
+      `;
+
     case "sequence":
       return `
         <section class="lesson-block">
@@ -294,6 +367,21 @@ function renderBlock(block) {
                 `
               )
               .join("")}
+          </div>
+        </section>
+      `;
+
+    case "code-block":
+      return `
+        <section class="lesson-block">
+          ${block.eyebrow ? `<span class="block-eyebrow">${escapeHtml(block.eyebrow)}</span>` : ""}
+          <h3 class="block-title">${escapeHtml(block.title || "")}</h3>
+          ${block.note ? `<p class="block-copy">${escapeHtml(block.note)}</p>` : ""}
+          <div class="code-shell">
+            <div class="code-header">
+              <span>${escapeHtml(block.language || "text")}</span>
+            </div>
+            <pre class="code-block"><code>${escapeHtml(block.code || "")}</code></pre>
           </div>
         </section>
       `;
@@ -337,6 +425,18 @@ function renderParagraphs(value) {
     .filter(Boolean)
     .map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`)
     .join("");
+}
+
+function renderTableCell(cell) {
+  if (Array.isArray(cell)) {
+    return `
+      <ul class="table-cell-list">
+        ${cell.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+      </ul>
+    `;
+  }
+
+  return `<span>${escapeHtml(cell)}</span>`;
 }
 
 function renderFatalState() {
