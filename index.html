@@ -21,30 +21,134 @@
     <div class="background-orb orb-b"></div>
     <div class="background-grid"></div>
 
+    <!-- Global progress bar at bottom of viewport -->
+    <div class="global-progress-bar" aria-hidden="true">
+      <span id="globalProgressFill"></span>
+    </div>
+
+    <!-- Onboarding modal -->
+    <div id="onboardingModal" class="onboarding-modal hidden" role="dialog" aria-modal="true" aria-labelledby="onboardingTitle">
+      <div class="onboarding-modal-card">
+        <h2 id="onboardingTitle">ברוך הבא!</h2>
+        <p>באיזה שבוע אתה נמצא כרגע?</p>
+        <div class="onboarding-week-grid" id="onboardingWeekGrid"></div>
+        <div class="onboarding-actions">
+          <button id="onboardingStart" type="button" class="button button-primary">התחל</button>
+          <button id="onboardingSkip" type="button" class="button button-ghost">דלג</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Drawer -->
+    <div id="aiDrawerOverlay" class="ai-drawer-overlay hidden" aria-hidden="true"></div>
+    <aside id="aiDrawer" class="ai-drawer hidden" role="complementary" aria-label="עזרת AI">
+      <div class="ai-drawer-header">
+        <div>
+          <span class="eyebrow">21ST Design Lab</span>
+          <h2>שכבת API אמיתית ל־21ST Agents</h2>
+        </div>
+        <button id="aiDrawerClose" type="button" class="ai-drawer-close" aria-label="סגור">×</button>
+      </div>
+      <p class="ai-drawer-desc">
+        כאן אפשר לדבר עם agent של 21ST מתוך הפרויקט עצמו. המפתח נשאר בשרת המקומי,
+        ומהדפדפן נשלחים רק ה־slug והפרומפט שלך.
+      </p>
+
+      <form id="anForm" class="lab-form">
+        <div class="field-grid">
+          <label class="field">
+            <span>Agent slug</span>
+            <input id="anSlug" type="text" placeholder="לדוגמה: syllabus-designer" autocomplete="off" />
+          </label>
+
+          <div class="lab-status-card">
+            <span class="panel-label">מצב חיבור</span>
+            <p id="anStatus">בודק אם השרת מחובר ל־21ST...</p>
+          </div>
+        </div>
+
+        <label class="field">
+          <span>מה לבקש מהסוכן</span>
+          <textarea
+            id="anPrompt"
+            rows="7"
+            placeholder="לדוגמה: הצע לי 3 וריאציות ל-hero editorial בעברית, עם דגש על progressive disclosure, proof strip ו-roadmap."
+          ></textarea>
+        </label>
+
+        <div class="form-actions">
+          <button id="anSubmit" type="submit" class="button button-primary">שלח ל־21ST</button>
+          <button id="anReset" type="button" class="button button-secondary">אפס session</button>
+        </div>
+
+        <p class="lab-footnote">
+          אם ה־agent שלך כבר רץ, השרת ישמור את ה־sandbox וה־thread כדי שתוכל להמשיך
+          את אותה שיחה גם בהודעות הבאות.
+        </p>
+      </form>
+
+      <div class="lab-panel">
+        <div class="lab-panel-head">
+          <div>
+            <span class="panel-label">תשובת הסוכן</span>
+            <h3>Live design feedback</h3>
+          </div>
+          <div id="anSessionMeta" class="stage-summary"></div>
+        </div>
+
+        <div id="anResponse" class="lab-response">
+          <div class="empty-state">
+            <div>
+              <h3>עדיין אין תגובה</h3>
+              <p>הזן slug, כתוב בריף קצר ושלח. התשובה תופיע כאן.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- AI FAB -->
+    <button id="aiFab" type="button" class="ai-fab" aria-label="עזרת AI">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+      <span class="ai-fab-label">עזרת AI</span>
+    </button>
+
     <main class="app-shell">
       <nav class="topbar" aria-label="ניווט עמוד">
         <a class="brand-lockup" href="#top">
           <span class="brand-mark">TPB</span>
           <span class="brand-copy">
             <strong>Technical Product Builder</strong>
-            <span>סילבוס אינטראקטיבי לבנייה, שיפוט וניהול delivery</span>
           </span>
         </a>
 
-        <div id="sectionNav" class="section-nav"></div>
-
-        <div class="topbar-progress" aria-hidden="true">
-          <span id="scrollProgress"></span>
+        <div class="topbar-right">
+          <div id="progressPill" class="progress-pill"></div>
         </div>
       </nav>
 
-      <header class="hero">
+      <!-- Sticky pill subnav -->
+      <nav id="pillSubnav" class="pill-subnav" aria-label="ניווט מהיר בין סקציות">
+        <div class="pill-subnav-inner">
+          <a href="#top" class="pill-nav-item" data-pill-section="top">Hero</a>
+          <a href="#overview" class="pill-nav-item" data-pill-section="overview">סקירה</a>
+          <a href="#navigator" class="pill-nav-item" data-pill-section="navigator">סילבוס</a>
+          <a href="#timeline" class="pill-nav-item" data-pill-section="timeline">לוח זמנים</a>
+          <a href="#toolkit" class="pill-nav-item" data-pill-section="toolkit">כלי למידה</a>
+          <a href="#stages" class="pill-nav-item" data-pill-section="stages">יומן שלבים</a>
+        </div>
+      </nav>
+
+      <header class="hero" id="hero-section">
         <canvas id="heroShaderCanvas" class="hero-shader-canvas" aria-hidden="true"></canvas>
         <div class="hero-shader-mask" aria-hidden="true"></div>
         <div class="hero-light hero-light-a" aria-hidden="true"></div>
         <div class="hero-light hero-light-b" aria-hidden="true"></div>
 
         <div class="hero-layout">
+          <!-- Right column: text -->
           <div class="hero-copy">
             <span class="hero-badge">מסלול Technical Product Builder</span>
             <p class="hero-kicker">הכשרה לבנייה, judgment ו-delivery</p>
@@ -58,110 +162,61 @@
             </p>
 
             <div class="hero-actions">
-              <a class="button button-primary" href="#navigator">לפתוח את היחידה הבאה</a>
-              <a class="button button-secondary" href="#timeline">לראות את מפת 16 השבועות</a>
+              <a class="button button-primary" href="#navigator">צלול לסילבוס</a>
+              <a class="button button-secondary" href="#stages">הרוד שלי</a>
             </div>
 
             <div id="heroNextActions" class="hero-next-actions"></div>
           </div>
 
-          <div class="hero-console">
-            <article class="hero-console-card hero-console-card-primary">
-              <div class="hero-console-head">
-                <span class="panel-label panel-label-inline">הפוקוס שלך עכשיו</span>
-                <a class="micro-link micro-link-light" href="#navigator">ליחידה המלאה</a>
+          <!-- Left column: product preview mock -->
+          <div class="hero-preview-frame" aria-hidden="true">
+            <div class="hero-preview-window">
+              <div class="hero-preview-toolbar">
+                <div class="toolbar-dots">
+                  <span></span><span></span><span></span>
+                </div>
+                <span class="hero-preview-url">syllabus navigator</span>
               </div>
-              <div id="heroFocusCard" class="hero-focus-shell"></div>
-              <div id="heroProofGrid" class="hero-proof-grid"></div>
-            </article>
+              <div class="hero-preview-layout">
+                <div class="hero-preview-sidebar">
+                  <div class="hero-preview-sidebar-head">
+                    <span class="hero-preview-badge">יחידות הקורס</span>
+                  </div>
+                  <div id="heroUnitPreviewList" class="hero-preview-unit-list"></div>
+                </div>
+                <div class="hero-preview-detail">
+                  <div id="heroFocusCard" class="hero-focus-shell"></div>
+                  <div id="heroProofGrid" class="hero-proof-grid"></div>
+                </div>
+              </div>
+              <div id="heroRoadmap" class="hero-preview-timeline"></div>
+            </div>
+          </div>
+        </div>
 
-            <article class="hero-console-card">
-              <div class="hero-console-head">
-                <span class="panel-label panel-label-inline">גישה מהירה</span>
-                <a class="micro-link micro-link-light" href="#navigator">כל היחידות</a>
-              </div>
-              <div id="heroUnitPreviewList" class="hero-mini-unit-list"></div>
-            </article>
-
-            <article class="hero-console-card">
-              <div class="hero-console-head">
-                <span class="panel-label panel-label-inline">מפת שבועות</span>
-                <a class="micro-link micro-link-light" href="#timeline">ללו״ז המלא</a>
-              </div>
-              <div id="heroRoadmap" class="hero-roadmap"></div>
-            </article>
+        <!-- Proof strip below both columns -->
+        <div class="hero-proof-strip">
+          <div class="hero-proof-strip-inner">
+            <div class="proof-strip-card">
+              <span class="proof-strip-value">16</span>
+              <span class="proof-strip-label">שבועות</span>
+            </div>
+            <div class="proof-strip-divider"></div>
+            <div class="proof-strip-card">
+              <span class="proof-strip-value">14</span>
+              <span class="proof-strip-label">יחידות</span>
+            </div>
+            <div class="proof-strip-divider"></div>
+            <div class="proof-strip-card">
+              <span class="proof-strip-value">5</span>
+              <span class="proof-strip-label">עמודות ליבה</span>
+            </div>
           </div>
         </div>
       </header>
 
-      <section class="section-block section-block-contrast" id="design-lab">
-        <div class="section-heading">
-          <div>
-            <span class="eyebrow">21ST Design Lab</span>
-            <h2>שכבת API אמיתית ל־21ST Agents</h2>
-          </div>
-          <p>
-            כאן אפשר לדבר עם agent של 21ST מתוך הפרויקט עצמו. המפתח נשאר בשרת המקומי,
-            ומהדפדפן נשלחים רק ה־slug והפרומפט שלך.
-          </p>
-        </div>
-
-        <div class="lab-layout">
-          <form id="anForm" class="lab-form">
-            <div class="field-grid">
-              <label class="field">
-                <span>Agent slug</span>
-                <input id="anSlug" type="text" placeholder="לדוגמה: syllabus-designer" autocomplete="off" />
-              </label>
-
-              <div class="lab-status-card">
-                <span class="panel-label">מצב חיבור</span>
-                <p id="anStatus">בודק אם השרת מחובר ל־21ST...</p>
-              </div>
-            </div>
-
-            <label class="field">
-              <span>מה לבקש מהסוכן</span>
-              <textarea
-                id="anPrompt"
-                rows="7"
-                placeholder="לדוגמה: הצע לי 3 וריאציות ל-hero editorial בעברית, עם דגש על progressive disclosure, proof strip ו-roadmap."
-              ></textarea>
-            </label>
-
-            <div class="form-actions">
-              <button id="anSubmit" type="submit" class="button button-primary">שלח ל־21ST</button>
-              <button id="anReset" type="button" class="button button-secondary">אפס session</button>
-            </div>
-
-            <p class="lab-footnote">
-              אם ה־agent שלך כבר רץ, השרת ישמור את ה־sandbox וה־thread כדי שתוכל להמשיך
-              את אותה שיחה גם בהודעות הבאות.
-            </p>
-          </form>
-
-          <div class="lab-panel">
-            <div class="lab-panel-head">
-              <div>
-                <span class="panel-label">תשובת הסוכן</span>
-                <h3>Live design feedback</h3>
-              </div>
-              <div id="anSessionMeta" class="stage-summary"></div>
-            </div>
-
-            <div id="anResponse" class="lab-response">
-              <div class="empty-state">
-                <div>
-                  <h3>עדיין אין תגובה</h3>
-                  <p>הזן slug, כתוב בריף קצר ושלח. התשובה תופיע כאן.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="section-block" id="overview">
+      <section class="section-block section-overview" id="overview">
         <div class="section-heading">
           <div>
             <span class="eyebrow">Overview</span>
@@ -173,13 +228,48 @@
           </p>
         </div>
 
-        <div class="overview-layout">
-          <div id="statsGrid" class="stats-grid"></div>
-          <div id="pillarsGrid" class="pillars-grid"></div>
+        <!-- Bento grid layout -->
+        <div class="bento-grid">
+          <!-- Large featured card -->
+          <div class="bento-card bento-featured">
+            <span class="eyebrow">מה הקורס הזה</span>
+            <h3>קורס ליצירת Product Builder טכני</h3>
+            <p>מסלול שמוביל אותך מ-prompt operator לתפקיד technical lead: מבנה מערכות, שיפוט קוד, הובלת delivery עם סוכנים ושליחה לפרודקשן.</p>
+          </div>
+
+          <!-- Stat cards -->
+          <div id="statsGrid" class="bento-stats-row"></div>
+
+          <!-- How it works card -->
+          <div class="bento-card bento-how-it-works">
+            <span class="panel-label">איך זה עובד</span>
+            <div class="bento-flow">
+              <div class="bento-flow-step">
+                <span class="bento-flow-icon">📖</span>
+                <strong>למד</strong>
+                <span>מושגים, שכבות ו-flows</span>
+              </div>
+              <span class="bento-flow-arrow">←</span>
+              <div class="bento-flow-step">
+                <span class="bento-flow-icon">🔨</span>
+                <strong>בנה</strong>
+                <span>תוצרים ו-deliverables</span>
+              </div>
+              <span class="bento-flow-arrow">←</span>
+              <div class="bento-flow-step">
+                <span class="bento-flow-icon">📝</span>
+                <strong>תעד</strong>
+                <span>שלבים אישיים ב-Build Log</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pillars grid -->
+          <div id="pillarsGrid" class="bento-pillars-grid"></div>
         </div>
       </section>
 
-      <section class="section-block" id="navigator">
+      <section class="section-block section-navigator" id="navigator">
         <div class="section-heading">
           <div>
             <span class="eyebrow">Syllabus Navigator</span>
@@ -206,7 +296,7 @@
         </div>
 
         <div class="navigator-layout">
-          <aside class="units-panel">
+          <aside class="units-panel" id="unitsPanelAside">
             <div class="panel-title-row">
               <h3>יחידות הקורס</h3>
               <span id="visibleCount" class="count-pill"></span>
@@ -216,9 +306,23 @@
 
           <article id="unitDetail" class="detail-panel"></article>
         </div>
+
+        <!-- Mobile drawer trigger -->
+        <button id="mobileUnitsBtn" type="button" class="mobile-units-fab hidden-desktop">
+          יחידות
+        </button>
+        <!-- Mobile units drawer -->
+        <div id="mobileUnitsDrawer" class="mobile-units-drawer hidden" aria-hidden="true">
+          <div class="mobile-units-drawer-header">
+            <h3>יחידות הקורס</h3>
+            <button id="mobileUnitsClose" type="button" class="ai-drawer-close" aria-label="סגור">×</button>
+          </div>
+          <div id="mobileUnitsList" class="units-list"></div>
+        </div>
+        <div id="mobileUnitsOverlay" class="ai-drawer-overlay hidden" aria-hidden="true"></div>
       </section>
 
-      <section class="section-block" id="lesson-studio">
+      <section class="section-block section-lesson-studio" id="lesson-studio">
         <div class="section-heading">
           <div>
             <span class="eyebrow">Learning Pages</span>
@@ -243,7 +347,7 @@
         </div>
       </section>
 
-      <section class="section-block" id="timeline">
+      <section class="section-block section-timeline" id="timeline">
         <div class="section-heading">
           <div>
             <span class="eyebrow">16 Week Plan</span>
@@ -258,7 +362,7 @@
         <div id="timelineGrid" class="timeline-grid"></div>
       </section>
 
-      <section class="section-block" id="toolkit">
+      <section class="section-block section-toolkit" id="toolkit">
         <div class="section-heading">
           <div>
             <span class="eyebrow">Learning System</span>
@@ -297,7 +401,7 @@
         </div>
       </section>
 
-      <section class="section-block" id="stages">
+      <section class="section-block section-stages" id="stages">
         <div class="section-heading">
           <div>
             <span class="eyebrow">Build Log</span>
