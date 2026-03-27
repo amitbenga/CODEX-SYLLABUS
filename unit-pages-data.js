@@ -1033,8 +1033,824 @@ Findings:
     ]
   };
 
+  const httpApiPage = {
+    id: "http-api",
+    heroEyebrow: "יחידה 2 · HTTP ו-API",
+    title: "HTTP, API וזרימות מערכת",
+    subtitle:
+      "יחידה שהופכת בקשות ותשובות לשפה ניהולית: סמנטיקת HTTP, contracts, failure modes, rate limiting ו-agent-in-the-loop בטוח.",
+    quickFacts: [
+      { value: "12", label: "חלקי לימוד" },
+      { value: "6", label: "תרחישי עבודה" },
+      { value: "4", label: "תבניות מוכנות" }
+    ],
+    parts: [
+      {
+        id: "summary",
+        label: "תקציר מנהלים",
+        navShort: "תקציר",
+        kicker: "מבט על",
+        title: "מ'עבר לי מקומית' ליכולת לתכנן ולנהל זרימות מערכת",
+        description:
+          "היחידה הזאת נועדה להפוך אותך ממי שרואה request עובד למי שמסוגל לנהל API מקצועי: עמידות, אבטחה, דיבוג ושחרור בטוח.",
+        blocks: [
+          {
+            type: "lead",
+            eyebrow: "Executive Summary",
+            title: "HTTP הוא חוזה התנהגות בינלאומי, לא רק תעלה שמעבירה JSON",
+            text: [
+              "יחידה זו הופכת אותך ממי שרואה בקשות עובדות למי שמסוגל לתכנן ולנהל זרימות מערכת בצורה מקצועית: להבין מה באמת קורה בין לקוח לשרת, לנסח חוזי API מדויקים, להקשיח נקודות כניסה ציבוריות, ולבנות התנהגות נכונה תחת כשלי רשת, timeouts, retries ודפוסי abuse.",
+              "עקרון המפתח הוא שאם ה-API שלך לא עקבי בסמנטיקה, לא ברור על מה אפשר לסמוך, ואין משמעת של ולידציה, טיפול שגיאות ותצפיתיות, אתה מקבל מערכת שבירה שבה כל שינוי קטן מפיל משהו אחר.",
+              "בסוף השבוע אמורים להיות לך ארטיפקטים ניהוליים: API Contract, תרשימי זרימה, טבלת שגיאות, failure modes, תסריט abuse, ותסריט agent-in-the-loop בטוח."
+            ]
+          },
+          {
+            type: "callout",
+            tone: "quiet",
+            title: "מדד ההצלחה של היחידה",
+            text:
+              "אתה לא נמדד לפי 'עבר לי מקומית', אלא לפי עמידות, אבטחה, יכולת דיבוג ושחרור בטוח של זרימות מערכת."
+          }
+        ]
+      },
+      {
+        id: "goals",
+        label: "מטרות ותוצרים",
+        navShort: "מטרות",
+        kicker: "מה צריך להישאר אצלך בסוף השבוע",
+        title: "מטרות למידה תמציתיות ותוצרים מדידים לשבוע 2",
+        description:
+          "היחידה בנויה כך שבסוף השבוע תהיה לך חבילת artifacts סביב flow אחד אמיתי: contract, traces, failure modes, abuse וקריאת סוכן בטוחה.",
+        blocks: [
+          {
+            type: "bullet-list",
+            title: "מטרות למידה תמציתיות",
+            items: [
+              "להבין Request/Response לעומק: מה הלקוח עושה, מה השרת עושה, ומה קורה באמצע.",
+              "לשלוט בסמנטיקת HTTP: methods, status codes, headers ותבניות קלט/פלט.",
+              "להבין Idempotency ומהי מדיניות retry נכונה.",
+              "לתכנן ולידציה והודעות שגיאה בצורה עקבית, בטוחה ומאפשרת דיבוג.",
+              "לזהות failure modes נפוצים ולהפוך אותם לחלק מהתכנון.",
+              "להטמיע הגנות API בסיסיות: rate limiting, abuse controls, token handling, BOLA, CSRF, CORS ו-injection.",
+              "לשלב סוכן או LLM בצורה נשלטת: גבולות הרשאה, אימות פלט וחסימת פעולות מסוכנות."
+            ]
+          },
+          {
+            type: "card-grid",
+            title: "תוצרים מדידים לסוף השבוע",
+            columns: 2,
+            items: [
+              {
+                eyebrow: "Deliverable",
+                title: "API Contract",
+                body: "לזרימה אחת: endpoints, schemas, statuses, idempotency, security ו-observability."
+              },
+              {
+                eyebrow: "Deliverable",
+                title: "Trace Pack",
+                body: "request-id, לוגים רלוונטיים וראיות של request/response."
+              },
+              {
+                eyebrow: "Deliverable",
+                title: "תסריט כשל",
+                body: "שחזור שגיאה, root cause, תיקון ובדיקה שמונעת רגרסיה."
+              },
+              {
+                eyebrow: "Deliverable",
+                title: "תסריט abuse",
+                body: "Rate limit, תגובת 429 וניטור בסיסי."
+              },
+              {
+                eyebrow: "Deliverable",
+                title: "Agent-in-the-loop",
+                body: "קריאת סוכן שמוגבלת, מאומתת ומתועדת."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: "request-response",
+        label: "Request / Response",
+        navShort: "מודל",
+        kicker: "חוקי התנועה של המערכת",
+        title: "מודל Request/Response ו-HTTP כחוקי תנועה",
+        description:
+          "הלקוח שולח בקשה, השרת מחזיר תשובה, והחוזה הזה חייב להיות מדויק גם כשיש לקוח עוין או משובש.",
+        blocks: [
+          {
+            type: "lead",
+            eyebrow: "HTTP Basics",
+            title: "Request הוא בקשה, Response הוא חוזה תשובה, ו-headers הם metadata שמסבירים את כל השאר",
+            text: [
+              "HTTP אינו מנגנון קסם, אלא סט כללים לסמנטיקה של בקשות, תגובות ו-metadata. הלקוח שולח request, השרת מחזיר response, ובאמצע יש edge, routing, auth, validation, DB ותלויות חיצוניות.",
+              "Pitfall נפוץ הוא לחשוב שהלקוח מכבד UI ולכן לא ישלח בקשות חריגות. Mitigation הוא להחשיב כל בקשה כלא אמינה, ולדרוש מהשרת AuthN, AuthZ, validation ותיעוד."
+            ]
+          },
+          {
+            type: "callout",
+            tone: "info",
+            title: "שאלת ניהול",
+            text:
+              "אילו בדיקות חייבות להיות בשרת כדי שהמערכת תהיה נכונה גם אם הלקוח עוין, שבור או מנסה לעקוף את ה-UI?"
+          }
+        ]
+      },
+      {
+        id: "methods",
+        label: "Methods",
+        navShort: "Methods",
+        kicker: "סמנטיקה של פעולה",
+        title: "GET, POST, PUT, PATCH ו-DELETE: מה כל method אמור לומר על הפעולה",
+        description:
+          "ה-method שבחרת הוא לא רק מילה ב-route. הוא מבטיח התנהגות, side effects, וציפייה של כל מי שיגע במערכת אחריך.",
+        blocks: [
+          {
+            type: "table",
+            title: "Methods וסמנטיקת פעולה",
+            columns: ["Method", "מה הוא מבטא", "Pitfall נפוץ", "Mitigation / שאלת ניהול"],
+            rows: [
+              [
+                "GET",
+                "קריאה בלבד; לא אמור לשנות מצב מערכת.",
+                "GET שמבצע כתיבה, counters או side effects לא רצויים.",
+                "בדוק שאין כתיבה נסתרת. האם יש משהו ב-GET שמשנה מצב?"
+              ],
+              [
+                "POST",
+                "יצירה או פעולה שאינה בהכרח idempotent.",
+                "כפילות בגלל לחיצות חוזרות או retry.",
+                "Idempotency-Key, unique constraint או בדיקת 'כבר קיים'. מה מונע פעולה כפולה?"
+              ],
+              [
+                "PUT",
+                "החלפה מלאה של ייצוג המשאב.",
+                "שימוש ב-PUT בלי להבין מלא מול חלקי, מה שגורם למחיקת שדות.",
+                "האם הלקוח שולח את כל הייצוג? מה קורה לשדות שלא נשלחו?"
+              ],
+              [
+                "PATCH",
+                "עדכון חלקי של משאב.",
+                "PATCH חופשי שמאפשר לשנות שדות אסורים.",
+                "Allowlist לשדות, DTO לפי role ושאלת ניהול: אילו שדות מותר לעדכן ולמי?"
+              ],
+              [
+                "DELETE",
+                "מחיקה או ביטול, לעיתים עם 204.",
+                "מחיקה לפי user_id מה-body או מחיקה ללא אישור.",
+                "שלוף user_id מה-token, בצע AuthZ ושקול soft delete כשצריך audit."
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        id: "status-codes",
+        label: "Status Codes",
+        navShort: "Statuses",
+        kicker: "שפת הדיבוג של ה-API",
+        title: "Status codes הם לא קוסמטיקה: הם שפת הדיבוג והאינטגרציה שלך",
+        description:
+          "סטטוסים נכונים חוסכים שעות של חקירה. סטטוסים שגויים שוברים כלים, מטשטשים אחריות ומייצרים clients פריכים.",
+        blocks: [
+          {
+            type: "table",
+            title: "מפת הסטטוסים המרכזיים",
+            columns: ["קוד", "מתי משתמשים", "הערה ניהולית"],
+            rows: [
+              ["200 OK", "הצלחה כללית", "בחר אותו רק כשאין סטטוס ספציפי טוב יותר."],
+              ["201 Created", "נוצר משאב חדש", "מצוין לפעולות יצירה שמחזירות משאב או מזהה."],
+              ["202 Accepted", "התקבל לעיבוד אסינכרוני", "צרף job id או דרך מעקב."],
+              ["204 No Content", "הצלחה בלי גוף תגובה", "טוב למחיקות ולעדכונים מסוימים."],
+              ["400 Bad Request", "שגיאת ולידציה או פורמט", "הלקוח שלח בקשה לא תקינה."],
+              ["401 Unauthorized", "אין זיהוי תקף", "טוקן חסר, פג או משתמש לא מחובר."],
+              ["403 Forbidden", "מזוהה אך לא מורשה", "זהות קיימת, הרשאה אין."],
+              ["404 Not Found", "משאב לא קיים או לא קיים עבורך", "בחר מדיניות עקבית לחשיפת קיום."],
+              ["409 Conflict", "קונפליקט מצב או כפילות", "טוב ל-idempotency, כפילויות וגרסאות."],
+              ["422 Unprocessable Entity", "פורמט תקין אך לא עומד בחוקים סמנטיים", "אופציונלי; חשוב לבחור קו עקבי."],
+              ["429 Too Many Requests", "Rate limit או abuse", "רצוי לצרף Retry-After."],
+              ["500 / 502 / 503 / 504", "כשלי שרת או תלות", "חשובים במיוחד למעקב תפעולי."]
+            ]
+          },
+          {
+            type: "callout",
+            tone: "quiet",
+            title: "Anti-pattern שחייב להיעלם",
+            text:
+              "להחזיר 200 עם הודעת שגיאה בתוך JSON כמו ok:false הורס דיבוג, כלי אינטגרציה ו-tracing. הסטטוס צריך לספר את האמת."
+          }
+        ]
+      },
+      {
+        id: "headers-body",
+        label: "Headers וגוף בקשה",
+        navShort: "Headers",
+        kicker: "המעטפה והתוכן",
+        title: "Headers, JSON ו-FormData: מה באמת מגיע לשרת ואיך שומרים על זה בטוח",
+        description:
+          "Headers הם metadata קריטי, וגוף הבקשה הוא המקום שבו הכי קל להכניס טעויות, דליפות ועלויות.",
+        blocks: [
+          {
+            type: "card-grid",
+            title: "Headers שחייבים להבין",
+            columns: 2,
+            items: [
+              {
+                eyebrow: "Auth",
+                title: "Authorization / Cookie",
+                body: "זהות וסשן. השאלה הניהולית: האם קיימת מדיניות אחידה איך מזדהים ואיפה זה נבדק?"
+              },
+              {
+                eyebrow: "Format",
+                title: "Content-Type / Accept",
+                body: "הפורמט שנשלח והפורמט שמצופה בחזרה. זה קובע parsing, validation ושגיאות."
+              },
+              {
+                eyebrow: "Safety",
+                title: "Idempotency-Key / Retry-After",
+                body: "Headers שעוזרים למנוע כפילויות ולנהל retry נכון."
+              },
+              {
+                eyebrow: "Tracing",
+                title: "X-Request-Id / traceparent",
+                body: "מזהים שעוזרים לעקוב אחרי זרימה בין מערכות ולוגים."
+              }
+            ]
+          },
+          {
+            type: "bullet-list",
+            title: "JSON מול FormData",
+            items: [
+              "JSON הוא ברירת המחדל לנתונים מובנים.",
+              "FormData מיועד לקבצים ובינארי.",
+              "Pitfall: העלאת קבצים בלי מגבלות גודל או סוג יוצרת DoS, עלויות וסיכוני תוכן.",
+              "Mitigation: מגבלות גודל, סוגים מותרים, private storage ותיוג או סריקה לפי צורך."
+            ]
+          },
+          {
+            type: "callout",
+            tone: "info",
+            title: "שאלת ניהול",
+            text:
+              "האם קיימת מדיניות עקבית של מה מותר להדפיס ללוג, ואיפה עושים redaction ל-Headers רגישים כמו Authorization או Cookie?"
+          }
+        ]
+      },
+      {
+        id: "lifecycle",
+        label: "Lifecycle",
+        navShort: "Lifecycle",
+        kicker: "מה באמת קורה בבקשה",
+        title: "Request / Response Lifecycle: הסדר הקבוע שמונע endpoints שבירים",
+        description:
+          "בקשה בריאה עוברת סדר של שלבים. ברגע שהסדר הזה לא ברור, קל לשכוח AuthZ, validation, telemetry או טיפול שגיאות נכון.",
+        blocks: [
+          {
+            type: "sequence",
+            title: "תשעת השלבים של בקשה בריאה",
+            items: [
+              { step: "1", title: "Edge", body: "TLS, routing בסיסי ו-rate limiting." },
+              { step: "2", title: "Router / Controller", body: "התאמת route ו-method." },
+              { step: "3", title: "AuthN", body: "מי אתה?" },
+              { step: "4", title: "AuthZ", body: "האם מותר לך על המשאב הזה, ברמת אובייקט?" },
+              { step: "5", title: "Validation", body: "האם הקלט עומד בסכמות ובחוקים?" },
+              { step: "6", title: "Business Logic", body: "ביצוע הפעולה עצמה." },
+              { step: "7", title: "DB / Storage / External", body: "התמדה, שליפה או קריאת חוץ." },
+              { step: "8", title: "Error Handling", body: "מיפוי הכשל לסטטוס ול-payload בטוח." },
+              { step: "9", title: "Observability", body: "request-id, logs, metrics ו-audit." }
+            ]
+          },
+          {
+            type: "callout",
+            tone: "quiet",
+            title: "שאלת ניהול",
+            text:
+              "האם מוגדר סדר קבוע של בדיקות בכל endpoint כך שאי אפשר לשכוח AuthZ, validation או observability?"
+          }
+        ]
+      },
+      {
+        id: "resilience",
+        label: "Resilience",
+        navShort: "עמידות",
+        kicker: "Idempotency, retries, timeouts ו-abuse",
+        title: "כשלים, retries ו-rate limiting: להפוך failure modes לחלק מהתכנון",
+        description:
+          "החלק הזה עוסק במה שקורה כשדברים לא עובדים: כפילויות, timeouts, retries מסוכנים ו-abuse חיצוני.",
+        blocks: [
+          {
+            type: "card-grid",
+            title: "ארבעת המושגים שחייבים להחזיק יחד",
+            columns: 2,
+            items: [
+              {
+                eyebrow: "Idempotency",
+                title: "אותה פעולה לא יוצרת תוצאה כפולה",
+                body: "כל פעולה רגישה שמערבת יצירה, כסף או הרשמות חייבת מנגנון שמונע כפילויות."
+              },
+              {
+                eyebrow: "Retries",
+                title: "לנסות שוב רק כשזה בטוח",
+                body: "Retry מותר רק כשיש idempotency או ודאות שלא תיווצר פעולה כפולה. השתמש ב-backoff, jitter ותקרת ניסיונות."
+              },
+              {
+                eyebrow: "Timeouts",
+                title: "לכל תלות יש גבול זמן",
+                body: "בלי timeouts המערכת נערמת, נוצרים תורים והכל נתקע."
+              },
+              {
+                eyebrow: "Rate limiting",
+                title: "מגינים על endpoints ועלויות",
+                body: "הגבלה לפי IP, user, token או route עם 429, Retry-After ולוגים."
+              }
+            ]
+          },
+          {
+            type: "callout",
+            tone: "info",
+            title: "Pitfall קלאסי",
+            text:
+              "Retry אוטומטי על POST בלי idempotency יוצר כפילויות. עבור כל תלות חיצונית, כולל LLM, צריך להגדיר timeout ומדיניות retry מפורשת."
+          }
+        ]
+      },
+      {
+        id: "security",
+        label: "אבטחה ו-Agents",
+        navShort: "אבטחה",
+        kicker: "מוטמע בתוך התכנון",
+        title: "כשלי אבטחה נפוצים והגנות מעשיות ל-API ול-Agent",
+        description:
+          "החלק הזה מחבר את ה-API לאבטחה: injection, BOLA, token handling, CSRF, CORS וסיכוני LLM/Agents.",
+        blocks: [
+          {
+            type: "table",
+            title: "סיכונים והגנות מעשיות",
+            columns: ["תחום", "Pitfall נפוץ", "Mitigation מעשי"],
+            rows: [
+              [
+                "Injection",
+                "בניית שאילתות, פקודות או תבניות ממחרוזות קלט.",
+                "פרמטריזציה, allowlists, escaping ו-validation קשיח."
+              ],
+              [
+                "BOLA / IDOR",
+                "שימוש ב-id מהלקוח בלי בדיקת בעלות או הרשאה.",
+                "AuthZ object-level בכל endpoint שמקבל id."
+              ],
+              [
+                "Token handling",
+                "שמירת טוקן ב-localStorage, הדפסה ללוג או העברה בקוורי.",
+                "מדיניות אחידה, TTL קצר ו-redaction בלוגים."
+              ],
+              [
+                "CSRF",
+                "POST או DELETE שמתקבל אוטומטית עם cookie בלי הגנה.",
+                "SameSite, CSRF tokens ובדיקת Origin או Referer."
+              ],
+              [
+                "CORS",
+                "Wildcard רחב מדי או credentials עם *.",
+                "Allowlist מדויק של origins, methods ו-headers."
+              ],
+              [
+                "Prompt Injection",
+                "תוכן משתמש מנסה לעקוף הוראות מערכת.",
+                "הפרדת הוראות ונתונים, צמצום context ו-tool allowlist."
+              ],
+              [
+                "Insecure Output Handling",
+                "פלט LLM נוגע ישירות ב-DB, HTML או SQL.",
+                "Schema validation, allowlist ואישור אנושי לפעולות מסוכנות."
+              ],
+              [
+                "Excessive Agency",
+                "לסוכן יש יותר מדי הרשאות או כתיבה חופשית.",
+                "Gates, approvals, allowlist לכלים ו-audit."
+              ]
+            ]
+          },
+          {
+            type: "callout",
+            tone: "quiet",
+            title: "שאלת ניהול",
+            text:
+              "האם הפלט של הסוכן יכול לגרום לפעולה בלתי הפיכה בלי בדיקה דטרמיניסטית לפני שהוא נוגע במערכת?"
+          }
+        ]
+      },
+      {
+        id: "exercises",
+        label: "תרגילים מעשיים",
+        navShort: "תרגילים",
+        kicker: "להפוך flow לחבילת artifacts",
+        title: "תרגילים מעשיים לשבוע 2",
+        description:
+          "כל תרגיל כאן מייצר תוצר ניהולי סביב flow אמיתי: contract, traces, root cause, abuse policy, agent call ו-failure modes.",
+        blocks: [
+          {
+            type: "table",
+            title: "טבלת התרגילים",
+            columns: ["תרגיל", "מטרה", "Timebox", "תוצר צפוי", "Rubric הערכה"],
+            rows: [
+              [
+                "יצירת חוזה API מלא",
+                "להפוך endpoint עובד לחוזה מנוהל",
+                "60–120 דק׳",
+                "מסמך API Contract לזרימה אחת",
+                "Pass: method/path/schemas/statuses. Strong: AuthN/AuthZ + errors עקביים. Excellent: idempotency + risk notes + audit."
+              ],
+              [
+                "Tracing של request/response",
+                "לאסוף ראיות לדיבוג מקצה לקצה",
+                "45–90 דק׳",
+                "Trace Pack: request-id, headers, response ולוגים קשורים",
+                "Pass: יש ראיות בסיסיות. Strong: ניתן לשחזר זרימה. Excellent: מזהה נקודת כשל ותלות איטית."
+              ],
+              [
+                "שחזור שגיאה ו-Root Cause",
+                "לתרגל דיבוג מקצועי",
+                "60–120 דק׳",
+                "מסמך Bug Investigation מלא + תיקון + בדיקה",
+                "Pass: שחזור ברור. Strong: root cause מוכח. Excellent: בדיקה שמונעת חזרה + שיפור observability."
+              ],
+              [
+                "תסריט Abuse + Rate Limit",
+                "לבנות מדיניות הגנה מעשית",
+                "45–90 דק׳",
+                "תסריט + thresholds + תגובת 429 + לוג/מדד",
+                "Pass: ספים מוגדרים. Strong: per-route/per-user. Excellent: לא פוגע בלגיטימי + ניטור."
+              ],
+              [
+                "Agent-in-the-loop safe call",
+                "לשלב סוכן בצורה נשלטת",
+                "60–120 דק׳",
+                "design קצר: מתי קוראים לסוכן, כלים מורשים, אימות פלט, gates",
+                "Pass: שליטה בסיסית. Strong: output validation + tool allowlist. Excellent: audit + approval לפעולות רגישות."
+              ],
+              [
+                "ניתוח Failure Modes לזרימה",
+                "להקדים תקלות בתכנון",
+                "30–60 דק׳",
+                "טבלה: failure mode → סימפטום → תגובה → status → לוג",
+                "Pass: 5 מצבים. Strong: כולל timeouts ו-duplicates. Excellent: כולל סוכן או תלות חיצונית."
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        id: "checklists",
+        label: "צ'קליסטים",
+        navShort: "צ'קליסטים",
+        kicker: "איכות אחידה בכל PR",
+        title: "API Design Review, אבטחה לנקודות ציבוריות ו-Production Readiness",
+        description:
+          "הצ'קליסטים כאן הופכים flow API לשיחת ביקורת מקצועית במקום לשיחה אינטואיטיבית או מקרית.",
+        blocks: [
+          {
+            type: "table",
+            title: "API Design Review",
+            columns: ["בדיקה", "מה מחפשים", "Done when"],
+            rows: [
+              ["סמנטיקת Method", "האם method מתאים לפעולה", "אין POST למחיקה; אין GET עם כתיבה"],
+              ["Status codes", "עקביות והבחנות נכונות", "401/403/400/409/429 מובחנים"],
+              ["חוזה קלט/פלט", "schema ברור ודוגמאות", "אפשר לממש קליינט רק מהחוזה"],
+              ["ולידציה", "מה בשרת ומה בלקוח", "שרת מכריע; הודעות שגיאה עקביות"],
+              ["Idempotency", "פעולות רגישות מוגנות", "Idempotency-Key או constraints קיימים"],
+              ["Pagination / filtering", "אם יש רשימות", "מדיניות ותיעוד עקביים"],
+              ["Observability", "request-id, audit, לוגים", "מוגדרים אירועים ושדות חובה"]
+            ]
+          },
+          {
+            type: "table",
+            title: "אבטחה לנקודות ציבוריות",
+            columns: ["בדיקה", "למה", "Done when"],
+            rows: [
+              ["AuthN", "מי אתה", "אין endpoints רגישים ללא AuthN"],
+              ["AuthZ object-level", "מניעת IDOR", "כל id נבדק מול הרשאה"],
+              ["Token hygiene", "מניעת דליפה", "אין tokens בלוגים, ב-URLs או בלקוח שלא נחוץ"],
+              ["CSRF", "מניעת בקשה זדונית", "SameSite, CSRF token או Origin checks"],
+              ["CORS", "מניעת פתיחה מיותרת", "Allowlist origins ואין wildcard עם creds"],
+              ["Injection", "מניעת הרצת קלט", "פרמטריזציה, allowlist ו-escaping לפי צורך"],
+              ["Rate limiting", "מניעת abuse", "429 + thresholds + ניטור"],
+              ["File uploads", "תוכן מסוכן או DoS", "מגבלות גודל, סוג ו-private storage"]
+            ]
+          },
+          {
+            type: "table",
+            title: "Production Readiness לשינויי API",
+            columns: ["תחום", "שאלה", "Done when"],
+            rows: [
+              ["תאימות לאחור", "האם שינוי שובר קליינטים?", "versioning או שדות אופציונליים מתוכננים"],
+              ["Rollout / rollback", "איך משחררים בבטחה?", "תכנית חזרה קיימת"],
+              ["DB / migrations", "שינוי סכימה נדרש?", "סדר פריסה מוגדר"],
+              ["Observability", "איך נזהה תקלה מהר?", "מדדים, לוגים ו-alerts מינימליים"],
+              ["Rate / cost", "האם יש סיכון עלויות?", "limits, quotas ו-timeouts למדידה"],
+              ["אבטחה", "משטח תקיפה חדש?", "Security review קצר בוצע"],
+              ["Agent governance", "האם סוכן מעורב?", "allowlist, validation ו-gates קיימים"]
+            ]
+          }
+        ]
+      },
+      {
+        id: "templates",
+        label: "תבניות עבודה",
+        navShort: "תבניות",
+        kicker: "Contracts שאפשר להפעיל מחר בבוקר",
+        title: "API Contract, Bug Investigation, PR Review ו-Security Review",
+        description:
+          "במקום לאלתר review סביב APIs, עובדים עם templates קבועים שמכריחים semantic correctness, security ו-observability.",
+        blocks: [
+          {
+            type: "code-block",
+            eyebrow: "Template 1",
+            title: "API Contract",
+            language: "text",
+            code: `[API Contract] שם הזרימה
+
+Purpose:
+- מה ה-endpoint עושה ולמי?
+
+Endpoint:
+- Method:
+- Path:
+
+Auth:
+- AuthN (איך מזדהים):
+- AuthZ object-level (מה נבדק, על איזה משאב):
+
+Request:
+- Headers:
+- Body schema (JSON/FormData):
+- Constraints (required fields, max length, allowed values):
+- Idempotency (אם נדרש):
+
+Response:
+- Success status + schema:
+- Error statuses (400/401/403/404/409/422/429/5xx) + schema:
+- Error envelope (שדות חובה: code, message, request_id):
+
+Side Effects:
+- מה נכתב ל-DB/Storage?
+- אילו אירועי audit נרשמים?
+
+Resilience:
+- Timeouts:
+- Retries (מתי, כמה, backoff):
+- Fallback behavior:
+
+Rate limiting:
+- Key (IP/user/token):
+- Threshold:
+- 429 behavior:
+
+Observability:
+- Logs:
+- Metrics:
+- Audit events:`
+          },
+          {
+            type: "callout",
+            tone: "quiet",
+            title: "דוגמה קצרה",
+            text:
+              "Method: POST, Path: /api/submissions. Idempotency: Idempotency-Key חובה; conflict מחזיר 409 אם כבר הוגש."
+          },
+          {
+            type: "code-block",
+            eyebrow: "Template 2",
+            title: "Bug Investigation",
+            language: "text",
+            code: `[Bug Investigation] כותרת
+
+Symptom:
+- מה רואים?
+
+Repro:
+1)
+2)
+
+Expected vs Actual:
+- Expected:
+- Actual:
+
+Evidence:
+- Request/response (כולל status):
+- request-id:
+- Logs קשורים:
+- DB snapshot/query:
+- שינוי קוד אחרון (PR/commit):
+
+Root Cause:
+- מה בדיוק נשבר ולמה?
+
+Fix:
+- שינוי מינימלי:
+- בדיקה למניעת רגרסיה:
+- סיכון/השפעה:
+
+Prevention:
+- איזו טלמטריה או צ'קליסט נוסיף?`
+          },
+          {
+            type: "callout",
+            tone: "quiet",
+            title: "דוגמה קצרה",
+            text:
+              "Root Cause: DELETE קיבל user_id מה-body ולא מה-token ולכן נוצר IDOR. Fix: user_id נשלף מה-token; AuthZ; 404 או 403 לפי מדיניות."
+          },
+          {
+            type: "code-block",
+            eyebrow: "Template 3",
+            title: "PR Review לשינויי API",
+            language: "text",
+            code: `[PR Review - API] קישור/כותרת
+
+Summary:
+- מה השתנה ב-API?
+
+Contract:
+- האם עודכן API Contract?
+- האם schemas תואמים?
+
+HTTP Semantics:
+- method נכון?
+- status codes נכונים?
+
+Security:
+- AuthZ object-level בכל id?
+- CSRF/CORS לפי מדיניות?
+- tokens לא בלוגים/קוד?
+
+Resilience:
+- timeouts מוגדרים?
+- retries בטוחים (idempotency)?
+
+Breaking changes:
+- האם זה שובר קליינטים?
+- האם יש rollout plan?
+
+Decision:
+- APPROVE / REQUEST CHANGES / BLOCK
+- Required fixes:
+- Risks:`
+          },
+          {
+            type: "callout",
+            tone: "quiet",
+            title: "דוגמה קצרה",
+            text:
+              "REQUEST CHANGES: נוסף POST למחיקה; לשנות ל-DELETE, להוסיף 204, ולהסיר user_id מה-body."
+          },
+          {
+            type: "code-block",
+            eyebrow: "Template 4",
+            title: "Security Review ל-API",
+            language: "text",
+            code: `[Security Review - API] זרימה/Endpoint
+
+Surface:
+- Public? מי יכול להגיע?
+- Endpoints:
+
+Assets:
+- איזה נתונים רגישים? (PII/קבצים/תשלומים)
+
+Threats (Top 5):
+1) Threat:
+   Vector:
+   Impact:
+   Mitigation:
+...
+
+Controls:
+- AuthN:
+- AuthZ object-level:
+- Validation:
+- Injection mitigations:
+- Rate limiting:
+- Error handling (no leaks):
+
+CSRF/CORS:
+- CSRF strategy:
+- CORS allowlist:
+
+Agent/LLM (אם יש):
+- tool allowlist:
+- output validation:
+- human approvals:
+- audit:
+
+Findings:
+- Must-fix:
+- Should-fix:
+- Accepted risks:`
+          }
+        ]
+      },
+      {
+        id: "diagrams-sources",
+        label: "תרשימים ומקורות",
+        navShort: "תרשימים",
+        kicker: "Mermaid + references",
+        title: "תרשימי Mermaid, הנחות עבודה ומקורות מומלצים",
+        description:
+          "החלק האחרון מרכז את שני התרשימים של היחידה, יחד עם הנחות העבודה והמקורות שמהם כדאי להעמיק כשצריך.",
+        blocks: [
+          {
+            type: "code-block",
+            eyebrow: "Mermaid",
+            title: "Request lifecycle flowchart",
+            language: "mermaid",
+            code: `flowchart TD
+  A[Client builds request] --> B[TLS + Edge protections]
+  B --> C[Route match: method + path]
+  C --> D{AuthN}
+  D -->|fail| E[401]
+  D --> F{AuthZ object-level}
+  F -->|fail| G[403]
+  F --> H[Validate & normalize input]
+  H -->|fail| I[400/422 safe error]
+  H --> J[Business logic]
+  J --> K{Call external/agent?}
+  K -->|yes| L[Timeout + safe retry policy]
+  L --> M[Validate output / map errors]
+  K -->|no| N[DB/Storage operations]
+  M --> N
+  N --> O[Compose response + status]
+  O --> P[Logs/metrics/audit with request-id]
+  P --> Q[Return response]`
+          },
+          {
+            type: "code-block",
+            eyebrow: "Mermaid",
+            title: "Sequence diagram: Client → API → DB → Agent",
+            language: "mermaid",
+            code: `sequenceDiagram
+  autonumber
+  participant Client as Client (Browser/App)
+  participant API as Backend API
+  participant DB as Database
+  participant Agent as Agent/LLM
+
+  Client->>API: POST /api/submissions (JSON + Auth header)
+  API->>API: AuthN + AuthZ object-level
+  alt Not authenticated
+    API-->>Client: 401
+  end
+  API->>API: Validate input schema
+  alt Invalid input
+    API-->>Client: 400/422
+  end
+  API->>DB: Check idempotency / existing submission
+  alt Already exists
+    API-->>Client: 409 Conflict
+  end
+  API->>Agent: Request evaluation (bounded context)
+  alt Agent timeout / transient error
+    Agent-->>API: timeout/5xx
+    API->>API: Safe retry (if allowed) + backoff
+  end
+  Agent-->>API: Structured result (score + feedback)
+  API->>API: Validate agent output schema
+  API->>DB: Persist result + audit event
+  DB-->>API: OK
+  API-->>Client: 201 Created (JSON result)`
+          },
+          {
+            type: "bullet-list",
+            title: "הנחות עבודה",
+            items: [
+              "אין גישה להרצה מקומית בכתובת 127.0.0.1; התאמה מדויקת ליישום תיעשה באמצעות צילומי מסך, קטעי קוד או דוגמאות request/response שיועברו בהמשך.",
+              "המסמך הנוכחי הוא גרסה עצמאית ומוכנה לפרסום של יחידה 2."
+            ]
+          },
+          {
+            type: "bullet-list",
+            title: "מקורות מומלצים לפי עדיפות",
+            items: [
+              "RFC 9110 — HTTP Semantics",
+              "RFC 6749 — OAuth 2.0 Authorization Framework",
+              "RFC 6750 — Bearer Token Usage",
+              "RFC 7636 — PKCE",
+              "OWASP Top 10 (2021)",
+              "OWASP API Security Top 10 (2023)",
+              "OWASP Cheat Sheet Series: Authentication, Authorization, REST Security, Logging, Secrets Management, Injection Prevention",
+              "OWASP Top 10 for Large Language Model Applications",
+              "OWASP Cheat Sheets: LLM Prompt Injection Prevention, AI Agent Security",
+              "OpenTelemetry Documentation",
+              "The Twelve-Factor App"
+            ]
+          }
+        ]
+      }
+    ]
+  };
+
   const authoredUnitPages = {
-    "world-map": worldMapPage
+    "world-map": worldMapPage,
+    "http-api": httpApiPage
   };
 
   function buildUnitPageUrl(unitId, partId) {

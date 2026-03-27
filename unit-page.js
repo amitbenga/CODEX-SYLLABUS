@@ -269,7 +269,7 @@ function renderBlock(block) {
                 (item) => `
                   <article class="tool-card">
                     <h4>${escapeHtml(item.title || "")}</h4>
-                    <p>${escapeHtml(item.body || "")}</p>
+                    <p>${escapeHtml(item.body || item.description || "")}</p>
                   </article>
                 `
               )
