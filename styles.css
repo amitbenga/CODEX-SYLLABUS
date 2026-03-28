@@ -42,11 +42,7 @@ body {
   min-height: 100vh;
   color: var(--ink);
   font-family: "Assistant", "Segoe UI Variable", "Trebuchet MS", sans-serif;
-  background:
-    radial-gradient(circle at 14% 16%, rgba(14, 165, 233, 0.18), transparent 22%),
-    radial-gradient(circle at 88% 10%, rgba(124, 58, 237, 0.14), transparent 20%),
-    radial-gradient(circle at 72% 78%, rgba(245, 158, 11, 0.1), transparent 24%),
-    linear-gradient(180deg, #f4f7ff 0%, #edf2fb 52%, #f7f2ea 100%);
+  background: #020617;
 }
 
 body::selection {
@@ -55,10 +51,7 @@ body::selection {
 
 .background-orb,
 .background-grid {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
+  display: none;
 }
 
 .background-orb {
@@ -93,8 +86,9 @@ body::selection {
 .app-shell {
   position: relative;
   z-index: 1;
-  width: min(1360px, calc(100% - 32px));
-  margin: 18px auto 56px;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
 }
 
 .topbar,
@@ -4233,3 +4227,105 @@ mark {
   margin-bottom: 4px;
 }
 
+
+/* ===== HERO COMPACT FULL-SCREEN FIX ===== */
+
+/* Topbar removed - hero starts from very top */
+.topbar { display: none !important; }
+
+/* Hero fills full viewport edge-to-edge, no surrounding card */
+.hero,
+.topbar,
+.section-block {
+  border-radius: 0 !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
+}
+
+.hero {
+  padding: 48px 24px 36px !important;
+  min-height: 100vh !important;
+  box-sizing: border-box !important;
+  border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+}
+
+/* Tighter center column gap */
+.hero-center {
+  gap: 18px !important;
+  max-width: 780px !important;
+}
+
+/* Title: 2 lines - first two spans inline, last one on new line */
+.hero-title {
+  font-size: clamp(2.2rem, 5.5vw, 4rem) !important;
+  line-height: 1.15 !important;
+  margin: 0 !important;
+}
+.hero-title span {
+  display: inline !important;
+}
+.hero-title span:last-child {
+  display: block !important;
+}
+/* Add a space between the first two inline spans */
+.hero-title span:first-child::after {
+  content: " ";
+}
+
+/* Subtitle smaller */
+.hero-subtitle {
+  font-size: 0.98rem !important;
+  line-height: 1.6 !important;
+  max-width: 520px !important;
+}
+
+/* Stats strip compact */
+.hero-stats-strip {
+  padding: 12px 28px !important;
+}
+.hero-stat strong {
+  font-size: 1.9rem !important;
+}
+.hero-stat {
+  padding: 0 22px !important;
+}
+.hero-stat-divider {
+  height: 38px !important;
+}
+
+/* CTA button */
+.hero-resume-btn {
+  font-size: 1.05rem !important;
+  padding: 13px 34px !important;
+}
+
+/* How to learn section compact */
+.hero-how-to-learn {
+  padding-top: 0 !important;
+  width: 100% !important;
+}
+.hero-section-label {
+  margin-bottom: 10px !important;
+}
+.hero-rhythm-step {
+  padding: 11px 10px !important;
+}
+.hero-rhythm-step strong {
+  font-size: 0.82rem !important;
+}
+.hero-rhythm-step p {
+  font-size: 0.74rem !important;
+}
+.hero-rhythm-step-num {
+  width: 20px !important;
+  height: 20px !important;
+  font-size: 0.7rem !important;
+  margin-bottom: 6px !important;
+}
+
+/* Badge compact */
+.hero-badge {
+  font-size: 0.78rem !important;
+  padding: 5px 14px !important;
+}
