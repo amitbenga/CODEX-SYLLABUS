@@ -1675,7 +1675,18 @@ body[data-theme="cursor"] .button-primary {
   backdrop-filter: blur(16px);
 }
 
-.next-action-card:first-child {
+.next-action-card--primary {
+  background: linear-gradient(135deg, rgba(15, 118, 110, 0.55), rgba(15, 118, 110, 0.3)) !important;
+  border-color: rgba(94, 234, 212, 0.3) !important;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.next-action-card--primary .next-action-meta {
+  color: rgba(94, 234, 212, 0.95);
+}
+
+.next-action-card:first-child:not(.next-action-card--primary) {
   background: linear-gradient(135deg, rgba(37, 99, 235, 0.28), rgba(124, 58, 237, 0.22));
 }
 

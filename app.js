@@ -1285,11 +1285,12 @@ function renderThemePresets() {
 function renderHeroNextActions() {
   const nextUnit = syllabusData.units.find((unit) => !state.unitProgress[unit.id]) || getSelectedUnit();
   const completedUnits = Object.values(state.unitProgress).filter(Boolean).length;
+  const firstUnitPageUrl = buildUnitPageUrl(nextUnit.id, "overview");
 
-  const actions = [
+  const sectionActions = [
     {
       sectionId: "navigator",
-      label: "השלב הבא",
+      label: "הסילבוס",
       note: shortenLabel(nextUnit.title, 22),
       meta: nextUnit.weekLabel
     },
@@ -1304,16 +1305,10 @@ function renderHeroNextActions() {
       label: "הלוג האישי",
       note: state.stages.length ? `${state.stages.length} שלבים שמורים` : "עוד אין שלבים",
       meta: "Build log"
-    },
-    {
-      sectionId: "toolkit",
-      label: "כלי הלמידה",
-      note: "רוטינה, חומרים ומדידה",
-      meta: "Learning System"
     }
   ];
 
-  elements.heroNextActions.innerHTML = actions
+  const sectionCards = sectionActions
     .map(
       (action) => `
         <button type="button" class="next-action-card" data-open-section="${action.sectionId}">
@@ -1324,6 +1319,16 @@ function renderHeroNextActions() {
       `
     )
     .join("");
+
+  const unitPageCard = `
+    <a href="${escapeAttribute(firstUnitPageUrl)}" class="next-action-card next-action-card--primary">
+      <span class="next-action-meta">התחל כאן ←</span>
+      <strong>פתח יחידה ראשונה</strong>
+      <span class="next-action-note">${escapeHtml(shortenLabel(nextUnit.title, 26))}</span>
+    </a>
+  `;
+
+  elements.heroNextActions.innerHTML = unitPageCard + sectionCards;
 }
 
 function renderSectionNav() {
@@ -1334,71 +1339,26 @@ function renderSectionNav() {
 }
 
 function setupSectionPanels() {
-  sectionLinks.forEach((sectionConfig) => {
-    const section = document.getElementById(sectionConfig.id);
-    const heading = section?.querySelector(".section-heading");
-
-    if (!section || !heading || section.querySelector(".section-content")) {
-      return;
-    }
-
-    section.classList.add("section-collapsible");
-
-    const toggle = document.createElement("button");
-    toggle.type = "button";
-    toggle.className = "section-toggle";
-    toggle.dataset.sectionToggle = sectionConfig.id;
-    toggle.textContent = "פתח";
-    heading.append(toggle);
-
-    const content = document.createElement("div");
-    content.className = "section-content";
-
-    while (heading.nextSibling) {
-      content.append(heading.nextSibling);
-    }
-
-    section.append(content);
-  });
+  // Sections are always visible; pill subnav handles page navigation.
 }
 
 function applySectionPanelState() {
-  sectionLinks.forEach((sectionConfig) => {
-    const section = document.getElementById(sectionConfig.id);
-    const content = section?.querySelector(".section-content");
-    const toggle = section?.querySelector(".section-toggle");
-    const isOpen = sectionConfig.id === state.openSectionId;
-
-    if (!section || !content || !toggle) {
-      return;
-    }
-
-    section.classList.toggle("is-open", isOpen);
-    content.hidden = !isOpen;
-    toggle.textContent = isOpen ? "סגור" : "פתח";
-    toggle.setAttribute("aria-expanded", String(isOpen));
-  });
+  // No-op: sections are always visible.
 }
 
 function toggleSectionPanel(sectionId) {
-  const nextOpenSectionId = state.openSectionId === sectionId ? "" : sectionId;
-  state.openSectionId = nextOpenSectionId;
-  saveStorage(STORAGE_KEYS.openSectionId, nextOpenSectionId);
-  applySectionPanelState();
-  syncScrollUi();
+  openSectionPanel(sectionId, true);
 }
 
 function openSectionPanel(sectionId, shouldScroll = false) {
-  state.openSectionId = sectionId;
-  saveStorage(STORAGE_KEYS.openSectionId, sectionId);
-  applySectionPanelState();
-  syncScrollUi();
-
   if (shouldScroll) {
-    document.getElementById(sectionId)?.scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
+    const el = document.getElementById(sectionId);
+    if (el) {
+      const topbarH = document.querySelector(".topbar")?.offsetHeight || 0;
+      const subnavH = document.querySelector(".pill-subnav")?.offsetHeight || 0;
+      const offset = el.getBoundingClientRect().top + window.scrollY - topbarH - subnavH - 12;
+      window.scrollTo({ top: offset, behavior: "smooth" });
+    }
   }
 }
 
