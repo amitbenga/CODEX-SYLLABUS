@@ -1,84 +1,97 @@
 # CODEX-SYLLABUS
 
-Dashboard אינטראקטיבי למסלול `Technical Product Builder`, עם עמוד נחיתה ויזואלי, סילבוס של 16 שבועות, ניווט בין יחידות, מרחב שלבים אישי, ותשתית לעמודי למידה לכל חלק בכל שבוע.
+Dashboard אינטראקטיבי למסלול `Technical Product Builder` – אפליקציית למידה מבוססת עמודי יחידה נפרדים, עם hero מלא-מסך, מעקב התקדמות, ואינטגרציה ל-21ST Agents.
 
-## מה יש בפרויקט
+## ארכיטקטורת הממשק
 
-- עמוד נחיתה אינטראקטיבי עם hero אנימטיבי
-- ניווט בין 14 יחידות ופריסת 16 שבועות
-- תצוגת יחידה מפורטת עם progressive disclosure
-- אזור `Build Log` אישי עם שמירה ב-`localStorage`
-- `Learning Pages` לכל חלק ביחידה, מוכן להזנת חומרי לימוד אמיתיים
-- חיבור מקומי ל-`21ST Agents API`
+### עמוד הבית (`index.html`)
+Hero מלא-מסך עם אנימציית shader (מטאורים) כרקע. כל התוכן מרוכז ומוצג על מסך אחד:
 
-## טכנולוגיה נוכחית
+- **כותרת** – Secular One, 2 שורות, מרוכז
+- **פס סטטיסטיקות** – 16 שבועות / 14 יחידות / X הושלמו (חי מה-localStorage)
+- **כפתור "המשך ללמוד"** – מנתב אוטומטית ליחידה הבאה הלא-מושלמת
+- **"איך ללמוד כל שבוע"** – רשת שלבי הלמידה השבועית
 
-הפרויקט כרגע הוא סטטי ומבוסס על:
+כל הסקציות הנוספות (סילבוס, ציר זמן, Build Log) קיימות ב-DOM אך מוסתרות – נגישות דרך ה-AI drawer או פיתוח עתידי.
 
-- `index.html`
-- `styles.css`
-- `app.js`
-- `server.js`
+### עמוד יחידה (`unit-page.html`)
+עמוד עצמאי לכל יחידה, עם ניווט בין 8 חלקי תוכן:
 
-הוא עדיין לא מבוסס על:
+| חלק | תוכן |
+|-----|------|
+| Overview | סקירה כללית |
+| Goals | מטרות השבוע |
+| Topics | נושאים מרכזיים |
+| Deliverable | תוצר שבועי |
+| Exercise | תרגיל מרכזי |
+| Understanding Test | מבחן הבנה |
+| Management Lens | זווית ניהולית |
+| Red Flags | דגלים אדומים |
 
-- React
-- shadcn/ui
-- Tailwind CSS
-- TypeScript
+**כפתור "סיימתי את היחידה"** – מסמן השלמה ב-localStorage ומעביר אוטומטית ליחידה הבאה.
 
-לכן קיימות גם קומפוננטות עתידיות תחת `components/ui`, אבל האתר החי כרגע רץ על HTML/CSS/JS רגיל.
+## מבנה הקבצים
 
-## קבצים עיקריים
+```
+index.html          – Hero + מבנה אפליקציה
+styles.css          – שכבת עיצוב מלאה (4,200+ שורות)
+app.js              – נתוני הסילבוס, רנדרינג, state management
+unit-page.html      – תבנית עמוד יחידה
+unit-page.css       – עיצוב עמוד יחידה
+unit-page.js        – לוגיקת עמוד יחידה + מנגנון השלמה
+unit-pages-data.js  – קטלוג תוכן כל היחידות (85KB)
+server.js           – שרת סטטי מקומי + proxy ל-21ST API
+wrangler.jsonc      – הגדרות Cloudflare Workers (static assets)
+components/ui/      – קומפוננטות React עתידיות
+```
 
-- `index.html` - מבנה העמוד
-- `styles.css` - כל שכבת העיצוב
-- `app.js` - נתונים, רנדרינג, אינטראקציות, שמירה מקומית ותשתית עמודי הלמידה
-- `server.js` - שרת סטטי מקומי עם proxy ל-21ST
-- `components/ui/animated-shader-hero.tsx` - גרסת React עתידית ל-hero
-- `components/ui/demo.tsx` - דמו שימוש לקומפוננטת ה-React
+## שמירת נתונים (localStorage)
+
+| מפתח | תוכן |
+|------|------|
+| `builder-course-unit-progress-v1` | אילו יחידות הושלמו `{ unitId: true }` |
+| `builder-course-selected-unit-v1` | יחידה נבחרת נוכחית |
+| `builder-course-stages-v1` | Build Log אישי |
+| `builder-course-selected-lesson-v1` | עמוד למידה פעיל |
 
 ## הרצה מקומית
 
-אפשר פשוט לפתוח את `index.html` בדפדפן, או להריץ את השרת המקומי:
+פתיחה ישירה בדפדפן:
+```bash
+open index.html
+```
 
+או דרך השרת המקומי (נדרש לאינטגרציית 21ST):
 ```bash
 node server.js 4173
+# http://127.0.0.1:4173
 ```
 
-ואז לפתוח:
+## פריסה ל-Cloudflare
 
-`http://127.0.0.1:4173`
-
-## תשתית עמודי הלמידה
-
-לכל יחידה יש עכשיו עמודי תוכן נפרדים עבור:
-
-- פתיח שבועי
-- מטרות
-- נושאים
-- תוצר
-- תרגיל מרכזי
-- מבחן הבנה
-- זווית ניהולית
-- דגלים אדומים
-
-בהמשך אפשר להזין לכל אחד מהם:
-
-- טקסט לימודי מלא
-- קישורים ומשאבים
-- דוגמאות
-- תרגילים
-
-## מעבר עתידי ל-React
-
-אם תרצה להעביר את הפרויקט ל-React + Tailwind + shadcn/ui, הסטאפ המומלץ הוא:
-
+הפרויקט מוגדר כ-static assets דרך `wrangler.jsonc`:
 ```bash
-npx create-next-app@latest tpb-course --typescript --tailwind --app
-cd tpb-course
-npx shadcn@latest init
-npm install lucide-react
+npx wrangler versions upload
 ```
 
-ואז להעביר את הקומפוננטות ל-`components/ui`.
+Cloudflare מגיש את כל קבצי ה-HTML/CSS/JS ישירות ללא build step.
+
+## אינטגרציית 21ST Agents
+
+כפתור AI (פינת המסך) פותח drawer עם טופס שליחה ל-21ST Agents API. המפתח (`AN_API_KEY`) נשמר בשרת המקומי בלבד – הדפדפן שולח רק את ה-slug והפרומפט.
+
+הגדרה מקומית: צור `.env.local` עם:
+```
+AN_API_KEY=your_key_here
+```
+
+## טכנולוגיה
+
+**נוכחית:**
+- HTML5 + CSS3 + Vanilla JS (ללא build step)
+- Cloudflare Workers (static assets)
+- localStorage לכל ה-state
+
+**לא בשימוש (מוכן לעתיד):**
+- React / Next.js – `components/ui/` מוכן
+- TypeScript, Tailwind CSS, shadcn/ui

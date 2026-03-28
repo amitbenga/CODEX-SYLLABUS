@@ -83,6 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   renderPage();
+  initCompletionBar();
 });
 
 function renderHero(unitPage, currentPart) {
@@ -468,4 +469,102 @@ function escapeHtml(value) {
 
 function escapeAttribute(value) {
   return escapeHtml(value);
+}
+
+function initCompletionBar() {
+  const params = new URLSearchParams(window.location.search);
+  const unitId = params.get("unit") || "";
+
+  if (!unitId) return;
+
+  // The canonical ordered list of unit IDs (same order as in unit-pages-data.js)
+  const UNIT_ORDER = [
+    "world-map",
+    "http-api",
+    "data-modeling",
+    "business-logic",
+    "frontend-architecture",
+    "backend-architecture",
+    "security",
+    "debugging",
+    "git-prs",
+    "testing",
+    "performance",
+    "agent-leadership",
+    "code-judgment",
+    "capstone"
+  ];
+
+  const PROGRESS_KEY = "builder-course-unit-progress-v1";
+
+  function getProgress() {
+    try {
+      return JSON.parse(localStorage.getItem(PROGRESS_KEY) || "{}");
+    } catch {
+      return {};
+    }
+  }
+
+  function saveProgress(progress) {
+    try {
+      localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+    } catch {}
+  }
+
+  function getNextUnitId(currentId) {
+    const idx = UNIT_ORDER.indexOf(currentId);
+    if (idx === -1 || idx === UNIT_ORDER.length - 1) return null;
+    return UNIT_ORDER[idx + 1];
+  }
+
+  const btn = document.getElementById("unitCompleteBtn");
+  const label = document.getElementById("unitCompletionLabel");
+
+  if (!btn) return;
+
+  // Check if already completed
+  const progress = getProgress();
+  if (progress[unitId]) {
+    btn.classList.add("is-done");
+    btn.textContent = "✓ היחידה הושלמה";
+    if (label) {
+      const nextId = getNextUnitId(unitId);
+      if (nextId) {
+        label.textContent = "ממשיכים? לחץ להמשך ליחידה הבאה.";
+        btn.textContent = "← ליחידה הבאה";
+        btn.addEventListener("click", () => {
+          window.location.href = `./unit-page.html?unit=${nextId}&page=overview`;
+        });
+      } else {
+        label.textContent = "כל היחידות הושלמו! עבודה מצוינת.";
+        btn.textContent = "✓ הסתיים המסלול";
+        btn.disabled = true;
+      }
+    }
+    return;
+  }
+
+  // Mark complete on click
+  btn.addEventListener("click", () => {
+    const prog = getProgress();
+    prog[unitId] = true;
+    saveProgress(prog);
+
+    btn.classList.add("is-done");
+    btn.textContent = "✓ הושלם!";
+
+    const nextId = getNextUnitId(unitId);
+
+    setTimeout(() => {
+      if (nextId) {
+        window.location.href = `./unit-page.html?unit=${nextId}&page=overview`;
+      } else {
+        window.location.href = "./index.html";
+      }
+    }, 800);
+
+    if (label) {
+      label.textContent = nextId ? "מעולה! עוברים ליחידה הבאה..." : "כל הכבוד! סיימת את המסלול.";
+    }
+  });
 }

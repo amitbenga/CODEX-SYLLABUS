@@ -801,17 +801,18 @@ const STORAGE_KEYS = {
   designLabSession: "builder-course-design-lab-session-v1",
   selectedLessonId: "builder-course-selected-lesson-v1",
   themePreset: "builder-course-theme-preset-v1",
-  openSectionId: "builder-course-open-section-v1"
+  openSectionId: "builder-course-open-section-v1",
+  startWeek: "builder-course-start-week-v1",
+  visited: "builder-course-visited-v1"
 };
 
 const sectionLinks = [
-  { id: "design-lab", label: "מעבדה" },
-  { id: "overview", label: "תמונה" },
-  { id: "navigator", label: "יחידות" },
+  { id: "overview", label: "סקירה" },
+  { id: "navigator", label: "סילבוס" },
   { id: "lesson-studio", label: "לומדים" },
-  { id: "timeline", label: "שבועות" },
-  { id: "toolkit", label: "כלים" },
-  { id: "stages", label: "שלבים" }
+  { id: "timeline", label: "לוח זמנים" },
+  { id: "toolkit", label: "כלי למידה" },
+  { id: "stages", label: "יומן שלבים" }
 ];
 
 const themePresets = [
@@ -844,6 +845,8 @@ const state = {
   editingStageId: null,
   openSectionId: "",
   themePreset: loadStorage(STORAGE_KEYS.themePreset, "cursor"),
+  startWeek: loadStorage(STORAGE_KEYS.startWeek, null),
+  onboardingSelectedWeek: null,
   designLab: {
     slug: loadStorage(STORAGE_KEYS.designLabSlug, ""),
     sandboxId: String(savedDesignLabSession.sandboxId || ""),
@@ -864,27 +867,29 @@ document.addEventListener("DOMContentLoaded", () => {
   cacheElements();
   hydrateHero();
   populateStageSelects();
-  renderSectionNav();
   setupSectionPanels();
   bindEvents();
   renderAll();
   initHeroShader();
   hydrateDesignLab();
   syncScrollUi();
+  initAiDrawer();
+  if (elements.unitSearch) initSearchShortcut();
 });
 
 function cacheElements() {
   elements.goalStatement = document.querySelector("#goalStatement");
   elements.outcomesList = document.querySelector("#outcomesList");
   elements.sectionNav = document.querySelector("#sectionNav");
+  elements.pillSubnav = document.querySelector("#pillSubnav");
   elements.scrollProgress = document.querySelector("#scrollProgress");
-  elements.heroProofGrid = document.querySelector("#heroProofGrid");
-  elements.heroNextActions = document.querySelector("#heroNextActions");
+  elements.globalProgressFill = document.querySelector("#globalProgressFill");
+  elements.progressPill = document.querySelector("#progressPill");
+  elements.heroResumeCta = document.querySelector("#heroResumeCta");
+  elements.heroCompletedStat = document.querySelector("#heroCompletedStat");
+  elements.heroRhythm = document.querySelector("#heroRhythm");
   elements.heroShaderCanvas = document.querySelector("#heroShaderCanvas");
   elements.themePresetChips = document.querySelector("#themePresetChips");
-  elements.heroUnitPreviewList = document.querySelector("#heroUnitPreviewList");
-  elements.heroFocusCard = document.querySelector("#heroFocusCard");
-  elements.heroRoadmap = document.querySelector("#heroRoadmap");
   elements.statsGrid = document.querySelector("#statsGrid");
   elements.pillarsGrid = document.querySelector("#pillarsGrid");
   elements.filterChips = document.querySelector("#filterChips");
@@ -924,6 +929,11 @@ function cacheElements() {
   elements.anReset = document.querySelector("#anReset");
   elements.anSessionMeta = document.querySelector("#anSessionMeta");
   elements.anResponse = document.querySelector("#anResponse");
+  // AI Drawer
+  elements.aiFab = document.querySelector("#aiFab");
+  elements.aiDrawer = document.querySelector("#aiDrawer");
+  elements.aiDrawerOverlay = document.querySelector("#aiDrawerOverlay");
+  elements.aiDrawerClose = document.querySelector("#aiDrawerClose");
 }
 
 function bindEvents() {
@@ -938,24 +948,36 @@ function bindEvents() {
     });
   }
 
-  elements.sectionNav.addEventListener("click", (event) => {
-    const target = event.target.closest("[data-section-id]");
-    if (!target) {
-      return;
-    }
+  if (elements.sectionNav) {
+    elements.sectionNav.addEventListener("click", (event) => {
+      const target = event.target.closest("[data-section-id]");
+      if (!target) {
+        return;
+      }
 
-    event.preventDefault();
-    openSectionPanel(target.dataset.sectionId, true);
-  });
+      event.preventDefault();
+      openSectionPanel(target.dataset.sectionId, true);
+    });
+  }
 
-  elements.heroNextActions.addEventListener("click", (event) => {
-    const target = event.target.closest("[data-open-section]");
-    if (!target) {
-      return;
-    }
-
-    openSectionPanel(target.dataset.openSection, true);
-  });
+  // Pill subnav smooth scroll
+  if (elements.pillSubnav) {
+    elements.pillSubnav.addEventListener("click", (event) => {
+      const target = event.target.closest("[data-pill-section]");
+      if (!target) return;
+      event.preventDefault();
+      const sectionId = target.dataset.pillSection;
+      if (sectionId === "top") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        const section = document.getElementById(sectionId);
+        if (section) {
+          section.scrollIntoView({ behavior: "smooth", block: "start" });
+          openSectionPanel(sectionId, false);
+        }
+      }
+    });
+  }
 
   document.addEventListener("click", (event) => {
     const toggle = event.target.closest("[data-section-toggle]");
@@ -1053,36 +1075,6 @@ function bindEvents() {
     openSectionPanel("navigator", true);
   });
 
-  elements.heroUnitPreviewList.addEventListener("click", (event) => {
-    const target = event.target.closest("[data-unit-id]");
-    if (!target) {
-      return;
-    }
-
-    selectUnit(target.dataset.unitId);
-    openSectionPanel("navigator", true);
-  });
-
-  elements.heroRoadmap.addEventListener("click", (event) => {
-    const target = event.target.closest("[data-unit-id]");
-    if (!target) {
-      return;
-    }
-
-    selectUnit(target.dataset.unitId);
-    openSectionPanel("navigator", true);
-  });
-
-  elements.heroFocusCard.addEventListener("click", (event) => {
-    const target = event.target.closest("[data-unit-id]");
-    if (!target) {
-      return;
-    }
-
-    selectUnit(target.dataset.unitId);
-    openSectionPanel("navigator", true);
-  });
-
   elements.stageForm.addEventListener("submit", (event) => {
     event.preventDefault();
     saveStageFromForm();
@@ -1163,9 +1155,8 @@ function populateStageSelects() {
 
 function renderAll() {
   renderThemePresets();
-  renderHeroNextActions();
-  renderHeroProof();
-  renderHeroShowcase();
+  renderHeroCta();
+  renderHeroRhythm();
   renderStats();
   renderPillars();
   renderFilterChips();
@@ -1181,6 +1172,7 @@ function renderAll() {
   renderStages();
   renderDesignLabSessionMeta();
   renderDesignLabResponse();
+  renderProgressPill();
   applySectionPanelState();
   syncScrollUi();
 }
@@ -1211,230 +1203,83 @@ function renderThemePresets() {
   document.body.dataset.theme = state.themePreset;
 }
 
-function renderHeroNextActions() {
-  const nextUnit = syllabusData.units.find((unit) => !state.unitProgress[unit.id]) || getSelectedUnit();
-  const completedUnits = Object.values(state.unitProgress).filter(Boolean).length;
+function renderHeroCta() {
+  // Find next incomplete unit
+  const nextUnit = syllabusData.units.find((unit) => !state.unitProgress[unit.id]) || syllabusData.units[0];
+  const url = buildUnitPageUrl(nextUnit.id, "overview");
 
-  const actions = [
-    {
-      sectionId: "navigator",
-      label: "השלב הבא",
-      note: shortenLabel(nextUnit.title, 22),
-      meta: nextUnit.weekLabel
-    },
-    {
-      sectionId: "timeline",
-      label: "מפת השבועות",
-      note: `${completedUnits}/${syllabusData.units.length} הושלמו`,
-      meta: `${syllabusData.durationWeeks} שבועות`
-    },
-    {
-      sectionId: "stages",
-      label: "הלוג האישי",
-      note: state.stages.length ? `${state.stages.length} שלבים שמורים` : "עוד אין שלבים",
-      meta: "Build log"
-    },
-    {
-      sectionId: "design-lab",
-      label: "השראה מ-21ST",
-      note: state.designLab.configured ? "החיבור מוכן" : "ממתין למפתח",
-      meta: "Inspiration"
-    }
-  ];
+  if (elements.heroResumeCta) {
+    elements.heroResumeCta.href = url;
+    elements.heroResumeCta.textContent = `המשך ללמוד ←`;
+  }
 
-  elements.heroNextActions.innerHTML = actions
-    .map(
-      (action) => `
-        <button type="button" class="next-action-card" data-open-section="${action.sectionId}">
-          <span class="next-action-meta">${escapeHtml(action.meta)}</span>
-          <strong>${escapeHtml(action.label)}</strong>
-          <span class="next-action-note">${escapeHtml(action.note)}</span>
-        </button>
-      `
-    )
+  // Update completed stat
+  const completedCount = Object.values(state.unitProgress).filter(Boolean).length;
+  if (elements.heroCompletedStat) {
+    const strong = elements.heroCompletedStat.querySelector("strong");
+    if (strong) strong.textContent = String(completedCount);
+  }
+}
+
+function renderHeroRhythm() {
+  if (!elements.heroRhythm || !syllabusData.weeklyRhythm) return;
+
+  elements.heroRhythm.innerHTML = syllabusData.weeklyRhythm
+    .map((step, index) => `
+      <div class="hero-rhythm-step">
+        <span class="hero-rhythm-step-num">${index + 1}</span>
+        <strong>${escapeHtml(step.action || step.title || step)}</strong>
+        ${step.detail || step.note ? `<p>${escapeHtml(step.detail || step.note)}</p>` : ""}
+      </div>
+    `)
     .join("");
 }
 
 function renderSectionNav() {
-  elements.sectionNav.innerHTML = sectionLinks
-    .map(
-      (section) => `
-        <a href="#${section.id}" class="nav-chip" data-section-id="${section.id}">
-          ${escapeHtml(section.label)}
-        </a>
-      `
-    )
-    .join("");
-}
-
-function setupSectionPanels() {
-  sectionLinks.forEach((sectionConfig) => {
-    const section = document.getElementById(sectionConfig.id);
-    const heading = section?.querySelector(".section-heading");
-
-    if (!section || !heading || section.querySelector(".section-content")) {
-      return;
-    }
-
-    section.classList.add("section-collapsible");
-
-    const toggle = document.createElement("button");
-    toggle.type = "button";
-    toggle.className = "section-toggle";
-    toggle.dataset.sectionToggle = sectionConfig.id;
-    toggle.textContent = "פתח";
-    heading.append(toggle);
-
-    const content = document.createElement("div");
-    content.className = "section-content";
-
-    while (heading.nextSibling) {
-      content.append(heading.nextSibling);
-    }
-
-    section.append(content);
-  });
-}
-
-function applySectionPanelState() {
-  sectionLinks.forEach((sectionConfig) => {
-    const section = document.getElementById(sectionConfig.id);
-    const content = section?.querySelector(".section-content");
-    const toggle = section?.querySelector(".section-toggle");
-    const isOpen = sectionConfig.id === state.openSectionId;
-
-    if (!section || !content || !toggle) {
-      return;
-    }
-
-    section.classList.toggle("is-open", isOpen);
-    content.hidden = !isOpen;
-    toggle.textContent = isOpen ? "סגור" : "פתח";
-    toggle.setAttribute("aria-expanded", String(isOpen));
-  });
-}
-
-function toggleSectionPanel(sectionId) {
-  const nextOpenSectionId = state.openSectionId === sectionId ? "" : sectionId;
-  state.openSectionId = nextOpenSectionId;
-  saveStorage(STORAGE_KEYS.openSectionId, nextOpenSectionId);
-  applySectionPanelState();
-  syncScrollUi();
-}
-
-function openSectionPanel(sectionId, shouldScroll = false) {
-  state.openSectionId = sectionId;
-  saveStorage(STORAGE_KEYS.openSectionId, sectionId);
-  applySectionPanelState();
-  syncScrollUi();
-
-  if (shouldScroll) {
-    document.getElementById(sectionId)?.scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
+  // Legacy - section nav is hidden, pill subnav is used instead
+  if (elements.sectionNav) {
+    elements.sectionNav.innerHTML = "";
   }
 }
 
-function renderHeroProof() {
-  const completedUnits = Object.values(state.unitProgress).filter(Boolean).length;
-  const proofItems = [
-    { value: syllabusData.durationWeeks, label: "שבועות" },
-    { value: syllabusData.units.length, label: "יחידות" },
-    { value: completedUnits, label: "הושלמו" }
-  ];
-
-  elements.heroProofGrid.innerHTML = proofItems
-    .map(
-      (item) => `
-        <article class="proof-card">
-          <strong class="proof-value">${escapeHtml(String(item.value))}</strong>
-          <span class="proof-label">${escapeHtml(item.label)}</span>
-        </article>
-      `
-    )
-    .join("");
+function setupSectionPanels() {
+  // Sections are always visible; pill subnav handles page navigation.
 }
 
-function renderHeroShowcase() {
-  const selectedUnit = getSelectedUnit();
-  const spotlightUnits = [
-    selectedUnit,
-    ...syllabusData.units.filter((unit) => unit.id !== selectedUnit.id).slice(0, 2)
-  ];
-  const isCompleted = Boolean(state.unitProgress[selectedUnit.id]);
+function applySectionPanelState() {
+  // No-op: sections are always visible.
+}
 
-  elements.heroUnitPreviewList.innerHTML = spotlightUnits
-    .map((unit) => {
-      const isSelected = unit.id === selectedUnit.id;
+function toggleSectionPanel(sectionId) {
+  openSectionPanel(sectionId, true);
+}
 
-      return `
-        <button
-          type="button"
-          class="hero-mini-unit accent-${unit.accent} ${isSelected ? "active" : ""}"
-          data-unit-id="${unit.id}"
-        >
-          <span class="hero-mini-unit-week">${escapeHtml(unit.weekLabel)}</span>
-          <strong>${escapeHtml(shortenLabel(unit.title, 24))}</strong>
-        </button>
-      `;
-    })
-    .join("");
-
-  elements.heroFocusCard.innerHTML = `
-    <button type="button" class="hero-focus-entry accent-${selectedUnit.accent}" data-unit-id="${selectedUnit.id}">
-      <div class="hero-focus-head">
-        <span class="hero-focus-week">${escapeHtml(selectedUnit.weekLabel)}</span>
-        <span class="hero-focus-status ${isCompleted ? "is-done" : ""}">
-          ${isCompleted ? "הושלם" : "פתוח עכשיו"}
-        </span>
-      </div>
-      <strong class="hero-focus-title">${escapeHtml(shortenLabel(selectedUnit.title, 38))}</strong>
-      <p class="hero-focus-summary">${escapeHtml(shortenLabel(selectedUnit.summary, 112))}</p>
-      <div class="detail-meta">
-        <span class="meta-pill">${escapeHtml(selectedUnit.category)}</span>
-        <span class="meta-pill">${selectedUnit.topics.length} נושאים</span>
-        <span class="meta-pill">${selectedUnit.weekStart === selectedUnit.weekEnd ? "שבוע אחד" : "שני שבועות"}</span>
-      </div>
-    </button>
-  `;
-
-  elements.heroRoadmap.innerHTML = weekPlan
-    .slice(0, 6)
-    .map((item) => {
-      const unit = syllabusData.units.find((entry) => entry.id === item.unitId);
-      const isSelected = item.unitId === selectedUnit.id;
-      const isCompleted = Boolean(state.unitProgress[item.unitId]);
-
-      return `
-        <button
-          type="button"
-          class="hero-roadmap-node ${isSelected ? "active" : ""} ${isCompleted ? "completed" : ""}"
-          data-unit-id="${item.unitId}"
-          title="${escapeHtml(unit ? unit.title : item.focus)}"
-        >
-          <span class="hero-roadmap-week">${item.week}</span>
-          <strong>${escapeHtml(shortenLabel(item.focus, 18))}</strong>
-        </button>
-      `;
-    })
-    .join("");
+function openSectionPanel(sectionId, shouldScroll = false) {
+  if (shouldScroll) {
+    const el = document.getElementById(sectionId);
+    if (el) {
+      const topbarH = document.querySelector(".topbar")?.offsetHeight || 0;
+      const subnavH = document.querySelector(".pill-subnav")?.offsetHeight || 0;
+      const offset = el.getBoundingClientRect().top + window.scrollY - topbarH - subnavH - 12;
+      window.scrollTo({ top: offset, behavior: "smooth" });
+    }
+  }
 }
 
 function renderStats() {
   const completedUnits = Object.values(state.unitProgress).filter(Boolean).length;
   const doneStages = state.stages.filter((stage) => stage.status === "done").length;
   const stats = [
-    { label: "יחידות במסלול", value: syllabusData.units.length },
-    { label: "שבועות במסלול", value: syllabusData.durationWeeks },
     { label: "יחידות שסומנו כהושלמו", value: completedUnits },
-    { label: "שלבים אישיים שסומנו הושלמו", value: doneStages }
+    { label: "שבועות במסלול", value: syllabusData.durationWeeks },
+    { label: "יחידות במסלול", value: syllabusData.units.length },
+    { label: "שלבים אישיים הושלמו", value: doneStages }
   ];
 
   elements.statsGrid.innerHTML = stats
     .map(
       (item) => `
-        <article class="stat-card">
+        <article class="bento-stat-card">
           <span class="stat-label">${escapeHtml(item.label)}</span>
           <strong class="stat-value">${escapeHtml(String(item.value))}</strong>
         </article>
@@ -1444,10 +1289,11 @@ function renderStats() {
 }
 
 function renderPillars() {
+  const pillarAccents = ["teal", "coral", "gold", "navy", "olive"];
   elements.pillarsGrid.innerHTML = syllabusData.pillars
     .map(
-      (pillar) => `
-        <article class="pillar-card">
+      (pillar, index) => `
+        <article class="bento-pillar-card accent-${pillarAccents[index % pillarAccents.length]}">
           <strong>${escapeHtml(pillar.title)}</strong>
           <p>${escapeHtml(pillar.description)}</p>
         </article>
@@ -1492,10 +1338,22 @@ function renderUnits() {
     return;
   }
 
-  elements.unitsList.innerHTML = filteredUnits
+  const html = filteredUnits
     .map((unit) => {
       const isSelected = unit.id === state.selectedUnitId;
       const isCompleted = Boolean(state.unitProgress[unit.id]);
+      const weekText = unit.weekStart === unit.weekEnd ? `שבוע ${unit.weekStart}` : `שבועות ${unit.weekStart}–${unit.weekEnd}`;
+      const titleHtml = state.searchTerm ? highlightText(escapeHtml(unit.title), escapeHtml(state.searchTerm)) : escapeHtml(unit.title);
+
+      // Circle progress indicator for completed units
+      const progressRing = isCompleted ? `
+        <svg class="unit-progress-ring" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="14" cy="14" r="11" stroke="rgba(44,123,88,0.18)" stroke-width="2.5"/>
+          <circle cx="14" cy="14" r="11" stroke="#2c7b58" stroke-width="2.5" stroke-dasharray="69.1" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 14 14)"/>
+          <path d="M9 14l3 3 7-7" stroke="#2c7b58" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      ` : "";
+
       return `
         <button
           type="button"
@@ -1504,23 +1362,32 @@ function renderUnits() {
         >
           <div class="unit-card-head">
             <div>
-              <span class="meta-pill">${escapeHtml(unit.weekLabel)}</span>
-              <h4>${escapeHtml(unit.title)}</h4>
+              <span class="unit-card-week-badge">${escapeHtml(weekText)}</span>
+              <h4>${titleHtml}</h4>
             </div>
-            <span class="status-pill ${isCompleted ? "status-done" : "status-planned"}">
-              ${isCompleted ? "הושלמה" : "פתוחה"}
-            </span>
+            ${progressRing || `<span class="status-pill ${isCompleted ? "status-done" : "status-planned"}">${isCompleted ? "הושלמה" : "פתוחה"}</span>`}
           </div>
           <div class="unit-meta">
             <span class="meta-pill">${escapeHtml(unit.category)}</span>
             <span class="meta-pill">${unit.topics.length} נושאים</span>
-            <span class="meta-pill">${unit.weekStart === unit.weekEnd ? `שבוע ${unit.weekStart}` : `שבועות ${unit.weekStart}-${unit.weekEnd}`}</span>
           </div>
-          <span class="unit-hint">לחץ כדי לחשוף מטרות, תוצר ודגלים אדומים</span>
+          <span class="unit-hint">לחץ לפרטים מלאים</span>
         </button>
       `;
     })
     .join("");
+
+  elements.unitsList.innerHTML = html;
+}
+
+function highlightText(text, term) {
+  if (!term) return text;
+  try {
+    const escapedTerm = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return text.replace(new RegExp(`(${escapedTerm})`, "gi"), "<mark>$1</mark>");
+  } catch {
+    return text;
+  }
 }
 
 function renderSelectedUnit() {
@@ -1585,11 +1452,11 @@ function renderSelectedUnit() {
     ${renderLearningLaunchpad(unit)}
 
     <div class="detail-stack">
-      ${renderDisclosureCard("מה המטרות כאן", renderList(unit.goals, "bullet-list"))}
+      ${renderDisclosureCard("מה המטרות כאן", renderList(unit.goals, "bullet-list"), true)}
       ${renderDisclosureCard(`אילו נושאים נלמדים (${unit.topics.length})`, renderList(unit.topics, "bullet-list"))}
       ${renderDisclosureCard("מה התוצר השבועי", `<p>${escapeHtml(unit.deliverable)}</p>`, true)}
       ${renderDisclosureCard("מה התרגיל המרכזי", `<p>${escapeHtml(unit.exercise)}</p>`)}
-      ${renderDisclosureCard("איך תבדוק שהבנת", `<p>${escapeHtml(unit.understandingTest)}</p>`, true)}
+      ${renderDisclosureCard("איך תבדוק שהבנת", `<p>${escapeHtml(unit.understandingTest)}</p>`)}
       ${renderDisclosureCard("מה הזווית הניהולית מול סוכן", `<p>${escapeHtml(unit.managementLens)}</p>`)}
       ${renderDisclosureCard("דגלים אדומים שכדאי לזהות", renderList(unit.redFlags, "bullet-list"))}
     </div>
@@ -2002,10 +1869,13 @@ function renderLearningPageVisual(page) {
 }
 
 function renderTimeline() {
+  const currentWeek = state.startWeek;
+
   elements.timelineGrid.innerHTML = weekPlan
     .map((item) => {
       const unit = syllabusData.units.find((entry) => entry.id === item.unitId);
       const isCompleted = Boolean(state.unitProgress[item.unitId]);
+      const isCurrentWeek = currentWeek !== null && item.week === currentWeek;
       if (!unit) {
         return "";
       }
@@ -2013,10 +1883,10 @@ function renderTimeline() {
       return `
         <button
           type="button"
-          class="timeline-card accent-${unit.accent} ${isCompleted ? "completed" : ""}"
+          class="timeline-card accent-${unit.accent} ${isCompleted ? "completed" : ""} ${isCurrentWeek ? "is-current-week" : ""}"
           data-unit-id="${unit.id}"
         >
-          <span class="timeline-week">שבוע ${item.week}</span>
+          <span class="timeline-week">שבוע ${item.week}${isCurrentWeek ? " ← אתה כאן" : ""}</span>
           <div class="timeline-card-head">
             <div>
               <h3>${escapeHtml(unit.title)}</h3>
@@ -2107,11 +1977,13 @@ function renderStageSummary() {
 function renderStages() {
   if (!state.stages.length) {
     elements.stagesList.innerHTML = `
-      <div class="empty-state">
-        <div>
-          <h3>עדיין אין שלבים שמורים</h3>
-          <p>השתמש בטופס כדי לשמור שלב ראשון, או משוך יחידה קיימת לטופס בלחיצה אחת.</p>
-        </div>
+      <div class="stages-empty-state">
+        <div class="stages-empty-icon">📋</div>
+        <h3>טרם תיעדת שלבים – זה הזמן להתחיל</h3>
+        <p>השתמש בטופס כדי לשמור שלב ראשון, או משוך יחידה קיימת לטופס בלחיצה אחת.</p>
+        <button type="button" class="button button-primary" onclick="document.querySelector('#stageTitle').focus(); document.querySelector('#stageTitle').scrollIntoView({behavior:'smooth'});">
+          הוסף שלב ראשון
+        </button>
       </div>
     `;
     return;
@@ -2121,47 +1993,95 @@ function renderStages() {
     second.updatedAt.localeCompare(first.updatedAt)
   );
 
-  elements.stagesList.innerHTML = sortedStages
-    .map((stage) => {
-      const unit = syllabusData.units.find((entry) => entry.id === stage.unitId);
-      const statusMeta = stageStatusMeta[stage.status] || stageStatusMeta.planned;
-      const typeMeta = stageTypeMeta[stage.type] || stageTypeMeta.note;
-      const notes = stage.notes ? escapeHtml(stage.notes).replace(/\n/g, "<br>") : "אין פירוט עדיין.";
+  // Group by week
+  const weekGroups = new Map();
+  const noWeekGroup = [];
 
-      return `
-        <article class="stage-card">
-          <div class="stage-card-head">
-            <div>
-              <h3>${escapeHtml(stage.title)}</h3>
-              <div class="stage-meta">
-                <span class="status-pill ${statusMeta.className}">${escapeHtml(statusMeta.label)}</span>
-                <span class="type-pill ${typeMeta.className}">${escapeHtml(typeMeta.label)}</span>
-                ${stage.week ? `<span class="meta-pill">שבוע ${stage.week}</span>` : ""}
-                ${unit ? `<span class="meta-pill">${escapeHtml(unit.title)}</span>` : ""}
-              </div>
+  sortedStages.forEach((stage) => {
+    if (stage.week) {
+      const key = stage.week;
+      if (!weekGroups.has(key)) weekGroups.set(key, []);
+      weekGroups.get(key).push(stage);
+    } else {
+      noWeekGroup.push(stage);
+    }
+  });
+
+  const sortedWeeks = [...weekGroups.keys()].sort((a, b) => b - a);
+
+  function renderStageCard(stage) {
+    const unit = syllabusData.units.find((entry) => entry.id === stage.unitId);
+    const statusMeta = stageStatusMeta[stage.status] || stageStatusMeta.planned;
+    const typeMeta = stageTypeMeta[stage.type] || stageTypeMeta.note;
+    const notes = stage.notes ? escapeHtml(stage.notes).replace(/\n/g, "<br>") : "אין פירוט עדיין.";
+
+    return `
+      <article class="stage-card">
+        <div class="stage-card-head">
+          <div>
+            <h3>${escapeHtml(stage.title)}</h3>
+            <div class="stage-meta">
+              <span class="status-pill ${statusMeta.className}">${escapeHtml(statusMeta.label)}</span>
+              <span class="type-pill ${typeMeta.className}">${escapeHtml(typeMeta.label)}</span>
+              ${unit ? `<span class="meta-pill">${escapeHtml(shortenLabel(unit.title, 22))}</span>` : ""}
             </div>
-            <span class="panel-label">${formatDate(stage.updatedAt)}</span>
           </div>
-          ${
-            stage.notes
-              ? renderDisclosureCard("פירוט השלב", `<p>${notes}</p>`, false, "inline")
-              : '<p class="inline-note">אין פירוט עדיין.</p>'
-          }
-          <div class="stage-actions">
-            <button type="button" class="mini-button" data-stage-action="edit" data-stage-id="${stage.id}">
-              עריכה
-            </button>
-            <button type="button" class="mini-button" data-stage-action="toggle-done" data-stage-id="${stage.id}">
-              ${stage.status === "done" ? "החזר לפעיל" : "סמן כהושלם"}
-            </button>
-            <button type="button" class="mini-button" data-stage-action="delete" data-stage-id="${stage.id}">
-              מחק
-            </button>
-          </div>
-        </article>
-      `;
-    })
-    .join("");
+          <span class="panel-label">${formatDate(stage.updatedAt)}</span>
+        </div>
+        ${
+          stage.notes
+            ? renderDisclosureCard("פירוט השלב", `<p>${notes}</p>`, false, "inline")
+            : '<p class="inline-note">אין פירוט עדיין.</p>'
+        }
+        <div class="stage-actions">
+          <button type="button" class="mini-button" data-stage-action="edit" data-stage-id="${stage.id}">
+            עריכה
+          </button>
+          <button type="button" class="mini-button" data-stage-action="toggle-done" data-stage-id="${stage.id}">
+            ${stage.status === "done" ? "החזר לפעיל" : "סמן כהושלם"}
+          </button>
+          <button type="button" class="mini-button" data-stage-action="delete" data-stage-id="${stage.id}">
+            מחק
+          </button>
+        </div>
+      </article>
+    `;
+  }
+
+  let html = "";
+
+  // Render week groups
+  sortedWeeks.forEach((week) => {
+    const stages = weekGroups.get(week);
+    html += `
+      <div class="stage-week-group">
+        <button type="button" class="stage-week-group-header" onclick="this.nextElementSibling.classList.toggle('collapsed')">
+          <strong>שבוע ${week}</strong>
+          <span class="count-pill">${stages.length} שלבים</span>
+        </button>
+        <div class="stage-week-group-body">
+          ${stages.map(renderStageCard).join("")}
+        </div>
+      </div>
+    `;
+  });
+
+  // Render no-week stages
+  if (noWeekGroup.length) {
+    html += `
+      <div class="stage-week-group">
+        <button type="button" class="stage-week-group-header" onclick="this.nextElementSibling.classList.toggle('collapsed')">
+          <strong>ללא שבוע</strong>
+          <span class="count-pill">${noWeekGroup.length} שלבים</span>
+        </button>
+        <div class="stage-week-group-body">
+          ${noWeekGroup.map(renderStageCard).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  elements.stagesList.innerHTML = html;
 }
 
 async function hydrateDesignLab() {
@@ -2192,7 +2112,7 @@ async function hydrateDesignLab() {
     state.designLab.statusMessage = "לא הצלחתי לבדוק את חיבור ה־21ST מהשרת.";
   }
 
-  renderHeroNextActions();
+  renderHeroCta();
   renderDesignLabSessionMeta();
   renderDesignLabResponse();
 }
@@ -2206,21 +2126,21 @@ async function submitDesignLabPrompt() {
 
   if (!slug) {
     state.designLab.statusMessage = "צריך להזין agent slug כדי לדבר עם 21ST.";
-    renderHeroNextActions();
+    renderHeroCta();
     renderDesignLabSessionMeta();
     return;
   }
 
   if (!message) {
     state.designLab.statusMessage = "צריך לכתוב פרומפט לפני השליחה.";
-    renderHeroNextActions();
+    renderHeroCta();
     renderDesignLabSessionMeta();
     return;
   }
 
   state.designLab.isLoading = true;
   state.designLab.statusMessage = "שולח ל־21ST...";
-  renderHeroNextActions();
+  renderHeroCta();
   renderDesignLabSessionMeta();
   renderDesignLabResponse();
 
@@ -2261,7 +2181,7 @@ async function submitDesignLabPrompt() {
       error instanceof Error ? error.message : "משהו השתבש בזמן הקריאה ל־21ST.";
   } finally {
     state.designLab.isLoading = false;
-    renderHeroNextActions();
+    renderHeroCta();
     renderDesignLabSessionMeta();
     renderDesignLabResponse();
   }
@@ -2278,7 +2198,7 @@ function resetDesignLabSession() {
     : "ה־session אופס, אבל השרת עדיין לא מחובר ל־21ST.";
 
   localStorage.removeItem(STORAGE_KEYS.designLabSession);
-  renderHeroNextActions();
+  renderHeroCta();
   renderDesignLabSessionMeta();
   renderDesignLabResponse();
 }
@@ -2356,23 +2276,38 @@ function setThemePreset(presetId) {
 function syncScrollUi() {
   const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
   const progress = maxScroll > 0 ? Math.min(1, window.scrollY / maxScroll) : 0;
-  elements.scrollProgress.style.width = `${progress * 100}%`;
 
-  const activeOffset = window.scrollY + 180;
-  let activeSectionId = state.openSectionId || sectionLinks[0].id;
+  if (elements.scrollProgress) {
+    elements.scrollProgress.style.width = `${progress * 100}%`;
+  }
+  if (elements.globalProgressFill) {
+    elements.globalProgressFill.style.width = `${progress * 100}%`;
+  }
 
-  if (!state.openSectionId) {
-    sectionLinks.forEach((section) => {
-      const node = document.getElementById(section.id);
-      if (node && node.offsetTop <= activeOffset) {
-        activeSectionId = section.id;
-      }
+  const activeOffset = window.scrollY + 200;
+  let activePillSection = "top";
+
+  // Check which section is in view for pill nav
+  const pillSections = ["overview", "navigator", "timeline", "toolkit", "stages"];
+  pillSections.forEach((sectionId) => {
+    const node = document.getElementById(sectionId);
+    if (node && node.offsetTop <= activeOffset) {
+      activePillSection = sectionId;
+    }
+  });
+
+  if (elements.pillSubnav) {
+    elements.pillSubnav.querySelectorAll("[data-pill-section]").forEach((link) => {
+      link.classList.toggle("is-active", link.dataset.pillSection === activePillSection);
     });
   }
 
-  elements.sectionNav.querySelectorAll("[data-section-id]").forEach((link) => {
-    link.classList.toggle("is-active", link.dataset.sectionId === activeSectionId);
-  });
+  if (elements.sectionNav) {
+    const activeSectionId = state.openSectionId || sectionLinks[0]?.id;
+    elements.sectionNav.querySelectorAll("[data-section-id]").forEach((link) => {
+      link.classList.toggle("is-active", link.dataset.sectionId === activeSectionId);
+    });
+  }
 }
 
 function saveStageFromForm() {
@@ -2409,10 +2344,10 @@ function saveStageFromForm() {
 
   persistStages();
   resetStageForm();
-  renderHeroProof();
   renderStats();
   renderStageSummary();
   renderStages();
+  renderProgressPill();
 }
 
 function editStage(stageId) {
@@ -2449,7 +2384,6 @@ function toggleStageDone(stageId) {
   });
 
   persistStages();
-  renderHeroProof();
   renderStats();
   renderStageSummary();
   renderStages();
@@ -2468,7 +2402,6 @@ function deleteStage(stageId) {
     resetStageForm();
   }
 
-  renderHeroProof();
   renderStats();
   renderStageSummary();
   renderStages();
@@ -2532,7 +2465,6 @@ function importStagesFromJson(event) {
       normalized.forEach((stage) => merged.set(stage.id, stage));
       state.stages = Array.from(merged.values());
       persistStages();
-      renderHeroProof();
       renderStats();
       renderStageSummary();
       renderStages();
@@ -2553,8 +2485,7 @@ function toggleUnitComplete(unitId) {
   };
 
   saveStorage(STORAGE_KEYS.unitProgress, state.unitProgress);
-  renderHeroProof();
-  renderHeroShowcase();
+  renderHeroCta();
   renderStats();
   renderUnits();
   renderSelectedUnit();
@@ -2564,7 +2495,6 @@ function toggleUnitComplete(unitId) {
 function selectUnit(unitId) {
   state.selectedUnitId = unitId;
   saveStorage(STORAGE_KEYS.selectedUnitId, unitId);
-  renderHeroShowcase();
   renderUnits();
   renderSelectedUnit();
   renderLessonStudio();
@@ -2588,6 +2518,10 @@ function getFilteredUnits() {
       unit.category,
       unit.summary,
       unit.weekLabel,
+      unit.deliverable || "",
+      unit.exercise || "",
+      unit.understandingTest || "",
+      unit.managementLens || "",
       ...unit.topics,
       ...unit.goals,
       ...unit.redFlags
@@ -2679,6 +2613,88 @@ function renderDisclosureCard(title, bodyHtml, isOpen = false, variant = "unit")
       </div>
     </details>
   `;
+}
+
+function renderProgressPill() {
+  if (!elements.progressPill) return;
+  const completedUnits = Object.values(state.unitProgress).filter(Boolean).length;
+  const total = syllabusData.units.length;
+  elements.progressPill.innerHTML = `
+    <span class="progress-pill-dot"></span>
+    ${completedUnits} מתוך ${total} יחידות הושלמו
+  `;
+}
+
+function initAiDrawer() {
+  if (!elements.aiFab || !elements.aiDrawer) return;
+
+  elements.aiFab.addEventListener("click", openAiDrawer);
+
+  if (elements.aiDrawerClose) {
+    elements.aiDrawerClose.addEventListener("click", closeAiDrawer);
+  }
+
+  if (elements.aiDrawerOverlay) {
+    elements.aiDrawerOverlay.addEventListener("click", closeAiDrawer);
+  }
+
+  // Escape key
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && elements.aiDrawer && elements.aiDrawer.classList.contains("is-open")) {
+      closeAiDrawer();
+    }
+  });
+}
+
+function openAiDrawer() {
+  if (!elements.aiDrawer) return;
+  elements.aiDrawer.classList.remove("hidden");
+  elements.aiDrawer.classList.add("is-open");
+  elements.aiDrawer.removeAttribute("aria-hidden");
+  if (elements.aiDrawerOverlay) {
+    elements.aiDrawerOverlay.classList.remove("hidden");
+    elements.aiDrawerOverlay.removeAttribute("aria-hidden");
+  }
+  // Re-render design lab in drawer context
+  renderDesignLabSessionMeta();
+  renderDesignLabResponse();
+}
+
+function closeAiDrawer() {
+  if (!elements.aiDrawer) return;
+  elements.aiDrawer.classList.remove("is-open");
+  if (elements.aiDrawerOverlay) {
+    elements.aiDrawerOverlay.classList.add("hidden");
+  }
+  // Delay hiding to allow transition
+  setTimeout(() => {
+    elements.aiDrawer.classList.add("hidden");
+  }, 320);
+}
+
+function initSearchShortcut() {
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "/" && !isInputFocused()) {
+      event.preventDefault();
+      if (elements.unitSearch) {
+        elements.unitSearch.focus();
+        elements.unitSearch.select();
+        // Scroll to navigator if collapsed
+        const navigator = document.getElementById("navigator");
+        if (navigator) {
+          navigator.scrollIntoView({ behavior: "smooth", block: "start" });
+          openSectionPanel("navigator", false);
+        }
+      }
+    }
+  });
+}
+
+function isInputFocused() {
+  const focused = document.activeElement;
+  if (!focused) return false;
+  const tag = focused.tagName.toLowerCase();
+  return tag === "input" || tag === "textarea" || tag === "select" || focused.isContentEditable;
 }
 
 function initHeroShader() {
