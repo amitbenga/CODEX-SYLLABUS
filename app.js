@@ -873,9 +873,8 @@ document.addEventListener("DOMContentLoaded", () => {
   initHeroShader();
   hydrateDesignLab();
   syncScrollUi();
-  initOnboarding();
   initAiDrawer();
-  initSearchShortcut();
+  if (elements.unitSearch) initSearchShortcut();
 });
 
 function cacheElements() {
@@ -886,13 +885,11 @@ function cacheElements() {
   elements.scrollProgress = document.querySelector("#scrollProgress");
   elements.globalProgressFill = document.querySelector("#globalProgressFill");
   elements.progressPill = document.querySelector("#progressPill");
-  elements.heroProofGrid = document.querySelector("#heroProofGrid");
-  elements.heroNextActions = document.querySelector("#heroNextActions");
+  elements.heroResumeCta = document.querySelector("#heroResumeCta");
+  elements.heroCompletedStat = document.querySelector("#heroCompletedStat");
+  elements.heroRhythm = document.querySelector("#heroRhythm");
   elements.heroShaderCanvas = document.querySelector("#heroShaderCanvas");
   elements.themePresetChips = document.querySelector("#themePresetChips");
-  elements.heroUnitPreviewList = document.querySelector("#heroUnitPreviewList");
-  elements.heroFocusCard = document.querySelector("#heroFocusCard");
-  elements.heroRoadmap = document.querySelector("#heroRoadmap");
   elements.statsGrid = document.querySelector("#statsGrid");
   elements.pillarsGrid = document.querySelector("#pillarsGrid");
   elements.filterChips = document.querySelector("#filterChips");
@@ -932,22 +929,11 @@ function cacheElements() {
   elements.anReset = document.querySelector("#anReset");
   elements.anSessionMeta = document.querySelector("#anSessionMeta");
   elements.anResponse = document.querySelector("#anResponse");
-  // Onboarding
-  elements.onboardingModal = document.querySelector("#onboardingModal");
-  elements.onboardingWeekGrid = document.querySelector("#onboardingWeekGrid");
-  elements.onboardingStart = document.querySelector("#onboardingStart");
-  elements.onboardingSkip = document.querySelector("#onboardingSkip");
   // AI Drawer
   elements.aiFab = document.querySelector("#aiFab");
   elements.aiDrawer = document.querySelector("#aiDrawer");
   elements.aiDrawerOverlay = document.querySelector("#aiDrawerOverlay");
   elements.aiDrawerClose = document.querySelector("#aiDrawerClose");
-  // Mobile units drawer
-  elements.mobileUnitsBtn = document.querySelector("#mobileUnitsBtn");
-  elements.mobileUnitsDrawer = document.querySelector("#mobileUnitsDrawer");
-  elements.mobileUnitsClose = document.querySelector("#mobileUnitsClose");
-  elements.mobileUnitsList = document.querySelector("#mobileUnitsList");
-  elements.mobileUnitsOverlay = document.querySelector("#mobileUnitsOverlay");
 }
 
 function bindEvents() {
@@ -974,15 +960,6 @@ function bindEvents() {
     });
   }
 
-  elements.heroNextActions.addEventListener("click", (event) => {
-    const target = event.target.closest("[data-open-section]");
-    if (!target) {
-      return;
-    }
-
-    openSectionPanel(target.dataset.openSection, true);
-  });
-
   // Pill subnav smooth scroll
   if (elements.pillSubnav) {
     elements.pillSubnav.addEventListener("click", (event) => {
@@ -999,25 +976,6 @@ function bindEvents() {
           openSectionPanel(sectionId, false);
         }
       }
-    });
-  }
-
-  // Mobile units drawer
-  if (elements.mobileUnitsBtn) {
-    elements.mobileUnitsBtn.addEventListener("click", openMobileUnitsDrawer);
-  }
-  if (elements.mobileUnitsClose) {
-    elements.mobileUnitsClose.addEventListener("click", closeMobileUnitsDrawer);
-  }
-  if (elements.mobileUnitsOverlay) {
-    elements.mobileUnitsOverlay.addEventListener("click", closeMobileUnitsDrawer);
-  }
-  if (elements.mobileUnitsList) {
-    elements.mobileUnitsList.addEventListener("click", (event) => {
-      const target = event.target.closest("[data-unit-id]");
-      if (!target) return;
-      selectUnit(target.dataset.unitId);
-      closeMobileUnitsDrawer();
     });
   }
 
@@ -1117,42 +1075,6 @@ function bindEvents() {
     openSectionPanel("navigator", true);
   });
 
-  if (elements.heroUnitPreviewList) {
-    elements.heroUnitPreviewList.addEventListener("click", (event) => {
-      const target = event.target.closest("[data-unit-id]");
-      if (!target) {
-        return;
-      }
-
-      selectUnit(target.dataset.unitId);
-      openSectionPanel("navigator", true);
-    });
-  }
-
-  if (elements.heroRoadmap) {
-    elements.heroRoadmap.addEventListener("click", (event) => {
-      const target = event.target.closest("[data-unit-id]");
-      if (!target) {
-        return;
-      }
-
-      selectUnit(target.dataset.unitId);
-      openSectionPanel("navigator", true);
-    });
-  }
-
-  if (elements.heroFocusCard) {
-    elements.heroFocusCard.addEventListener("click", (event) => {
-      const target = event.target.closest("[data-unit-id]");
-      if (!target) {
-        return;
-      }
-
-      selectUnit(target.dataset.unitId);
-      openSectionPanel("navigator", true);
-    });
-  }
-
   elements.stageForm.addEventListener("submit", (event) => {
     event.preventDefault();
     saveStageFromForm();
@@ -1233,9 +1155,8 @@ function populateStageSelects() {
 
 function renderAll() {
   renderThemePresets();
-  renderHeroNextActions();
-  renderHeroProof();
-  renderHeroShowcase();
+  renderHeroCta();
+  renderHeroRhythm();
   renderStats();
   renderPillars();
   renderFilterChips();
@@ -1282,53 +1203,36 @@ function renderThemePresets() {
   document.body.dataset.theme = state.themePreset;
 }
 
-function renderHeroNextActions() {
-  const nextUnit = syllabusData.units.find((unit) => !state.unitProgress[unit.id]) || getSelectedUnit();
-  const completedUnits = Object.values(state.unitProgress).filter(Boolean).length;
-  const firstUnitPageUrl = buildUnitPageUrl(nextUnit.id, "overview");
+function renderHeroCta() {
+  // Find next incomplete unit
+  const nextUnit = syllabusData.units.find((unit) => !state.unitProgress[unit.id]) || syllabusData.units[0];
+  const url = buildUnitPageUrl(nextUnit.id, "overview");
 
-  const sectionActions = [
-    {
-      sectionId: "navigator",
-      label: "הסילבוס",
-      note: shortenLabel(nextUnit.title, 22),
-      meta: nextUnit.weekLabel
-    },
-    {
-      sectionId: "timeline",
-      label: "מפת השבועות",
-      note: `${completedUnits}/${syllabusData.units.length} הושלמו`,
-      meta: `${syllabusData.durationWeeks} שבועות`
-    },
-    {
-      sectionId: "stages",
-      label: "הלוג האישי",
-      note: state.stages.length ? `${state.stages.length} שלבים שמורים` : "עוד אין שלבים",
-      meta: "Build log"
-    }
-  ];
+  if (elements.heroResumeCta) {
+    elements.heroResumeCta.href = url;
+    elements.heroResumeCta.textContent = `המשך ללמוד ←`;
+  }
 
-  const sectionCards = sectionActions
-    .map(
-      (action) => `
-        <button type="button" class="next-action-card" data-open-section="${action.sectionId}">
-          <span class="next-action-meta">${escapeHtml(action.meta)}</span>
-          <strong>${escapeHtml(action.label)}</strong>
-          <span class="next-action-note">${escapeHtml(action.note)}</span>
-        </button>
-      `
-    )
+  // Update completed stat
+  const completedCount = Object.values(state.unitProgress).filter(Boolean).length;
+  if (elements.heroCompletedStat) {
+    const strong = elements.heroCompletedStat.querySelector("strong");
+    if (strong) strong.textContent = String(completedCount);
+  }
+}
+
+function renderHeroRhythm() {
+  if (!elements.heroRhythm || !syllabusData.weeklyRhythm) return;
+
+  elements.heroRhythm.innerHTML = syllabusData.weeklyRhythm
+    .map((step, index) => `
+      <div class="hero-rhythm-step">
+        <span class="hero-rhythm-step-num">${index + 1}</span>
+        <strong>${escapeHtml(step.action || step.title || step)}</strong>
+        ${step.detail || step.note ? `<p>${escapeHtml(step.detail || step.note)}</p>` : ""}
+      </div>
+    `)
     .join("");
-
-  const unitPageCard = `
-    <a href="${escapeAttribute(firstUnitPageUrl)}" class="next-action-card next-action-card--primary">
-      <span class="next-action-meta">התחל כאן ←</span>
-      <strong>פתח יחידה ראשונה</strong>
-      <span class="next-action-note">${escapeHtml(shortenLabel(nextUnit.title, 26))}</span>
-    </a>
-  `;
-
-  elements.heroNextActions.innerHTML = unitPageCard + sectionCards;
 }
 
 function renderSectionNav() {
@@ -1359,97 +1263,6 @@ function openSectionPanel(sectionId, shouldScroll = false) {
       const offset = el.getBoundingClientRect().top + window.scrollY - topbarH - subnavH - 12;
       window.scrollTo({ top: offset, behavior: "smooth" });
     }
-  }
-}
-
-function renderHeroProof() {
-  if (!elements.heroProofGrid) return;
-  const completedUnits = Object.values(state.unitProgress).filter(Boolean).length;
-  const proofItems = [
-    { value: completedUnits, label: "הושלמו" },
-    { value: syllabusData.units.length, label: "יחידות" },
-    { value: state.stages.length || 0, label: "שלבים" }
-  ];
-
-  elements.heroProofGrid.innerHTML = proofItems
-    .map(
-      (item) => `
-        <article class="proof-card">
-          <strong class="proof-value">${escapeHtml(String(item.value))}</strong>
-          <span class="proof-label">${escapeHtml(item.label)}</span>
-        </article>
-      `
-    )
-    .join("");
-}
-
-function renderHeroShowcase() {
-  if (!elements.heroUnitPreviewList && !elements.heroFocusCard && !elements.heroRoadmap) {
-    return;
-  }
-
-  const selectedUnit = getSelectedUnit();
-  const spotlightUnits = [
-    selectedUnit,
-    ...syllabusData.units.filter((unit) => unit.id !== selectedUnit.id).slice(0, 3)
-  ];
-  const isCompleted = Boolean(state.unitProgress[selectedUnit.id]);
-
-  if (elements.heroUnitPreviewList) {
-    elements.heroUnitPreviewList.innerHTML = spotlightUnits
-      .map((unit) => {
-        const isSelected = unit.id === selectedUnit.id;
-
-        return `
-          <button
-            type="button"
-            class="hero-preview-unit-btn ${isSelected ? "active" : ""}"
-            data-unit-id="${unit.id}"
-          >
-            <span class="hero-preview-unit-week">${escapeHtml(unit.weekLabel)}</span>
-            <strong>${escapeHtml(shortenLabel(unit.title, 22))}</strong>
-          </button>
-        `;
-      })
-      .join("");
-  }
-
-  if (elements.heroFocusCard) {
-    elements.heroFocusCard.innerHTML = `
-      <button type="button" class="hero-focus-entry accent-${selectedUnit.accent}" data-unit-id="${selectedUnit.id}">
-        <div class="hero-focus-head">
-          <span class="hero-focus-week">${escapeHtml(selectedUnit.weekLabel)}</span>
-          <span class="hero-focus-status ${isCompleted ? "is-done" : ""}">
-            ${isCompleted ? "הושלם" : "פתוח עכשיו"}
-          </span>
-        </div>
-        <strong class="hero-focus-title">${escapeHtml(shortenLabel(selectedUnit.title, 34))}</strong>
-        <p class="hero-focus-summary">${escapeHtml(shortenLabel(selectedUnit.summary, 90))}</p>
-      </button>
-    `;
-  }
-
-  if (elements.heroRoadmap) {
-    elements.heroRoadmap.innerHTML = weekPlan
-      .slice(0, 6)
-      .map((item) => {
-        const unit = syllabusData.units.find((entry) => entry.id === item.unitId);
-        const isSelected = item.unitId === selectedUnit.id;
-        const isComp = Boolean(state.unitProgress[item.unitId]);
-
-        return `
-          <button
-            type="button"
-            class="hero-roadmap-node ${isSelected ? "active" : ""} ${isComp ? "completed" : ""}"
-            data-unit-id="${item.unitId}"
-            title="${escapeHtml(unit ? unit.title : item.focus)}"
-          >
-            <span class="hero-roadmap-week">${item.week}</span>
-            <strong>${escapeHtml(shortenLabel(item.focus, 14))}</strong>
-          </button>
-        `;
-      })
-      .join("");
   }
 }
 
@@ -1522,10 +1335,6 @@ function renderUnits() {
         </div>
       </div>
     `;
-    // Also update mobile list
-    if (elements.mobileUnitsList) {
-      elements.mobileUnitsList.innerHTML = elements.unitsList.innerHTML;
-    }
     return;
   }
 
@@ -1569,11 +1378,6 @@ function renderUnits() {
     .join("");
 
   elements.unitsList.innerHTML = html;
-
-  // Also update mobile list
-  if (elements.mobileUnitsList) {
-    elements.mobileUnitsList.innerHTML = html;
-  }
 }
 
 function highlightText(text, term) {
