@@ -26,19 +26,6 @@
       <span id="globalProgressFill"></span>
     </div>
 
-    <!-- Onboarding modal -->
-    <div id="onboardingModal" class="onboarding-modal hidden" role="dialog" aria-modal="true" aria-labelledby="onboardingTitle">
-      <div class="onboarding-modal-card">
-        <h2 id="onboardingTitle">ברוך הבא!</h2>
-        <p>באיזה שבוע אתה נמצא כרגע?</p>
-        <div class="onboarding-week-grid" id="onboardingWeekGrid"></div>
-        <div class="onboarding-actions">
-          <button id="onboardingStart" type="button" class="button button-primary">התחל</button>
-          <button id="onboardingSkip" type="button" class="button button-ghost">דלג</button>
-        </div>
-      </div>
-    </div>
-
     <!-- AI Drawer -->
     <div id="aiDrawerOverlay" class="ai-drawer-overlay hidden" aria-hidden="true"></div>
     <aside id="aiDrawer" class="ai-drawer hidden" role="complementary" aria-label="עזרת AI">
@@ -130,7 +117,7 @@
       </nav>
 
       <!-- Sticky pill subnav -->
-      <nav id="pillSubnav" class="pill-subnav" aria-label="ניווט מהיר בין סקציות">
+      <nav id="pillSubnav" class="pill-subnav" aria-label="ניווט מהיר בין סקציות" style="display:none">
         <div class="pill-subnav-inner">
           <a href="#top" class="pill-nav-item" data-pill-section="top">Hero</a>
           <a href="#overview" class="pill-nav-item" data-pill-section="overview">סקירה</a>
@@ -147,76 +134,47 @@
         <div class="hero-light hero-light-a" aria-hidden="true"></div>
         <div class="hero-light hero-light-b" aria-hidden="true"></div>
 
-        <div class="hero-layout">
-          <!-- Right column: text -->
-          <div class="hero-copy">
-            <span class="hero-badge">מסלול Technical Product Builder</span>
-            <p class="hero-kicker">הכשרה לבנייה, judgment ו-delivery</p>
-            <h1>
-              <span>לומדים לבנות</span>
-              <span class="hero-title-accent">מוצר טכני</span>
-              <span>בלי ללכת לאיבוד בקוד</span>
-            </h1>
-            <p class="hero-text">
-              מסלול חי שמציג לך רק את הדבר הבא: להבין מערכות, לשפוט קוד, להוביל עבודה עם סוכנים ולשלוח לפרודקשן.
-            </p>
+        <div class="hero-center">
+          <span class="hero-badge">מסלול Technical Product Builder</span>
+          <h1 class="hero-title">
+            <span>לומדים לבנות</span>
+            <span class="hero-title-accent">מוצר טכני</span>
+            <span>בלי ללכת לאיבוד בקוד</span>
+          </h1>
+          <p class="hero-subtitle">מסלול חי שמציג לך רק את הדבר הבא: להבין מערכות, לשפוט קוד, להוביל עבודה עם סוכנים ולשלוח לפרודקשן.</p>
 
-            <div class="hero-actions">
-              <a class="button button-primary" href="#navigator">צלול לסילבוס</a>
-              <a class="button button-secondary" href="#stages">הרוד שלי</a>
+          <!-- Stats strip -->
+          <div class="hero-stats-strip">
+            <div class="hero-stat">
+              <strong>16</strong>
+              <span>שבועות</span>
             </div>
-
-            <div id="heroNextActions" class="hero-next-actions"></div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat">
+              <strong>14</strong>
+              <span>יחידות</span>
+            </div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat" id="heroCompletedStat">
+              <strong>0</strong>
+              <span>הושלמו</span>
+            </div>
           </div>
 
-          <!-- Left column: product preview mock -->
-          <div class="hero-preview-frame" aria-hidden="true">
-            <div class="hero-preview-window">
-              <div class="hero-preview-toolbar">
-                <div class="toolbar-dots">
-                  <span></span><span></span><span></span>
-                </div>
-                <span class="hero-preview-url">syllabus navigator</span>
-              </div>
-              <div class="hero-preview-layout">
-                <div class="hero-preview-sidebar">
-                  <div class="hero-preview-sidebar-head">
-                    <span class="hero-preview-badge">יחידות הקורס</span>
-                  </div>
-                  <div id="heroUnitPreviewList" class="hero-preview-unit-list"></div>
-                </div>
-                <div class="hero-preview-detail">
-                  <div id="heroFocusCard" class="hero-focus-shell"></div>
-                  <div id="heroProofGrid" class="hero-proof-grid"></div>
-                </div>
-              </div>
-              <div id="heroRoadmap" class="hero-preview-timeline"></div>
-            </div>
+          <!-- Primary CTA -->
+          <div class="hero-cta-row">
+            <a id="heroResumeCta" class="button hero-resume-btn" href="./unit-page.html">המשך ללמוד ←</a>
           </div>
-        </div>
 
-        <!-- Proof strip below both columns -->
-        <div class="hero-proof-strip">
-          <div class="hero-proof-strip-inner">
-            <div class="proof-strip-card">
-              <span class="proof-strip-value">16</span>
-              <span class="proof-strip-label">שבועות</span>
-            </div>
-            <div class="proof-strip-divider"></div>
-            <div class="proof-strip-card">
-              <span class="proof-strip-value">14</span>
-              <span class="proof-strip-label">יחידות</span>
-            </div>
-            <div class="proof-strip-divider"></div>
-            <div class="proof-strip-card">
-              <span class="proof-strip-value">5</span>
-              <span class="proof-strip-label">עמודות ליבה</span>
-            </div>
+          <!-- How to learn section -->
+          <div class="hero-how-to-learn">
+            <h3 class="hero-section-label">איך ללמוד כל שבוע</h3>
+            <div id="heroRhythm" class="hero-rhythm-grid"></div>
           </div>
         </div>
       </header>
 
-      <section class="section-block section-overview" id="overview">
+      <section class="section-block section-overview" id="overview" hidden>
         <div class="section-heading">
           <div>
             <span class="eyebrow">Overview</span>
@@ -269,7 +227,7 @@
         </div>
       </section>
 
-      <section class="section-block section-navigator" id="navigator">
+      <section class="section-block section-navigator" id="navigator" hidden>
         <div class="section-heading">
           <div>
             <span class="eyebrow">Syllabus Navigator</span>
@@ -307,22 +265,9 @@
           <article id="unitDetail" class="detail-panel"></article>
         </div>
 
-        <!-- Mobile drawer trigger -->
-        <button id="mobileUnitsBtn" type="button" class="mobile-units-fab hidden-desktop">
-          יחידות
-        </button>
-        <!-- Mobile units drawer -->
-        <div id="mobileUnitsDrawer" class="mobile-units-drawer hidden" aria-hidden="true">
-          <div class="mobile-units-drawer-header">
-            <h3>יחידות הקורס</h3>
-            <button id="mobileUnitsClose" type="button" class="ai-drawer-close" aria-label="סגור">×</button>
-          </div>
-          <div id="mobileUnitsList" class="units-list"></div>
-        </div>
-        <div id="mobileUnitsOverlay" class="ai-drawer-overlay hidden" aria-hidden="true"></div>
       </section>
 
-      <section class="section-block section-lesson-studio" id="lesson-studio">
+      <section class="section-block section-lesson-studio" id="lesson-studio" hidden>
         <div class="section-heading">
           <div>
             <span class="eyebrow">Learning Pages</span>
@@ -347,7 +292,7 @@
         </div>
       </section>
 
-      <section class="section-block section-timeline" id="timeline">
+      <section class="section-block section-timeline" id="timeline" hidden>
         <div class="section-heading">
           <div>
             <span class="eyebrow">16 Week Plan</span>
@@ -362,7 +307,7 @@
         <div id="timelineGrid" class="timeline-grid"></div>
       </section>
 
-      <section class="section-block section-toolkit" id="toolkit">
+      <section class="section-block section-toolkit" id="toolkit" hidden>
         <div class="section-heading">
           <div>
             <span class="eyebrow">Learning System</span>
@@ -401,7 +346,7 @@
         </div>
       </section>
 
-      <section class="section-block section-stages" id="stages">
+      <section class="section-block section-stages" id="stages" hidden>
         <div class="section-heading">
           <div>
             <span class="eyebrow">Build Log</span>

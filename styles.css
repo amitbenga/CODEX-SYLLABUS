@@ -207,12 +207,15 @@ body::selection {
 }
 
 .hero {
-  display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(360px, 1.1fr);
-  gap: 32px;
-  padding: 36px;
-  overflow: hidden;
   position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 120px 24px 80px;
+  text-align: center;
   animation: fade-up 0.7s ease both;
   background:
     radial-gradient(circle at 18% 14%, rgba(14, 165, 233, 0.22), transparent 26%),
@@ -3315,6 +3318,208 @@ body[data-theme="cursor"] .button-primary {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
+}
+
+/* ===== HERO CENTER LAYOUT ===== */
+.hero-center {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+
+/* Remove old two-column layout */
+.hero-layout {
+  display: none !important;
+}
+.hero-preview-frame {
+  display: none !important;
+}
+.hero-copy {
+  display: none !important;
+}
+.hero-proof-strip {
+  display: none !important;
+}
+
+/* Title */
+.hero-title {
+  font-family: 'Secular One', sans-serif;
+  font-size: clamp(2.8rem, 7vw, 5.5rem);
+  line-height: 1.1;
+  color: #fff;
+  text-align: center;
+  margin: 0;
+}
+.hero-title span {
+  display: block;
+}
+.hero-title-accent {
+  color: var(--coral);
+  background: linear-gradient(135deg, #e8855a, #c96a3d);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-badge {
+  display: inline-block;
+  padding: 6px 18px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 999px;
+  color: rgba(255,255,255,0.85);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  backdrop-filter: blur(8px);
+}
+
+.hero-subtitle {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: rgba(255,255,255,0.75);
+  max-width: 600px;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* Stats strip */
+.hero-stats-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 20px;
+  padding: 16px 40px;
+  backdrop-filter: blur(12px);
+  flex-wrap: wrap;
+  gap: 0;
+}
+
+.hero-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 32px;
+}
+.hero-stat strong {
+  font-family: 'Secular One', sans-serif;
+  font-size: 2.4rem;
+  color: #fff;
+  line-height: 1;
+}
+.hero-stat span {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.65);
+  margin-top: 4px;
+}
+.hero-stat-divider {
+  width: 1px;
+  height: 48px;
+  background: rgba(255,255,255,0.2);
+  flex-shrink: 0;
+}
+
+/* CTA */
+.hero-cta-row {
+  display: flex;
+  justify-content: center;
+}
+.hero-resume-btn {
+  font-size: 1.15rem;
+  padding: 16px 40px;
+  border-radius: 14px;
+  background: var(--teal);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+  display: inline-block;
+}
+.hero-resume-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+/* How to learn */
+.hero-how-to-learn {
+  width: 100%;
+  padding-top: 8px;
+}
+.hero-section-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 16px;
+  text-align: center;
+}
+.hero-rhythm-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+}
+.hero-rhythm-step {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  padding: 14px 12px;
+  text-align: center;
+  backdrop-filter: blur(8px);
+}
+.hero-rhythm-step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: rgba(15,118,110,0.5);
+  border-radius: 50%;
+  color: rgba(255,255,255,0.9);
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.hero-rhythm-step strong {
+  display: block;
+  color: rgba(255,255,255,0.9);
+  font-size: 0.88rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.hero-rhythm-step p {
+  color: rgba(255,255,255,0.55);
+  font-size: 0.78rem;
+  line-height: 1.4;
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .hero-stats-strip {
+    padding: 12px 16px;
+  }
+  .hero-stat {
+    padding: 0 16px;
+  }
+  .hero-stat strong {
+    font-size: 1.8rem;
+  }
+  .hero-rhythm-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .hero-resume-btn {
+    font-size: 1rem;
+    padding: 14px 28px;
+  }
 }
 
 /* ---- Bento Grid ---- */
