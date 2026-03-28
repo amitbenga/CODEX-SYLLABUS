@@ -2112,7 +2112,7 @@ async function hydrateDesignLab() {
     state.designLab.statusMessage = "לא הצלחתי לבדוק את חיבור ה־21ST מהשרת.";
   }
 
-  renderHeroNextActions();
+  renderHeroCta();
   renderDesignLabSessionMeta();
   renderDesignLabResponse();
 }
@@ -2126,21 +2126,21 @@ async function submitDesignLabPrompt() {
 
   if (!slug) {
     state.designLab.statusMessage = "צריך להזין agent slug כדי לדבר עם 21ST.";
-    renderHeroNextActions();
+    renderHeroCta();
     renderDesignLabSessionMeta();
     return;
   }
 
   if (!message) {
     state.designLab.statusMessage = "צריך לכתוב פרומפט לפני השליחה.";
-    renderHeroNextActions();
+    renderHeroCta();
     renderDesignLabSessionMeta();
     return;
   }
 
   state.designLab.isLoading = true;
   state.designLab.statusMessage = "שולח ל־21ST...";
-  renderHeroNextActions();
+  renderHeroCta();
   renderDesignLabSessionMeta();
   renderDesignLabResponse();
 
@@ -2181,7 +2181,7 @@ async function submitDesignLabPrompt() {
       error instanceof Error ? error.message : "משהו השתבש בזמן הקריאה ל־21ST.";
   } finally {
     state.designLab.isLoading = false;
-    renderHeroNextActions();
+    renderHeroCta();
     renderDesignLabSessionMeta();
     renderDesignLabResponse();
   }
@@ -2198,7 +2198,7 @@ function resetDesignLabSession() {
     : "ה־session אופס, אבל השרת עדיין לא מחובר ל־21ST.";
 
   localStorage.removeItem(STORAGE_KEYS.designLabSession);
-  renderHeroNextActions();
+  renderHeroCta();
   renderDesignLabSessionMeta();
   renderDesignLabResponse();
 }
@@ -2344,7 +2344,6 @@ function saveStageFromForm() {
 
   persistStages();
   resetStageForm();
-  renderHeroProof();
   renderStats();
   renderStageSummary();
   renderStages();
@@ -2385,7 +2384,6 @@ function toggleStageDone(stageId) {
   });
 
   persistStages();
-  renderHeroProof();
   renderStats();
   renderStageSummary();
   renderStages();
@@ -2404,7 +2402,6 @@ function deleteStage(stageId) {
     resetStageForm();
   }
 
-  renderHeroProof();
   renderStats();
   renderStageSummary();
   renderStages();
@@ -2468,7 +2465,6 @@ function importStagesFromJson(event) {
       normalized.forEach((stage) => merged.set(stage.id, stage));
       state.stages = Array.from(merged.values());
       persistStages();
-      renderHeroProof();
       renderStats();
       renderStageSummary();
       renderStages();
@@ -2489,8 +2485,7 @@ function toggleUnitComplete(unitId) {
   };
 
   saveStorage(STORAGE_KEYS.unitProgress, state.unitProgress);
-  renderHeroProof();
-  renderHeroShowcase();
+  renderHeroCta();
   renderStats();
   renderUnits();
   renderSelectedUnit();
@@ -2500,7 +2495,6 @@ function toggleUnitComplete(unitId) {
 function selectUnit(unitId) {
   state.selectedUnitId = unitId;
   saveStorage(STORAGE_KEYS.selectedUnitId, unitId);
-  renderHeroShowcase();
   renderUnits();
   renderSelectedUnit();
   renderLessonStudio();
@@ -2631,57 +2625,6 @@ function renderProgressPill() {
   `;
 }
 
-function initOnboarding() {
-  const hasVisited = loadStorage(STORAGE_KEYS.visited, false);
-  if (hasVisited || !elements.onboardingModal) return;
-
-  // Build week grid
-  if (elements.onboardingWeekGrid) {
-    elements.onboardingWeekGrid.innerHTML = Array.from({ length: 16 }, (_, i) => {
-      const week = i + 1;
-      return `
-        <button type="button" class="onboarding-week-btn" data-week="${week}">שבוע ${week}</button>
-      `;
-    }).join("");
-
-    elements.onboardingWeekGrid.addEventListener("click", (event) => {
-      const btn = event.target.closest("[data-week]");
-      if (!btn) return;
-      state.onboardingSelectedWeek = Number(btn.dataset.week);
-      elements.onboardingWeekGrid.querySelectorAll(".onboarding-week-btn").forEach((b) => {
-        b.classList.toggle("selected", b === btn);
-      });
-    });
-  }
-
-  // Show modal
-  elements.onboardingModal.classList.remove("hidden");
-  elements.onboardingModal.removeAttribute("aria-hidden");
-
-  if (elements.onboardingStart) {
-    elements.onboardingStart.addEventListener("click", () => {
-      if (state.onboardingSelectedWeek) {
-        state.startWeek = state.onboardingSelectedWeek;
-        saveStorage(STORAGE_KEYS.startWeek, state.startWeek);
-        renderTimeline();
-      }
-      closeOnboarding();
-    });
-  }
-
-  if (elements.onboardingSkip) {
-    elements.onboardingSkip.addEventListener("click", closeOnboarding);
-  }
-}
-
-function closeOnboarding() {
-  saveStorage(STORAGE_KEYS.visited, true);
-  if (elements.onboardingModal) {
-    elements.onboardingModal.classList.add("hidden");
-    elements.onboardingModal.setAttribute("aria-hidden", "true");
-  }
-}
-
 function initAiDrawer() {
   if (!elements.aiFab || !elements.aiDrawer) return;
 
@@ -2752,28 +2695,6 @@ function isInputFocused() {
   if (!focused) return false;
   const tag = focused.tagName.toLowerCase();
   return tag === "input" || tag === "textarea" || tag === "select" || focused.isContentEditable;
-}
-
-function openMobileUnitsDrawer() {
-  if (!elements.mobileUnitsDrawer) return;
-  elements.mobileUnitsDrawer.classList.remove("hidden");
-  elements.mobileUnitsDrawer.classList.add("is-open");
-  elements.mobileUnitsDrawer.removeAttribute("aria-hidden");
-  if (elements.mobileUnitsOverlay) {
-    elements.mobileUnitsOverlay.classList.remove("hidden");
-    elements.mobileUnitsOverlay.removeAttribute("aria-hidden");
-  }
-}
-
-function closeMobileUnitsDrawer() {
-  if (!elements.mobileUnitsDrawer) return;
-  elements.mobileUnitsDrawer.classList.remove("is-open");
-  setTimeout(() => {
-    elements.mobileUnitsDrawer.classList.add("hidden");
-  }, 320);
-  if (elements.mobileUnitsOverlay) {
-    elements.mobileUnitsOverlay.classList.add("hidden");
-  }
 }
 
 function initHeroShader() {
