@@ -1,7 +1,12 @@
 const syllabusData = {
   programTitle: "מסלול Technical Product Builder",
   roleTitle: "AI-Native Full-Stack Product Lead",
-  durationWeeks: 16,
+  durationWeeks: 17,
+  runningCase: {
+    title: "מערכת ניהול לידים, פגישות וידע למטפלים",
+    description:
+      "קייס מתגלגל עבור מטפלת נטורופתית ורפלקסולוגית: קליטת לידים, תיאום פגישות, תיעוד ידע מקצועי והכנה להוספת דאטה בהמשך."
+  },
   coreGoal:
     "להוביל בנייה של מערכות בצורה מקצועית, ביקורתית ואחראית, עם מספיק עומק טכני כדי להבין ארכיטקטורה, לשפוט קוד, לנהל delivery ולהכווין סוכנים בלי ללכת לאיבוד בעומק מיותר.",
   pillars: [
@@ -19,7 +24,7 @@ const syllabusData = {
     },
     {
       title: "ניהול עבודה עם סוכנים",
-      description: "לנסח scope, לבקש analysis נכון, ולדרוש diff קטן, בדיקות ותכנית rollback."
+      description: "לנסח scope, לנהל הרשאות וכלים, לבקש analysis נכון, ולדרוש diff קטן, בדיקות ותכנית rollback."
     },
     {
       title: "פרודקשן, אבטחה ותחזוקה",
@@ -202,43 +207,40 @@ const syllabusData = {
       weekLabel: "שבועות 3-4",
       weekStart: 3,
       weekEnd: 4,
-      title: "דאטה מודלינג וחשיבה רלציונית",
-      category: "דאטה וארכיטקטורה",
+      title: "מודלינג נתונים, זיכרון וקטורי ו-State בעולם של סוכנים",
+      category: "דאטה, זיכרון וסוכנים",
       accent: "gold",
       summary:
-        "הלב של מוצרי data-heavy: להבין ישויות, יחסים, constraints ומה לא משכפלים.",
+        "לתכנן שכבת נתונים שמחזיקה אמת רלציונית, זיכרון סמנטי ו-state של סוכנים בלי לתת לקוד אוטומטי לשבור את המערכת.",
       goals: [
-        "לזהות את הישות האמיתית ואת היחסים בינהן.",
-        "להחליט איפה constraint שייך ואיפה derived data צריך לגור.",
-        "להבין מה קורה במחיקה, בשחזור וב-auditability."
+        "לזהות אילו נתונים שייכים ל-SQL, אילו לקבצים/Storage, אילו לווקטורים ואילו ל-agent state.",
+        "לתכנן סכמות, constraints ו-RLS למערכת המטפלים כך שסוכנים לא יעקפו את חוקי הדומיין.",
+        "להבין איך RAG, embeddings ו-Structured Outputs מחברים סוכן הסתברותי למערכת דטרמיניסטית."
       ],
       topics: [
-        "Tables",
-        "Rows",
-        "Primary key",
-        "Foreign key",
-        "Unique constraints",
-        "Junction tables",
-        "One-to-many",
-        "Many-to-many",
-        "Nullable vs required",
-        "Derived data",
-        "Normalization בסיסי",
-        "Soft delete vs hard delete",
-        "Auditability"
+        "Relational source of truth",
+        "Entities, constraints and junction tables",
+        "Supabase, RLS and serverless connection pressure",
+        "Object Storage and signed URLs",
+        "Vector embeddings, chunking and retrieval",
+        "RAG for therapist knowledge",
+        "Agent state, runs, tool calls and audit trail",
+        "MCP as a controlled tool boundary",
+        "Structured Outputs and Zod validation",
+        "SQL injection, prompt injection and slopsquatting"
       ],
       deliverable:
-        "סקירה מלאה של טבלאות המוצר: actors, projects, project_actors, folders, submissions, approvals ו-media references עם constraints וקשרי מחיקה.",
+        "Data architecture pack למערכת המטפלים: ERD ראשוני, טבלת RAG chunks, מודל agent_runs/tool_calls, כללי RLS, ו-checklist הגנה לפני שסוכן כותב ל-DB.",
       exercise:
-        "עבור כל טבלה ענה: מה הישות? מה היחסים? מה אסור לשכפל? איזה constraint הכרחי? מה יקרה במחיקה?",
+        "תכנן פיצ'ר שבו מטפלת מעלה סיכום טיפול וקבצים, וסוכן מציע follow-up: איפה נשמרת האמת, איפה נשמר הקובץ, מה נכנס לווקטורים, ואיזו ולידציה נדרשת לפני כתיבה.",
       understandingTest:
-        "לזהות מיד מתי מישהו דוחף שדה לטבלה הלא נכונה כי זה נוח זמנית.",
+        "לדעת לזהות מתי סוכן מציע פתרון שנראה עובד אבל מערבב SQL, קבצים, וקטורים ו-state בצורה שתשבור פרודקשן.",
       managementLens:
-        "דרוש מכל שינוי DB נימוק לישות, constraints, migration impact ו-rollback plan.",
+        "בכל שינוי דאטה דרוש מהסוכן: מקור אמת, הרשאות, constraints, migration impact, rollback, ולידציה וראיות בדיקה.",
       redFlags: [
-        "status גלובלי כשצריך להיות פר-פרויקט",
-        "כפילויות data 'לנוחות'",
-        "מחיקות שמשמידות יותר ממה שהתכוונת"
+        "קבצים כבדים בתוך JSON או עמודת DB במקום Storage",
+        "סוכן שכותב ישירות ל-DB בלי Structured Output וולידציה",
+        "RAG בלי metadata, הרשאות, מקור ואסטרטגיית מחיקה"
       ]
     },
     {
@@ -325,10 +327,51 @@ const syllabusData = {
       ]
     },
     {
-      id: "backend-architecture",
+      id: "design-templates-21st",
       weekLabel: "שבוע 7",
       weekStart: 7,
       weekEnd: 7,
+      title: "21ST, טמפלייטים ושבירת עיצוב AI גנרי",
+      category: "ממשק וחוויית מוצר",
+      accent: "purple",
+      summary:
+        "להשתמש בספריות UI וטמפלייטים כמו 21st כדי לכוון סוכן קוד לעיצוב ספציפי, עשיר ומתאים למוצר במקום לקבל UI גנרי.",
+      goals: [
+        "להבין למה סוכני AI מייצרים עיצוב גנרי כשאין להם רפרנס, היררכיה ומגבלות עיצוב.",
+        "לדעת לחפש ב-21st קומפוננטות, screens ו-themes לפי תפקיד מוצרי ולא לפי מראה בלבד.",
+        "לתרגם רפרנס עיצובי ל-spec שאפשר לתת לסוכן קוד: layout, tokens, states, components ו-constraints."
+      ],
+      topics: [
+        "Generic AI design patterns",
+        "21st Community components",
+        "Screens and themes as design references",
+        "Magic Chat and Magic MCP as UI exploration tools",
+        "Reference decomposition",
+        "Design tokens",
+        "Component anatomy",
+        "Responsive states",
+        "Accessibility and content fit",
+        "Prompting a coding agent with visual constraints"
+      ],
+      deliverable:
+        "Design reference pack למערכת המטפלים: 3 רפרנסים מ-21st, פירוק layout/tokens/states, ופרומפט עבודה לסוכן שמייצר מסך לידים או פגישות לא גנרי.",
+      exercise:
+        "בחר מסך אחד במערכת המטפלים, למשל lead intake או פגישות קרובות, מצא 3 רפרנסים ב-21st, וכתוב מה לקחת מכל אחד ומה אסור להעתיק.",
+      understandingTest:
+        "לדעת להסביר למה 'תעשה dashboard יפה' כמעט תמיד ייצר UI גנרי, ואיך רפרנס מפורק נכון משנה את התוצאה.",
+      managementLens:
+        "לפני משימת UI לסוכן, דרוש reference pack: מטרת המסך, רפרנסים, tokens, states, מגבלות נגישות ודברים שלא לשנות.",
+      redFlags: [
+        "העתקה עיוורת של hero/gradient שאינה מתאימה למוצר תפעולי",
+        "בחירת קומפוננטה לפי וואו ויזואלי במקום workflow",
+        "פרומפט UI בלי states, responsive behavior או תוכן אמיתי"
+      ]
+    },
+    {
+      id: "backend-architecture",
+      weekLabel: "שבוע 8",
+      weekStart: 8,
+      weekEnd: 8,
       title: "Backend architecture בלי להסתבך",
       category: "מערכת ושרת",
       accent: "navy",
@@ -368,9 +411,9 @@ const syllabusData = {
     },
     {
       id: "security",
-      weekLabel: "שבוע 8",
-      weekStart: 8,
-      weekEnd: 8,
+      weekLabel: "שבוע 9",
+      weekStart: 9,
+      weekEnd: 9,
       title: "אבטחה פרקטית למי שבונה מוצרים",
       category: "איכות ופרודקשן",
       accent: "brick",
@@ -412,9 +455,9 @@ const syllabusData = {
     },
     {
       id: "debugging",
-      weekLabel: "שבוע 9",
-      weekStart: 9,
-      weekEnd: 9,
+      weekLabel: "שבוע 10",
+      weekStart: 10,
+      weekEnd: 10,
       title: "דיבאגינג מקצועי",
       category: "איכות ופרודקשן",
       accent: "teal",
@@ -455,9 +498,9 @@ const syllabusData = {
     },
     {
       id: "git-pr",
-      weekLabel: "שבוע 10",
-      weekStart: 10,
-      weekEnd: 10,
+      weekLabel: "שבוע 11",
+      weekStart: 11,
+      weekEnd: 11,
       title: "Git, branches, PRs ו-review discipline",
       category: "Delivery והובלה",
       accent: "navy",
@@ -495,9 +538,9 @@ const syllabusData = {
     },
     {
       id: "testing",
-      weekLabel: "שבוע 11",
-      weekStart: 11,
-      weekEnd: 11,
+      weekLabel: "שבוע 12",
+      weekStart: 12,
+      weekEnd: 12,
       title: "Testing בלי להיות דתי",
       category: "איכות ופרודקשן",
       accent: "gold",
@@ -534,9 +577,9 @@ const syllabusData = {
     },
     {
       id: "performance",
-      weekLabel: "שבוע 12",
-      weekStart: 12,
-      weekEnd: 12,
+      weekLabel: "שבוע 13",
+      weekStart: 13,
+      weekEnd: 13,
       title: "Performance, scale ותחזוקה",
       category: "איכות ופרודקשן",
       accent: "olive",
@@ -576,9 +619,9 @@ const syllabusData = {
     },
     {
       id: "agent-work",
-      weekLabel: "שבועות 13-14",
-      weekStart: 13,
-      weekEnd: 14,
+      weekLabel: "שבועות 14-15",
+      weekStart: 14,
+      weekEnd: 15,
       title: "עבודה עם סוכנים כמו Tech Lead",
       category: "עבודה עם סוכנים",
       accent: "teal",
@@ -590,25 +633,25 @@ const syllabusData = {
         "לזהות hallucinations, overconfidence ו-'sounds good' שאין מאחוריהם substance."
       ],
       topics: [
-        "איך לנסח משימות לסוכן",
-        "איך לחלק scope",
-        "איך למנוע overreach",
+        "Codex App / CLI / IDE / Web",
+        "Permissions, approvals ו-sandbox boundaries",
+        "MCP, skills, tools ו-subagents",
+        "איך לנסח משימות לסוכן ולחלק scope",
+        "איך למנוע overreach ו-tool over-permission",
         "איך לבקש analysis לפני implementation",
-        "איך לדרוש diff קטן ומבוקר",
+        "איך לדרוש diff קטן, test plan ו-rollback plan",
         "איך לבקש root cause, not patch",
-        "איך לדרוש test plan",
-        "איך לדרוש rollback plan",
-        "איך לזהות hallucination טכנית",
-        "איך לא ליפול ל-'sounds good'"
+        "Traces, evals ו-run evidence",
+        "איך לזהות hallucination טכנית ו-'sounds good'"
       ],
       deliverable:
-        "ספר תבניות לסוכן: feature spec, bug investigation, security review, refactor, PR review ו-production readiness.",
+        "ספר תבניות לסוכן: feature spec, bug investigation, security review, refactor, PR review, tool permissions, eval plan ו-production readiness.",
       exercise:
         "אותה משימה בדיוק: לכתוב גרסה לסוכן ג'וניור, מיד וסניור, ולהתאים scope, פיקוח ו-checkpoints.",
       understandingTest:
         "לדעת להבדיל בין תשובה שנשמעת חכמה לבין עבודה טכנית שאפשר לסמוך עליה.",
       managementLens:
-        "בכל משימה: context קצר, definition of done, constraints, tests, risks ו-what not to touch.",
+        "בכל משימה: context קצר, definition of done, constraints, permissions, allowed tools, tests, risks ו-what not to touch.",
       redFlags: [
         "rewrite מיותר כי הבקשה לא תחמה scope",
         "implementation בלי design pass",
@@ -617,9 +660,9 @@ const syllabusData = {
     },
     {
       id: "code-review",
-      weekLabel: "שבוע 15",
-      weekStart: 15,
-      weekEnd: 15,
+      weekLabel: "שבוע 16",
+      weekStart: 16,
+      weekEnd: 16,
       title: "קריאת קוד והערכת איכות",
       category: "Delivery והובלה",
       accent: "navy",
@@ -658,9 +701,9 @@ const syllabusData = {
     },
     {
       id: "capstone",
-      weekLabel: "שבוע 16",
-      weekStart: 16,
-      weekEnd: 16,
+      weekLabel: "שבוע 17",
+      weekStart: 17,
+      weekEnd: 17,
       title: "Capstone: הובלת פיצ'ר אמיתי מקצה לקצה",
       category: "Capstone",
       accent: "coral",
@@ -691,7 +734,7 @@ const syllabusData = {
       understandingTest:
         "להוביל פיצ'ר אמיתי לפרודקשן בצורה מבוקרת, מדויקת ורב-שכבתית.",
       managementLens:
-        "השלב שבו אתה מפסיק לחשוב כמו 'prompt operator' ומתחיל לעבוד כמו builder-operator.",
+        "השלב שבו אתה מפסיק לחשוב כמו מתפעל פרומפטים ומתחיל לעבוד כמו builder-operator.",
       redFlags: [
         "חוסר alignment בין layers",
         "אין rollout / rollback plan",
@@ -704,20 +747,21 @@ const syllabusData = {
 const weekPlan = [
   { week: 1, unitId: "world-map", focus: "מפת שכבות ומערכות" },
   { week: 2, unitId: "http-api", focus: "זרימות, API ו-errors" },
-  { week: 3, unitId: "data-modeling", focus: "ישויות, יחסים ו-constraints" },
-  { week: 4, unitId: "data-modeling", focus: "מחיקות, auditability ו-derived data" },
+  { week: 3, unitId: "data-modeling", focus: "SQL, entities, constraints ו-RLS" },
+  { week: 4, unitId: "data-modeling", focus: "Vector memory, RAG ו-agent state" },
   { week: 5, unitId: "business-logic", focus: "Business invariants" },
   { week: 6, unitId: "frontend-architecture", focus: "State, screens ו-failure modes" },
-  { week: 7, unitId: "backend-architecture", focus: "Services, handlers ו-data access" },
-  { week: 8, unitId: "security", focus: "Trust boundaries ואבטחה" },
-  { week: 9, unitId: "debugging", focus: "Root cause ו-regression thinking" },
-  { week: 10, unitId: "git-pr", focus: "PR discipline ו-rollbacks" },
-  { week: 11, unitId: "testing", focus: "Test matrix פרקטי" },
-  { week: 12, unitId: "performance", focus: "Scale, cost ו-maintenance" },
-  { week: 13, unitId: "agent-work", focus: "Scope נכון לסוכן" },
-  { week: 14, unitId: "agent-work", focus: "תבניות עבודה ו-hallucinations" },
-  { week: 15, unitId: "code-review", focus: "Code judgment וריוויו" },
-  { week: 16, unitId: "capstone", focus: "Capstone והובלת פיצ'ר" }
+  { week: 7, unitId: "design-templates-21st", focus: "21st, רפרנסים ושבירת UI גנרי" },
+  { week: 8, unitId: "backend-architecture", focus: "Services, handlers ו-data access" },
+  { week: 9, unitId: "security", focus: "Trust boundaries ואבטחה" },
+  { week: 10, unitId: "debugging", focus: "Root cause ו-regression thinking" },
+  { week: 11, unitId: "git-pr", focus: "PR discipline ו-rollbacks" },
+  { week: 12, unitId: "testing", focus: "Test matrix פרקטי" },
+  { week: 13, unitId: "performance", focus: "Scale, cost ו-maintenance" },
+  { week: 14, unitId: "agent-work", focus: "Scope נכון לסוכן" },
+  { week: 15, unitId: "agent-work", focus: "תבניות עבודה ו-hallucinations" },
+  { week: 16, unitId: "code-review", focus: "Code judgment וריוויו" },
+  { week: 17, unitId: "capstone", focus: "Capstone והובלת פיצ'ר" }
 ];
 
 const learningPageBlueprints = [
@@ -801,17 +845,18 @@ const STORAGE_KEYS = {
   designLabSession: "builder-course-design-lab-session-v1",
   selectedLessonId: "builder-course-selected-lesson-v1",
   themePreset: "builder-course-theme-preset-v1",
-  openSectionId: "builder-course-open-section-v1"
+  openSectionId: "builder-course-open-section-v1",
+  startWeek: "builder-course-start-week-v1",
+  visited: "builder-course-visited-v1"
 };
 
 const sectionLinks = [
-  { id: "design-lab", label: "מעבדה" },
-  { id: "overview", label: "תמונה" },
-  { id: "navigator", label: "יחידות" },
+  { id: "overview", label: "סקירה" },
+  { id: "navigator", label: "סילבוס" },
   { id: "lesson-studio", label: "לומדים" },
-  { id: "timeline", label: "שבועות" },
-  { id: "toolkit", label: "כלים" },
-  { id: "stages", label: "שלבים" }
+  { id: "timeline", label: "לוח זמנים" },
+  { id: "toolkit", label: "כלי למידה" },
+  { id: "stages", label: "יומן שלבים" }
 ];
 
 const themePresets = [
@@ -844,6 +889,8 @@ const state = {
   editingStageId: null,
   openSectionId: "",
   themePreset: loadStorage(STORAGE_KEYS.themePreset, "cursor"),
+  startWeek: loadStorage(STORAGE_KEYS.startWeek, null),
+  onboardingSelectedWeek: null,
   designLab: {
     slug: loadStorage(STORAGE_KEYS.designLabSlug, ""),
     sandboxId: String(savedDesignLabSession.sandboxId || ""),
@@ -851,7 +898,7 @@ const state = {
     sessionId: String(savedDesignLabSession.sessionId || ""),
     configured: false,
     isLoading: false,
-    statusMessage: "בודק חיבור ל־21ST...",
+    statusMessage: "בודק חיבור ל־21ST Design Lab...",
     response: "",
     usage: null
   }
@@ -864,27 +911,30 @@ document.addEventListener("DOMContentLoaded", () => {
   cacheElements();
   hydrateHero();
   populateStageSelects();
-  renderSectionNav();
   setupSectionPanels();
   bindEvents();
   renderAll();
   initHeroShader();
   hydrateDesignLab();
   syncScrollUi();
+  initAiDrawer();
+  if (elements.unitSearch) initSearchShortcut();
 });
 
 function cacheElements() {
   elements.goalStatement = document.querySelector("#goalStatement");
   elements.outcomesList = document.querySelector("#outcomesList");
   elements.sectionNav = document.querySelector("#sectionNav");
+  elements.pillSubnav = document.querySelector("#pillSubnav");
   elements.scrollProgress = document.querySelector("#scrollProgress");
-  elements.heroProofGrid = document.querySelector("#heroProofGrid");
-  elements.heroNextActions = document.querySelector("#heroNextActions");
+  elements.globalProgressFill = document.querySelector("#globalProgressFill");
+  elements.progressPill = document.querySelector("#progressPill");
+  elements.heroResumeCta = document.querySelector("#heroResumeCta");
+  elements.heroCompletedStat = document.querySelector("#heroCompletedStat");
+  elements.heroRhythm = document.querySelector("#heroRhythm");
+  elements.heroSyllabusDropdown = document.querySelector("#heroSyllabusDropdown");
   elements.heroShaderCanvas = document.querySelector("#heroShaderCanvas");
   elements.themePresetChips = document.querySelector("#themePresetChips");
-  elements.heroUnitPreviewList = document.querySelector("#heroUnitPreviewList");
-  elements.heroFocusCard = document.querySelector("#heroFocusCard");
-  elements.heroRoadmap = document.querySelector("#heroRoadmap");
   elements.statsGrid = document.querySelector("#statsGrid");
   elements.pillarsGrid = document.querySelector("#pillarsGrid");
   elements.filterChips = document.querySelector("#filterChips");
@@ -924,6 +974,11 @@ function cacheElements() {
   elements.anReset = document.querySelector("#anReset");
   elements.anSessionMeta = document.querySelector("#anSessionMeta");
   elements.anResponse = document.querySelector("#anResponse");
+  // 21ST Design Drawer
+  elements.aiFab = document.querySelector("#aiFab");
+  elements.aiDrawer = document.querySelector("#aiDrawer");
+  elements.aiDrawerOverlay = document.querySelector("#aiDrawerOverlay");
+  elements.aiDrawerClose = document.querySelector("#aiDrawerClose");
 }
 
 function bindEvents() {
@@ -938,24 +993,36 @@ function bindEvents() {
     });
   }
 
-  elements.sectionNav.addEventListener("click", (event) => {
-    const target = event.target.closest("[data-section-id]");
-    if (!target) {
-      return;
-    }
+  if (elements.sectionNav) {
+    elements.sectionNav.addEventListener("click", (event) => {
+      const target = event.target.closest("[data-section-id]");
+      if (!target) {
+        return;
+      }
 
-    event.preventDefault();
-    openSectionPanel(target.dataset.sectionId, true);
-  });
+      event.preventDefault();
+      openSectionPanel(target.dataset.sectionId, true);
+    });
+  }
 
-  elements.heroNextActions.addEventListener("click", (event) => {
-    const target = event.target.closest("[data-open-section]");
-    if (!target) {
-      return;
-    }
-
-    openSectionPanel(target.dataset.openSection, true);
-  });
+  // Pill subnav smooth scroll
+  if (elements.pillSubnav) {
+    elements.pillSubnav.addEventListener("click", (event) => {
+      const target = event.target.closest("[data-pill-section]");
+      if (!target) return;
+      event.preventDefault();
+      const sectionId = target.dataset.pillSection;
+      if (sectionId === "top") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        const section = document.getElementById(sectionId);
+        if (section) {
+          section.scrollIntoView({ behavior: "smooth", block: "start" });
+          openSectionPanel(sectionId, false);
+        }
+      }
+    });
+  }
 
   document.addEventListener("click", (event) => {
     const toggle = event.target.closest("[data-section-toggle]");
@@ -1053,36 +1120,6 @@ function bindEvents() {
     openSectionPanel("navigator", true);
   });
 
-  elements.heroUnitPreviewList.addEventListener("click", (event) => {
-    const target = event.target.closest("[data-unit-id]");
-    if (!target) {
-      return;
-    }
-
-    selectUnit(target.dataset.unitId);
-    openSectionPanel("navigator", true);
-  });
-
-  elements.heroRoadmap.addEventListener("click", (event) => {
-    const target = event.target.closest("[data-unit-id]");
-    if (!target) {
-      return;
-    }
-
-    selectUnit(target.dataset.unitId);
-    openSectionPanel("navigator", true);
-  });
-
-  elements.heroFocusCard.addEventListener("click", (event) => {
-    const target = event.target.closest("[data-unit-id]");
-    if (!target) {
-      return;
-    }
-
-    selectUnit(target.dataset.unitId);
-    openSectionPanel("navigator", true);
-  });
-
   elements.stageForm.addEventListener("submit", (event) => {
     event.preventDefault();
     saveStageFromForm();
@@ -1163,9 +1200,9 @@ function populateStageSelects() {
 
 function renderAll() {
   renderThemePresets();
-  renderHeroNextActions();
-  renderHeroProof();
-  renderHeroShowcase();
+  renderHeroCta();
+  renderHeroRhythm();
+  renderHeroSyllabusDropdown();
   renderStats();
   renderPillars();
   renderFilterChips();
@@ -1181,6 +1218,7 @@ function renderAll() {
   renderStages();
   renderDesignLabSessionMeta();
   renderDesignLabResponse();
+  renderProgressPill();
   applySectionPanelState();
   syncScrollUi();
 }
@@ -1211,230 +1249,130 @@ function renderThemePresets() {
   document.body.dataset.theme = state.themePreset;
 }
 
-function renderHeroNextActions() {
-  const nextUnit = syllabusData.units.find((unit) => !state.unitProgress[unit.id]) || getSelectedUnit();
-  const completedUnits = Object.values(state.unitProgress).filter(Boolean).length;
+function renderHeroCta() {
+  // Find next incomplete unit
+  const nextUnit = syllabusData.units.find((unit) => !state.unitProgress[unit.id]) || syllabusData.units[0];
+  const url = buildUnitPageUrl(nextUnit.id, "overview");
 
-  const actions = [
-    {
-      sectionId: "navigator",
-      label: "השלב הבא",
-      note: shortenLabel(nextUnit.title, 22),
-      meta: nextUnit.weekLabel
-    },
-    {
-      sectionId: "timeline",
-      label: "מפת השבועות",
-      note: `${completedUnits}/${syllabusData.units.length} הושלמו`,
-      meta: `${syllabusData.durationWeeks} שבועות`
-    },
-    {
-      sectionId: "stages",
-      label: "הלוג האישי",
-      note: state.stages.length ? `${state.stages.length} שלבים שמורים` : "עוד אין שלבים",
-      meta: "Build log"
-    },
-    {
-      sectionId: "design-lab",
-      label: "השראה מ-21ST",
-      note: state.designLab.configured ? "החיבור מוכן" : "ממתין למפתח",
-      meta: "Inspiration"
-    }
-  ];
+  if (elements.heroResumeCta) {
+    elements.heroResumeCta.href = url;
+    elements.heroResumeCta.textContent = `המשך ללמוד ←`;
+  }
 
-  elements.heroNextActions.innerHTML = actions
-    .map(
-      (action) => `
-        <button type="button" class="next-action-card" data-open-section="${action.sectionId}">
-          <span class="next-action-meta">${escapeHtml(action.meta)}</span>
-          <strong>${escapeHtml(action.label)}</strong>
-          <span class="next-action-note">${escapeHtml(action.note)}</span>
-        </button>
-      `
-    )
+  // Update completed stat
+  const completedCount = Object.values(state.unitProgress).filter(Boolean).length;
+  if (elements.heroCompletedStat) {
+    const strong = elements.heroCompletedStat.querySelector("strong");
+    if (strong) strong.textContent = String(completedCount);
+  }
+}
+
+function renderHeroSyllabusDropdown() {
+  if (!elements.heroSyllabusDropdown) return;
+
+  const catalog = getUnitPagesCatalog();
+  const nextUnit = syllabusData.units.find((unit) => !state.unitProgress[unit.id]) || syllabusData.units[0];
+  const items = syllabusData.units
+    .map((unit) => {
+      const unitPage = catalog ? catalog.getUnitPage(unit.id) : null;
+      const isSkeleton = Boolean(
+        unitPage?.quickFacts?.some((fact) => ["Code", "Soon"].includes(String(fact.value)))
+      );
+      const isCompleted = Boolean(state.unitProgress[unit.id]);
+      const isNext = unit.id === nextUnit.id;
+      const status = isCompleted ? "הושלמה" : isSkeleton ? "שלד להשלמה" : "יחידת עומק";
+      const statusClass = isCompleted ? "done" : isSkeleton ? "draft" : "ready";
+
+      return `
+        <a class="hero-syllabus-item ${isNext ? "is-next" : ""}" href="${escapeAttribute(buildUnitPageUrl(unit.id, "overview"))}">
+          <span class="hero-syllabus-week">${escapeHtml(unit.weekLabel)}</span>
+          <span class="hero-syllabus-copy">
+            <strong>${escapeHtml(unit.title)}</strong>
+            <span>${escapeHtml(unit.summary)}</span>
+          </span>
+          <span class="hero-syllabus-status ${statusClass}">${escapeHtml(status)}</span>
+        </a>
+      `;
+    })
+    .join("");
+
+  elements.heroSyllabusDropdown.innerHTML = `
+    <summary>
+      <span>סילבוס מלא</span>
+      <strong>${syllabusData.units.length} יחידות עם הסבר קצר לכל שלב</strong>
+    </summary>
+    <div class="hero-syllabus-menu">
+      <div class="hero-syllabus-case">
+        <span>קייס מתגלגל</span>
+        <strong>${escapeHtml(syllabusData.runningCase.title)}</strong>
+        <p>${escapeHtml(syllabusData.runningCase.description)}</p>
+      </div>
+      <div class="hero-syllabus-list">
+        ${items}
+      </div>
+    </div>
+  `;
+}
+
+function renderHeroRhythm() {
+  if (!elements.heroRhythm || !syllabusData.weeklyRhythm) return;
+
+  elements.heroRhythm.innerHTML = syllabusData.weeklyRhythm
+    .map((step, index) => `
+      <div class="hero-rhythm-step">
+        <span class="hero-rhythm-step-num">${index + 1}</span>
+        <strong>${escapeHtml(step.action || step.title || step)}</strong>
+        ${step.detail || step.note ? `<p>${escapeHtml(step.detail || step.note)}</p>` : ""}
+      </div>
+    `)
     .join("");
 }
 
 function renderSectionNav() {
-  elements.sectionNav.innerHTML = sectionLinks
-    .map(
-      (section) => `
-        <a href="#${section.id}" class="nav-chip" data-section-id="${section.id}">
-          ${escapeHtml(section.label)}
-        </a>
-      `
-    )
-    .join("");
-}
-
-function setupSectionPanels() {
-  sectionLinks.forEach((sectionConfig) => {
-    const section = document.getElementById(sectionConfig.id);
-    const heading = section?.querySelector(".section-heading");
-
-    if (!section || !heading || section.querySelector(".section-content")) {
-      return;
-    }
-
-    section.classList.add("section-collapsible");
-
-    const toggle = document.createElement("button");
-    toggle.type = "button";
-    toggle.className = "section-toggle";
-    toggle.dataset.sectionToggle = sectionConfig.id;
-    toggle.textContent = "פתח";
-    heading.append(toggle);
-
-    const content = document.createElement("div");
-    content.className = "section-content";
-
-    while (heading.nextSibling) {
-      content.append(heading.nextSibling);
-    }
-
-    section.append(content);
-  });
-}
-
-function applySectionPanelState() {
-  sectionLinks.forEach((sectionConfig) => {
-    const section = document.getElementById(sectionConfig.id);
-    const content = section?.querySelector(".section-content");
-    const toggle = section?.querySelector(".section-toggle");
-    const isOpen = sectionConfig.id === state.openSectionId;
-
-    if (!section || !content || !toggle) {
-      return;
-    }
-
-    section.classList.toggle("is-open", isOpen);
-    content.hidden = !isOpen;
-    toggle.textContent = isOpen ? "סגור" : "פתח";
-    toggle.setAttribute("aria-expanded", String(isOpen));
-  });
-}
-
-function toggleSectionPanel(sectionId) {
-  const nextOpenSectionId = state.openSectionId === sectionId ? "" : sectionId;
-  state.openSectionId = nextOpenSectionId;
-  saveStorage(STORAGE_KEYS.openSectionId, nextOpenSectionId);
-  applySectionPanelState();
-  syncScrollUi();
-}
-
-function openSectionPanel(sectionId, shouldScroll = false) {
-  state.openSectionId = sectionId;
-  saveStorage(STORAGE_KEYS.openSectionId, sectionId);
-  applySectionPanelState();
-  syncScrollUi();
-
-  if (shouldScroll) {
-    document.getElementById(sectionId)?.scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
+  // Legacy - section nav is hidden, pill subnav is used instead
+  if (elements.sectionNav) {
+    elements.sectionNav.innerHTML = "";
   }
 }
 
-function renderHeroProof() {
-  const completedUnits = Object.values(state.unitProgress).filter(Boolean).length;
-  const proofItems = [
-    { value: syllabusData.durationWeeks, label: "שבועות" },
-    { value: syllabusData.units.length, label: "יחידות" },
-    { value: completedUnits, label: "הושלמו" }
-  ];
-
-  elements.heroProofGrid.innerHTML = proofItems
-    .map(
-      (item) => `
-        <article class="proof-card">
-          <strong class="proof-value">${escapeHtml(String(item.value))}</strong>
-          <span class="proof-label">${escapeHtml(item.label)}</span>
-        </article>
-      `
-    )
-    .join("");
+function setupSectionPanels() {
+  // The home screen is intentionally minimal. Full dashboard sections stay in the DOM for later work.
 }
 
-function renderHeroShowcase() {
-  const selectedUnit = getSelectedUnit();
-  const spotlightUnits = [
-    selectedUnit,
-    ...syllabusData.units.filter((unit) => unit.id !== selectedUnit.id).slice(0, 2)
-  ];
-  const isCompleted = Boolean(state.unitProgress[selectedUnit.id]);
+function applySectionPanelState() {
+  // No-op: dashboard sections are hidden from the current minimal home experience.
+}
 
-  elements.heroUnitPreviewList.innerHTML = spotlightUnits
-    .map((unit) => {
-      const isSelected = unit.id === selectedUnit.id;
+function toggleSectionPanel(sectionId) {
+  openSectionPanel(sectionId, true);
+}
 
-      return `
-        <button
-          type="button"
-          class="hero-mini-unit accent-${unit.accent} ${isSelected ? "active" : ""}"
-          data-unit-id="${unit.id}"
-        >
-          <span class="hero-mini-unit-week">${escapeHtml(unit.weekLabel)}</span>
-          <strong>${escapeHtml(shortenLabel(unit.title, 24))}</strong>
-        </button>
-      `;
-    })
-    .join("");
-
-  elements.heroFocusCard.innerHTML = `
-    <button type="button" class="hero-focus-entry accent-${selectedUnit.accent}" data-unit-id="${selectedUnit.id}">
-      <div class="hero-focus-head">
-        <span class="hero-focus-week">${escapeHtml(selectedUnit.weekLabel)}</span>
-        <span class="hero-focus-status ${isCompleted ? "is-done" : ""}">
-          ${isCompleted ? "הושלם" : "פתוח עכשיו"}
-        </span>
-      </div>
-      <strong class="hero-focus-title">${escapeHtml(shortenLabel(selectedUnit.title, 38))}</strong>
-      <p class="hero-focus-summary">${escapeHtml(shortenLabel(selectedUnit.summary, 112))}</p>
-      <div class="detail-meta">
-        <span class="meta-pill">${escapeHtml(selectedUnit.category)}</span>
-        <span class="meta-pill">${selectedUnit.topics.length} נושאים</span>
-        <span class="meta-pill">${selectedUnit.weekStart === selectedUnit.weekEnd ? "שבוע אחד" : "שני שבועות"}</span>
-      </div>
-    </button>
-  `;
-
-  elements.heroRoadmap.innerHTML = weekPlan
-    .slice(0, 6)
-    .map((item) => {
-      const unit = syllabusData.units.find((entry) => entry.id === item.unitId);
-      const isSelected = item.unitId === selectedUnit.id;
-      const isCompleted = Boolean(state.unitProgress[item.unitId]);
-
-      return `
-        <button
-          type="button"
-          class="hero-roadmap-node ${isSelected ? "active" : ""} ${isCompleted ? "completed" : ""}"
-          data-unit-id="${item.unitId}"
-          title="${escapeHtml(unit ? unit.title : item.focus)}"
-        >
-          <span class="hero-roadmap-week">${item.week}</span>
-          <strong>${escapeHtml(shortenLabel(item.focus, 18))}</strong>
-        </button>
-      `;
-    })
-    .join("");
+function openSectionPanel(sectionId, shouldScroll = false) {
+  if (shouldScroll) {
+    const el = document.getElementById(sectionId);
+    if (el) {
+      const topbarH = document.querySelector(".topbar")?.offsetHeight || 0;
+      const subnavH = document.querySelector(".pill-subnav")?.offsetHeight || 0;
+      const offset = el.getBoundingClientRect().top + window.scrollY - topbarH - subnavH - 12;
+      window.scrollTo({ top: offset, behavior: "smooth" });
+    }
+  }
 }
 
 function renderStats() {
   const completedUnits = Object.values(state.unitProgress).filter(Boolean).length;
   const doneStages = state.stages.filter((stage) => stage.status === "done").length;
   const stats = [
-    { label: "יחידות במסלול", value: syllabusData.units.length },
-    { label: "שבועות במסלול", value: syllabusData.durationWeeks },
     { label: "יחידות שסומנו כהושלמו", value: completedUnits },
-    { label: "שלבים אישיים שסומנו הושלמו", value: doneStages }
+    { label: "שבועות במסלול", value: syllabusData.durationWeeks },
+    { label: "יחידות במסלול", value: syllabusData.units.length },
+    { label: "שלבים אישיים הושלמו", value: doneStages }
   ];
 
   elements.statsGrid.innerHTML = stats
     .map(
       (item) => `
-        <article class="stat-card">
+        <article class="bento-stat-card">
           <span class="stat-label">${escapeHtml(item.label)}</span>
           <strong class="stat-value">${escapeHtml(String(item.value))}</strong>
         </article>
@@ -1444,10 +1382,11 @@ function renderStats() {
 }
 
 function renderPillars() {
+  const pillarAccents = ["teal", "coral", "gold", "navy", "olive"];
   elements.pillarsGrid.innerHTML = syllabusData.pillars
     .map(
-      (pillar) => `
-        <article class="pillar-card">
+      (pillar, index) => `
+        <article class="bento-pillar-card accent-${pillarAccents[index % pillarAccents.length]}">
           <strong>${escapeHtml(pillar.title)}</strong>
           <p>${escapeHtml(pillar.description)}</p>
         </article>
@@ -1492,10 +1431,22 @@ function renderUnits() {
     return;
   }
 
-  elements.unitsList.innerHTML = filteredUnits
+  const html = filteredUnits
     .map((unit) => {
       const isSelected = unit.id === state.selectedUnitId;
       const isCompleted = Boolean(state.unitProgress[unit.id]);
+      const weekText = unit.weekStart === unit.weekEnd ? `שבוע ${unit.weekStart}` : `שבועות ${unit.weekStart}–${unit.weekEnd}`;
+      const titleHtml = state.searchTerm ? highlightText(escapeHtml(unit.title), escapeHtml(state.searchTerm)) : escapeHtml(unit.title);
+
+      // Circle progress indicator for completed units
+      const progressRing = isCompleted ? `
+        <svg class="unit-progress-ring" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="14" cy="14" r="11" stroke="rgba(44,123,88,0.18)" stroke-width="2.5"/>
+          <circle cx="14" cy="14" r="11" stroke="#2c7b58" stroke-width="2.5" stroke-dasharray="69.1" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 14 14)"/>
+          <path d="M9 14l3 3 7-7" stroke="#2c7b58" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      ` : "";
+
       return `
         <button
           type="button"
@@ -1504,23 +1455,32 @@ function renderUnits() {
         >
           <div class="unit-card-head">
             <div>
-              <span class="meta-pill">${escapeHtml(unit.weekLabel)}</span>
-              <h4>${escapeHtml(unit.title)}</h4>
+              <span class="unit-card-week-badge">${escapeHtml(weekText)}</span>
+              <h4>${titleHtml}</h4>
             </div>
-            <span class="status-pill ${isCompleted ? "status-done" : "status-planned"}">
-              ${isCompleted ? "הושלמה" : "פתוחה"}
-            </span>
+            ${progressRing || `<span class="status-pill ${isCompleted ? "status-done" : "status-planned"}">${isCompleted ? "הושלמה" : "פתוחה"}</span>`}
           </div>
           <div class="unit-meta">
             <span class="meta-pill">${escapeHtml(unit.category)}</span>
             <span class="meta-pill">${unit.topics.length} נושאים</span>
-            <span class="meta-pill">${unit.weekStart === unit.weekEnd ? `שבוע ${unit.weekStart}` : `שבועות ${unit.weekStart}-${unit.weekEnd}`}</span>
           </div>
-          <span class="unit-hint">לחץ כדי לחשוף מטרות, תוצר ודגלים אדומים</span>
+          <span class="unit-hint">לחץ לפרטים מלאים</span>
         </button>
       `;
     })
     .join("");
+
+  elements.unitsList.innerHTML = html;
+}
+
+function highlightText(text, term) {
+  if (!term) return text;
+  try {
+    const escapedTerm = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return text.replace(new RegExp(`(${escapedTerm})`, "gi"), "<mark>$1</mark>");
+  } catch {
+    return text;
+  }
 }
 
 function renderSelectedUnit() {
@@ -1585,11 +1545,11 @@ function renderSelectedUnit() {
     ${renderLearningLaunchpad(unit)}
 
     <div class="detail-stack">
-      ${renderDisclosureCard("מה המטרות כאן", renderList(unit.goals, "bullet-list"))}
+      ${renderDisclosureCard("מה המטרות כאן", renderList(unit.goals, "bullet-list"), true)}
       ${renderDisclosureCard(`אילו נושאים נלמדים (${unit.topics.length})`, renderList(unit.topics, "bullet-list"))}
       ${renderDisclosureCard("מה התוצר השבועי", `<p>${escapeHtml(unit.deliverable)}</p>`, true)}
       ${renderDisclosureCard("מה התרגיל המרכזי", `<p>${escapeHtml(unit.exercise)}</p>`)}
-      ${renderDisclosureCard("איך תבדוק שהבנת", `<p>${escapeHtml(unit.understandingTest)}</p>`, true)}
+      ${renderDisclosureCard("איך תבדוק שהבנת", `<p>${escapeHtml(unit.understandingTest)}</p>`)}
       ${renderDisclosureCard("מה הזווית הניהולית מול סוכן", `<p>${escapeHtml(unit.managementLens)}</p>`)}
       ${renderDisclosureCard("דגלים אדומים שכדאי לזהות", renderList(unit.redFlags, "bullet-list"))}
     </div>
@@ -2002,10 +1962,13 @@ function renderLearningPageVisual(page) {
 }
 
 function renderTimeline() {
+  const currentWeek = state.startWeek;
+
   elements.timelineGrid.innerHTML = weekPlan
     .map((item) => {
       const unit = syllabusData.units.find((entry) => entry.id === item.unitId);
       const isCompleted = Boolean(state.unitProgress[item.unitId]);
+      const isCurrentWeek = currentWeek !== null && item.week === currentWeek;
       if (!unit) {
         return "";
       }
@@ -2013,10 +1976,10 @@ function renderTimeline() {
       return `
         <button
           type="button"
-          class="timeline-card accent-${unit.accent} ${isCompleted ? "completed" : ""}"
+          class="timeline-card accent-${unit.accent} ${isCompleted ? "completed" : ""} ${isCurrentWeek ? "is-current-week" : ""}"
           data-unit-id="${unit.id}"
         >
-          <span class="timeline-week">שבוע ${item.week}</span>
+          <span class="timeline-week">שבוע ${item.week}${isCurrentWeek ? " ← אתה כאן" : ""}</span>
           <div class="timeline-card-head">
             <div>
               <h3>${escapeHtml(unit.title)}</h3>
@@ -2107,11 +2070,13 @@ function renderStageSummary() {
 function renderStages() {
   if (!state.stages.length) {
     elements.stagesList.innerHTML = `
-      <div class="empty-state">
-        <div>
-          <h3>עדיין אין שלבים שמורים</h3>
-          <p>השתמש בטופס כדי לשמור שלב ראשון, או משוך יחידה קיימת לטופס בלחיצה אחת.</p>
-        </div>
+      <div class="stages-empty-state">
+        <div class="stages-empty-icon">📋</div>
+        <h3>טרם תיעדת שלבים – זה הזמן להתחיל</h3>
+        <p>השתמש בטופס כדי לשמור שלב ראשון, או משוך יחידה קיימת לטופס בלחיצה אחת.</p>
+        <button type="button" class="button button-primary" onclick="document.querySelector('#stageTitle').focus(); document.querySelector('#stageTitle').scrollIntoView({behavior:'smooth'});">
+          הוסף שלב ראשון
+        </button>
       </div>
     `;
     return;
@@ -2121,47 +2086,95 @@ function renderStages() {
     second.updatedAt.localeCompare(first.updatedAt)
   );
 
-  elements.stagesList.innerHTML = sortedStages
-    .map((stage) => {
-      const unit = syllabusData.units.find((entry) => entry.id === stage.unitId);
-      const statusMeta = stageStatusMeta[stage.status] || stageStatusMeta.planned;
-      const typeMeta = stageTypeMeta[stage.type] || stageTypeMeta.note;
-      const notes = stage.notes ? escapeHtml(stage.notes).replace(/\n/g, "<br>") : "אין פירוט עדיין.";
+  // Group by week
+  const weekGroups = new Map();
+  const noWeekGroup = [];
 
-      return `
-        <article class="stage-card">
-          <div class="stage-card-head">
-            <div>
-              <h3>${escapeHtml(stage.title)}</h3>
-              <div class="stage-meta">
-                <span class="status-pill ${statusMeta.className}">${escapeHtml(statusMeta.label)}</span>
-                <span class="type-pill ${typeMeta.className}">${escapeHtml(typeMeta.label)}</span>
-                ${stage.week ? `<span class="meta-pill">שבוע ${stage.week}</span>` : ""}
-                ${unit ? `<span class="meta-pill">${escapeHtml(unit.title)}</span>` : ""}
-              </div>
+  sortedStages.forEach((stage) => {
+    if (stage.week) {
+      const key = stage.week;
+      if (!weekGroups.has(key)) weekGroups.set(key, []);
+      weekGroups.get(key).push(stage);
+    } else {
+      noWeekGroup.push(stage);
+    }
+  });
+
+  const sortedWeeks = [...weekGroups.keys()].sort((a, b) => b - a);
+
+  function renderStageCard(stage) {
+    const unit = syllabusData.units.find((entry) => entry.id === stage.unitId);
+    const statusMeta = stageStatusMeta[stage.status] || stageStatusMeta.planned;
+    const typeMeta = stageTypeMeta[stage.type] || stageTypeMeta.note;
+    const notes = stage.notes ? escapeHtml(stage.notes).replace(/\n/g, "<br>") : "אין פירוט עדיין.";
+
+    return `
+      <article class="stage-card">
+        <div class="stage-card-head">
+          <div>
+            <h3>${escapeHtml(stage.title)}</h3>
+            <div class="stage-meta">
+              <span class="status-pill ${statusMeta.className}">${escapeHtml(statusMeta.label)}</span>
+              <span class="type-pill ${typeMeta.className}">${escapeHtml(typeMeta.label)}</span>
+              ${unit ? `<span class="meta-pill">${escapeHtml(shortenLabel(unit.title, 22))}</span>` : ""}
             </div>
-            <span class="panel-label">${formatDate(stage.updatedAt)}</span>
           </div>
-          ${
-            stage.notes
-              ? renderDisclosureCard("פירוט השלב", `<p>${notes}</p>`, false, "inline")
-              : '<p class="inline-note">אין פירוט עדיין.</p>'
-          }
-          <div class="stage-actions">
-            <button type="button" class="mini-button" data-stage-action="edit" data-stage-id="${stage.id}">
-              עריכה
-            </button>
-            <button type="button" class="mini-button" data-stage-action="toggle-done" data-stage-id="${stage.id}">
-              ${stage.status === "done" ? "החזר לפעיל" : "סמן כהושלם"}
-            </button>
-            <button type="button" class="mini-button" data-stage-action="delete" data-stage-id="${stage.id}">
-              מחק
-            </button>
-          </div>
-        </article>
-      `;
-    })
-    .join("");
+          <span class="panel-label">${formatDate(stage.updatedAt)}</span>
+        </div>
+        ${
+          stage.notes
+            ? renderDisclosureCard("פירוט השלב", `<p>${notes}</p>`, false, "inline")
+            : '<p class="inline-note">אין פירוט עדיין.</p>'
+        }
+        <div class="stage-actions">
+          <button type="button" class="mini-button" data-stage-action="edit" data-stage-id="${stage.id}">
+            עריכה
+          </button>
+          <button type="button" class="mini-button" data-stage-action="toggle-done" data-stage-id="${stage.id}">
+            ${stage.status === "done" ? "החזר לפעיל" : "סמן כהושלם"}
+          </button>
+          <button type="button" class="mini-button" data-stage-action="delete" data-stage-id="${stage.id}">
+            מחק
+          </button>
+        </div>
+      </article>
+    `;
+  }
+
+  let html = "";
+
+  // Render week groups
+  sortedWeeks.forEach((week) => {
+    const stages = weekGroups.get(week);
+    html += `
+      <div class="stage-week-group">
+        <button type="button" class="stage-week-group-header" onclick="this.nextElementSibling.classList.toggle('collapsed')">
+          <strong>שבוע ${week}</strong>
+          <span class="count-pill">${stages.length} שלבים</span>
+        </button>
+        <div class="stage-week-group-body">
+          ${stages.map(renderStageCard).join("")}
+        </div>
+      </div>
+    `;
+  });
+
+  // Render no-week stages
+  if (noWeekGroup.length) {
+    html += `
+      <div class="stage-week-group">
+        <button type="button" class="stage-week-group-header" onclick="this.nextElementSibling.classList.toggle('collapsed')">
+          <strong>ללא שבוע</strong>
+          <span class="count-pill">${noWeekGroup.length} שלבים</span>
+        </button>
+        <div class="stage-week-group-body">
+          ${noWeekGroup.map(renderStageCard).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  elements.stagesList.innerHTML = html;
 }
 
 async function hydrateDesignLab() {
@@ -2171,7 +2184,7 @@ async function hydrateDesignLab() {
 
   elements.anPrompt.value =
     elements.anPrompt.value ||
-    "הצע 3 כיווני redesign לעמוד הנחיתה של הסילבוס בעברית RTL, עם hero editorial, proof strip, בנטו עדין ו-progressive disclosure.";
+    "מצא 3 כיווני עיצוב מתוך שפת הטמפלייטים של 21ST לעמוד קורס RTL בעברית: hero מינימלי, CTA ברור, dropdown סילבוס והיררכיה נקייה.";
 
   try {
     const response = await fetch("/api/an/status");
@@ -2185,14 +2198,14 @@ async function hydrateDesignLab() {
     }
 
     state.designLab.statusMessage = result.configured
-      ? "השרת מחובר ל־21ST. חסר רק agent slug פעיל."
-      : "השרת המקומי עדיין לא קיבל AN_API_KEY.";
+      ? "השרת מחובר ל־21ST. חסר רק slug של מקור עיצוב פעיל."
+      : "השרת המקומי עדיין לא קיבל AN_API_KEY או API_KEY_21ST.";
   } catch (error) {
     state.designLab.configured = false;
     state.designLab.statusMessage = "לא הצלחתי לבדוק את חיבור ה־21ST מהשרת.";
   }
 
-  renderHeroNextActions();
+  renderHeroCta();
   renderDesignLabSessionMeta();
   renderDesignLabResponse();
 }
@@ -2205,22 +2218,22 @@ async function submitDesignLabPrompt() {
   saveStorage(STORAGE_KEYS.designLabSlug, slug);
 
   if (!slug) {
-    state.designLab.statusMessage = "צריך להזין agent slug כדי לדבר עם 21ST.";
-    renderHeroNextActions();
+    state.designLab.statusMessage = "צריך להזין slug של 21ST כדי לשלוח בריף עיצובי.";
+    renderHeroCta();
     renderDesignLabSessionMeta();
     return;
   }
 
   if (!message) {
-    state.designLab.statusMessage = "צריך לכתוב פרומפט לפני השליחה.";
-    renderHeroNextActions();
+    state.designLab.statusMessage = "צריך לכתוב בריף עיצובי לפני השליחה.";
+    renderHeroCta();
     renderDesignLabSessionMeta();
     return;
   }
 
   state.designLab.isLoading = true;
   state.designLab.statusMessage = "שולח ל־21ST...";
-  renderHeroNextActions();
+  renderHeroCta();
   renderDesignLabSessionMeta();
   renderDesignLabResponse();
 
@@ -2249,7 +2262,7 @@ async function submitDesignLabPrompt() {
     state.designLab.threadId = String(result.threadId || state.designLab.threadId || "");
     state.designLab.sessionId = String(result.sessionId || state.designLab.sessionId || "");
     state.designLab.usage = result.usage || null;
-    state.designLab.statusMessage = "התקבלה תשובה מהסוכן.";
+    state.designLab.statusMessage = "התקבלה תשובת עיצוב מ־21ST.";
 
     saveStorage(STORAGE_KEYS.designLabSession, {
       sandboxId: state.designLab.sandboxId,
@@ -2261,7 +2274,7 @@ async function submitDesignLabPrompt() {
       error instanceof Error ? error.message : "משהו השתבש בזמן הקריאה ל־21ST.";
   } finally {
     state.designLab.isLoading = false;
-    renderHeroNextActions();
+    renderHeroCta();
     renderDesignLabSessionMeta();
     renderDesignLabResponse();
   }
@@ -2278,7 +2291,7 @@ function resetDesignLabSession() {
     : "ה־session אופס, אבל השרת עדיין לא מחובר ל־21ST.";
 
   localStorage.removeItem(STORAGE_KEYS.designLabSession);
-  renderHeroNextActions();
+  renderHeroCta();
   renderDesignLabSessionMeta();
   renderDesignLabResponse();
 }
@@ -2326,7 +2339,7 @@ function renderDesignLabResponse() {
       <div class="empty-state">
         <div>
           <h3>עדיין אין תגובה</h3>
-          <p>הזן slug, כתוב בריף קצר ושלח. התשובה תופיע כאן.</p>
+          <p>הזן slug, כתוב בריף עיצובי קצר ושלח. ההשראה או ההכוונה תופיע כאן.</p>
         </div>
       </div>
     `;
@@ -2336,7 +2349,7 @@ function renderDesignLabResponse() {
   elements.anResponse.innerHTML = `
     <article class="lab-response-shell">
       <div class="chat-bubble chat-bubble-agent">
-        <span class="chat-role">21ST Agent</span>
+        <span class="chat-role">21ST Design</span>
         <pre class="lab-response-text">${escapeHtml(state.designLab.response)}</pre>
       </div>
     </article>
@@ -2356,23 +2369,38 @@ function setThemePreset(presetId) {
 function syncScrollUi() {
   const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
   const progress = maxScroll > 0 ? Math.min(1, window.scrollY / maxScroll) : 0;
-  elements.scrollProgress.style.width = `${progress * 100}%`;
 
-  const activeOffset = window.scrollY + 180;
-  let activeSectionId = state.openSectionId || sectionLinks[0].id;
+  if (elements.scrollProgress) {
+    elements.scrollProgress.style.width = `${progress * 100}%`;
+  }
+  if (elements.globalProgressFill) {
+    elements.globalProgressFill.style.width = `${progress * 100}%`;
+  }
 
-  if (!state.openSectionId) {
-    sectionLinks.forEach((section) => {
-      const node = document.getElementById(section.id);
-      if (node && node.offsetTop <= activeOffset) {
-        activeSectionId = section.id;
-      }
+  const activeOffset = window.scrollY + 200;
+  let activePillSection = "top";
+
+  // Check which section is in view for pill nav
+  const pillSections = ["overview", "navigator", "timeline", "toolkit", "stages"];
+  pillSections.forEach((sectionId) => {
+    const node = document.getElementById(sectionId);
+    if (node && node.offsetTop <= activeOffset) {
+      activePillSection = sectionId;
+    }
+  });
+
+  if (elements.pillSubnav) {
+    elements.pillSubnav.querySelectorAll("[data-pill-section]").forEach((link) => {
+      link.classList.toggle("is-active", link.dataset.pillSection === activePillSection);
     });
   }
 
-  elements.sectionNav.querySelectorAll("[data-section-id]").forEach((link) => {
-    link.classList.toggle("is-active", link.dataset.sectionId === activeSectionId);
-  });
+  if (elements.sectionNav) {
+    const activeSectionId = state.openSectionId || sectionLinks[0]?.id;
+    elements.sectionNav.querySelectorAll("[data-section-id]").forEach((link) => {
+      link.classList.toggle("is-active", link.dataset.sectionId === activeSectionId);
+    });
+  }
 }
 
 function saveStageFromForm() {
@@ -2409,10 +2437,10 @@ function saveStageFromForm() {
 
   persistStages();
   resetStageForm();
-  renderHeroProof();
   renderStats();
   renderStageSummary();
   renderStages();
+  renderProgressPill();
 }
 
 function editStage(stageId) {
@@ -2449,7 +2477,6 @@ function toggleStageDone(stageId) {
   });
 
   persistStages();
-  renderHeroProof();
   renderStats();
   renderStageSummary();
   renderStages();
@@ -2468,7 +2495,6 @@ function deleteStage(stageId) {
     resetStageForm();
   }
 
-  renderHeroProof();
   renderStats();
   renderStageSummary();
   renderStages();
@@ -2532,7 +2558,6 @@ function importStagesFromJson(event) {
       normalized.forEach((stage) => merged.set(stage.id, stage));
       state.stages = Array.from(merged.values());
       persistStages();
-      renderHeroProof();
       renderStats();
       renderStageSummary();
       renderStages();
@@ -2553,8 +2578,7 @@ function toggleUnitComplete(unitId) {
   };
 
   saveStorage(STORAGE_KEYS.unitProgress, state.unitProgress);
-  renderHeroProof();
-  renderHeroShowcase();
+  renderHeroCta();
   renderStats();
   renderUnits();
   renderSelectedUnit();
@@ -2564,7 +2588,6 @@ function toggleUnitComplete(unitId) {
 function selectUnit(unitId) {
   state.selectedUnitId = unitId;
   saveStorage(STORAGE_KEYS.selectedUnitId, unitId);
-  renderHeroShowcase();
   renderUnits();
   renderSelectedUnit();
   renderLessonStudio();
@@ -2588,6 +2611,10 @@ function getFilteredUnits() {
       unit.category,
       unit.summary,
       unit.weekLabel,
+      unit.deliverable || "",
+      unit.exercise || "",
+      unit.understandingTest || "",
+      unit.managementLens || "",
       ...unit.topics,
       ...unit.goals,
       ...unit.redFlags
@@ -2679,6 +2706,88 @@ function renderDisclosureCard(title, bodyHtml, isOpen = false, variant = "unit")
       </div>
     </details>
   `;
+}
+
+function renderProgressPill() {
+  if (!elements.progressPill) return;
+  const completedUnits = Object.values(state.unitProgress).filter(Boolean).length;
+  const total = syllabusData.units.length;
+  elements.progressPill.innerHTML = `
+    <span class="progress-pill-dot"></span>
+    ${completedUnits} מתוך ${total} יחידות הושלמו
+  `;
+}
+
+function initAiDrawer() {
+  if (!elements.aiFab || !elements.aiDrawer) return;
+
+  elements.aiFab.addEventListener("click", openAiDrawer);
+
+  if (elements.aiDrawerClose) {
+    elements.aiDrawerClose.addEventListener("click", closeAiDrawer);
+  }
+
+  if (elements.aiDrawerOverlay) {
+    elements.aiDrawerOverlay.addEventListener("click", closeAiDrawer);
+  }
+
+  // Escape key
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && elements.aiDrawer && elements.aiDrawer.classList.contains("is-open")) {
+      closeAiDrawer();
+    }
+  });
+}
+
+function openAiDrawer() {
+  if (!elements.aiDrawer) return;
+  elements.aiDrawer.classList.remove("hidden");
+  elements.aiDrawer.classList.add("is-open");
+  elements.aiDrawer.removeAttribute("aria-hidden");
+  if (elements.aiDrawerOverlay) {
+    elements.aiDrawerOverlay.classList.remove("hidden");
+    elements.aiDrawerOverlay.removeAttribute("aria-hidden");
+  }
+  // Re-render design lab in drawer context
+  renderDesignLabSessionMeta();
+  renderDesignLabResponse();
+}
+
+function closeAiDrawer() {
+  if (!elements.aiDrawer) return;
+  elements.aiDrawer.classList.remove("is-open");
+  if (elements.aiDrawerOverlay) {
+    elements.aiDrawerOverlay.classList.add("hidden");
+  }
+  // Delay hiding to allow transition
+  setTimeout(() => {
+    elements.aiDrawer.classList.add("hidden");
+  }, 320);
+}
+
+function initSearchShortcut() {
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "/" && !isInputFocused()) {
+      event.preventDefault();
+      if (elements.unitSearch) {
+        elements.unitSearch.focus();
+        elements.unitSearch.select();
+        // Scroll to navigator if collapsed
+        const navigator = document.getElementById("navigator");
+        if (navigator) {
+          navigator.scrollIntoView({ behavior: "smooth", block: "start" });
+          openSectionPanel("navigator", false);
+        }
+      }
+    }
+  });
+}
+
+function isInputFocused() {
+  const focused = document.activeElement;
+  if (!focused) return false;
+  const tag = focused.tagName.toLowerCase();
+  return tag === "input" || tag === "textarea" || tag === "select" || focused.isContentEditable;
 }
 
 function initHeroShader() {

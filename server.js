@@ -29,7 +29,7 @@ const server = http.createServer(async (request, response) => {
 
     if (request.method === "GET" && currentUrl.pathname === "/api/an/status") {
       sendJson(response, 200, {
-        configured: Boolean(process.env.AN_API_KEY),
+        configured: Boolean(getAnApiKey()),
         defaultSlug: process.env.AN_AGENT_SLUG || ""
       });
       return;
@@ -79,9 +79,11 @@ function serveStaticAsset(urlPath, response) {
 }
 
 async function handleAnChat(request, response) {
-  if (!process.env.AN_API_KEY) {
+  const apiKey = getAnApiKey();
+
+  if (!apiKey) {
     sendJson(response, 500, {
-      error: "AN_API_KEY is not configured on the server."
+      error: "AN_API_KEY or API_KEY_21ST is not configured on the server."
     });
     return;
   }
@@ -123,20 +125,33 @@ async function handleAnChat(request, response) {
     ]
   };
 
-  const sandboxId = String(payload.sandboxId || "").trim();
+  let sandboxId = String(payload.sandboxId || "").trim();
   const threadId = String(payload.threadId || "").trim();
 
-  if (sandboxId) {
-    relayBody.sandboxId = sandboxId;
+  if (!sandboxId) {
+    try {
+      sandboxId = await createSandbox(slug, apiKey);
+    } catch (error) {
+      sendJson(response, 502, {
+        error: error instanceof Error ? error.message : "Failed to create 21ST sandbox."
+      });
+      return;
+    }
   }
+
+  relayBody.sandboxId = sandboxId;
 
   if (threadId) {
     relayBody.threadId = threadId;
   }
 
   try {
-    const result = await relayChat(slug, relayBody, process.env.AN_API_KEY);
-    sendJson(response, 200, result);
+    const result = await relayChat(slug, relayBody, apiKey);
+    sendJson(response, 200, {
+      ...result,
+      sandboxId: result.sandboxId || sandboxId,
+      threadId: result.threadId || threadId
+    });
   } catch (error) {
     sendJson(response, 502, {
       error: error instanceof Error ? error.message : "Relay request failed."
@@ -174,6 +189,17 @@ function readJsonBody(request) {
   });
 }
 
+async function createSandbox(slug, apiKey) {
+  const result = await postJson("/v1/sandboxes", { agent: slug }, apiKey);
+  const sandboxId = String(result.id || result.sandboxId || "").trim();
+
+  if (!sandboxId) {
+    throw new Error("21ST did not return a sandbox id.");
+  }
+
+  return sandboxId;
+}
+
 function relayChat(slug, body, apiKey) {
   return new Promise((resolve, reject) => {
     const relayUrl = new URL(`/v1/chat/${encodeURIComponent(slug)}`, relayOrigin);
@@ -208,6 +234,51 @@ function relayChat(slug, body, apiKey) {
             resolve(parseSsePayload(raw));
           } catch (error) {
             reject(error);
+          }
+        });
+      }
+    );
+
+    relayRequest.on("error", reject);
+    relayRequest.write(JSON.stringify(body));
+    relayRequest.end();
+  });
+}
+
+function postJson(pathname, body, apiKey) {
+  return new Promise((resolve, reject) => {
+    const relayUrl = new URL(pathname, relayOrigin);
+
+    const relayRequest = https.request(
+      relayUrl,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        }
+      },
+      (relayResponse) => {
+        let raw = "";
+
+        relayResponse.setEncoding("utf8");
+        relayResponse.on("data", (chunk) => {
+          raw += chunk;
+        });
+
+        relayResponse.on("end", () => {
+          const statusCode = relayResponse.statusCode || 500;
+
+          if (statusCode >= 400) {
+            reject(new Error(extractRelayError(raw) || `Relay returned ${statusCode}.`));
+            return;
+          }
+
+          try {
+            resolve(raw.trim() ? JSON.parse(raw) : {});
+          } catch (error) {
+            reject(new Error("Relay returned invalid JSON."));
           }
         });
       }
@@ -285,6 +356,10 @@ function extractRelayError(raw) {
     const text = raw.replace(/^data:\s*/gm, "").trim();
     return text || "";
   }
+}
+
+function getAnApiKey() {
+  return process.env.AN_API_KEY || process.env.API_KEY_21ST || "";
 }
 
 function sendJson(response, statusCode, payload) {
