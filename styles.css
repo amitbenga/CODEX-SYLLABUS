@@ -3496,7 +3496,7 @@ body[data-theme="cursor"] .button-primary {
   position: absolute;
   top: calc(100% + 12px);
   inset-inline-end: 50%;
-  transform: translateX(50%);
+  transform: translateX(-50%);
   width: min(720px, calc(100vw - 32px));
   max-height: min(620px, calc(100vh - 180px));
   overflow: auto;
