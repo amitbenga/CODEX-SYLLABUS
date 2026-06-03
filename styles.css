@@ -3497,8 +3497,8 @@ body[data-theme="cursor"] .button-primary {
   top: calc(100% + 12px);
   inset-inline-end: 50%;
   transform: translateX(-50%);
-  width: min(720px, calc(100vw - 32px));
-  max-height: min(620px, calc(100vh - 180px));
+  width: min(860px, calc(100vw - 32px));
+  max-height: 85vh;
   overflow: auto;
   padding: 14px;
   border-radius: 18px;
