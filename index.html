@@ -26,26 +26,26 @@
       <span id="globalProgressFill"></span>
     </div>
 
-    <!-- AI Drawer -->
+    <!-- 21ST Design Drawer -->
     <div id="aiDrawerOverlay" class="ai-drawer-overlay hidden" aria-hidden="true"></div>
-    <aside id="aiDrawer" class="ai-drawer hidden" role="complementary" aria-label="עזרת AI">
+    <aside id="aiDrawer" class="ai-drawer hidden" role="complementary" aria-label="21ST Design Lab">
       <div class="ai-drawer-header">
         <div>
           <span class="eyebrow">21ST Design Lab</span>
-          <h2>שכבת API אמיתית ל־21ST Agents</h2>
+          <h2>מעבדת השראה מטמפלייטים של 21ST</h2>
         </div>
         <button id="aiDrawerClose" type="button" class="ai-drawer-close" aria-label="סגור">×</button>
       </div>
       <p class="ai-drawer-desc">
-        כאן אפשר לדבר עם agent של 21ST מתוך הפרויקט עצמו. המפתח נשאר בשרת המקומי,
-        ומהדפדפן נשלחים רק ה־slug והפרומפט שלך.
+        החיבור הזה נועד לעזור לסוכן הקוד לקבל כיוון עיצובי מתוך שפת הטמפלייטים של
+        21ST. המפתח נשאר בשרת המקומי, ומהדפדפן נשלחים רק ה־slug והבריף.
       </p>
 
       <form id="anForm" class="lab-form">
         <div class="field-grid">
           <label class="field">
-            <span>Agent slug</span>
-            <input id="anSlug" type="text" placeholder="לדוגמה: syllabus-designer" autocomplete="off" />
+            <span>21ST slug</span>
+            <input id="anSlug" type="text" placeholder="לדוגמה: landing-template-advisor" autocomplete="off" />
           </label>
 
           <div class="lab-status-card">
@@ -55,30 +55,30 @@
         </div>
 
         <label class="field">
-          <span>מה לבקש מהסוכן</span>
+          <span>בריף עיצובי</span>
           <textarea
             id="anPrompt"
             rows="7"
-            placeholder="לדוגמה: הצע לי 3 וריאציות ל-hero editorial בעברית, עם דגש על progressive disclosure, proof strip ו-roadmap."
+            placeholder="לדוגמה: מצא כיוון עיצובי בסגנון 21ST לעמוד קורס RTL בעברית: hero מינימלי, CTA ברור ו-dropdown סילבוס."
           ></textarea>
         </label>
 
         <div class="form-actions">
-          <button id="anSubmit" type="submit" class="button button-primary">שלח ל־21ST</button>
+          <button id="anSubmit" type="submit" class="button button-primary">שלח בריף ל־21ST</button>
           <button id="anReset" type="button" class="button button-secondary">אפס session</button>
         </div>
 
         <p class="lab-footnote">
-          אם ה־agent שלך כבר רץ, השרת ישמור את ה־sandbox וה־thread כדי שתוכל להמשיך
-          את אותה שיחה גם בהודעות הבאות.
+          זה כלי עזר לעיצוב, לא חלק מתוכן הליבה של הקורס. אם יש session פעיל, השרת
+          ישמור sandbox ו-thread כדי להמשיך מאותה נקודה.
         </p>
       </form>
 
       <div class="lab-panel">
         <div class="lab-panel-head">
           <div>
-            <span class="panel-label">תשובת הסוכן</span>
-            <h3>Live design feedback</h3>
+            <span class="panel-label">תשובת 21ST</span>
+            <h3>Design template feedback</h3>
           </div>
           <div id="anSessionMeta" class="stage-summary"></div>
         </div>
@@ -95,18 +95,18 @@
     </aside>
 
     <!-- AI FAB -->
-    <button id="aiFab" type="button" class="ai-fab" aria-label="עזרת AI">
+    <button id="aiFab" type="button" class="ai-fab" aria-label="21ST עיצוב" hidden>
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
       </svg>
-      <span class="ai-fab-label">עזרת AI</span>
+      <span class="ai-fab-label">21ST עיצוב</span>
     </button>
 
     <main class="app-shell">
-      <div id="progressPill" style="display:none"></div>
+      <div id="progressPill" class="progress-pill" hidden></div>
 
       <!-- Sticky pill subnav -->
-      <nav id="pillSubnav" class="pill-subnav" aria-label="ניווט מהיר בין סקציות" style="display:none">
+      <nav id="pillSubnav" class="pill-subnav" aria-label="ניווט מהיר בין סקציות" hidden>
         <div class="pill-subnav-inner">
           <a href="#top" class="pill-nav-item" data-pill-section="top">Hero</a>
           <a href="#overview" class="pill-nav-item" data-pill-section="overview">סקירה</a>
@@ -130,17 +130,20 @@
             <span class="hero-title-accent">מוצר טכני</span>
             <span>בלי ללכת לאיבוד בקוד</span>
           </h1>
-          <p class="hero-subtitle">מסלול חי שמציג לך רק את הדבר הבא: להבין מערכות, לשפוט קוד, להוביל עבודה עם סוכנים ולשלוח לפרודקשן.</p>
+          <p class="hero-subtitle">
+            מסלול חי שמציג את הצעד הבא: להבין מערכות, לשפוט קוד, להוביל עבודה עם סוכנים
+            ולבנות לאורך הדרך מערכת ניהול לידים, פגישות וידע למטפלים.
+          </p>
 
           <!-- Stats strip -->
           <div class="hero-stats-strip">
             <div class="hero-stat">
-              <strong>16</strong>
+              <strong>17</strong>
               <span>שבועות</span>
             </div>
             <div class="hero-stat-divider"></div>
             <div class="hero-stat">
-              <strong>14</strong>
+              <strong>15</strong>
               <span>יחידות</span>
             </div>
             <div class="hero-stat-divider"></div>
@@ -153,12 +156,7 @@
           <!-- Primary CTA -->
           <div class="hero-cta-row">
             <a id="heroResumeCta" class="button hero-resume-btn" href="./unit-page.html">המשך ללמוד ←</a>
-          </div>
-
-          <!-- How to learn section -->
-          <div class="hero-how-to-learn">
-            <h3 class="hero-section-label">איך ללמוד כל שבוע</h3>
-            <div id="heroRhythm" class="hero-rhythm-grid"></div>
+            <details id="heroSyllabusDropdown" class="hero-syllabus-dropdown"></details>
           </div>
         </div>
       </header>
@@ -181,7 +179,7 @@
           <div class="bento-card bento-featured">
             <span class="eyebrow">מה הקורס הזה</span>
             <h3>קורס ליצירת Product Builder טכני</h3>
-            <p>מסלול שמוביל אותך מ-prompt operator לתפקיד technical lead: מבנה מערכות, שיפוט קוד, הובלת delivery עם סוכנים ושליחה לפרודקשן.</p>
+            <p>מסלול שמוביל אותך מתפעול פרומפטים לניהול סביבת בנייה טכנית: מבנה מערכות, שיפוט קוד, הובלת delivery עם סוכנים ושליחה לפרודקשן.</p>
           </div>
 
           <!-- Stat cards -->
@@ -284,8 +282,8 @@
       <section class="section-block section-timeline" id="timeline" hidden>
         <div class="section-heading">
           <div>
-            <span class="eyebrow">16 Week Plan</span>
-            <h2>מפת 16 השבועות</h2>
+            <span class="eyebrow">17 Week Plan</span>
+            <h2>מפת 17 השבועות</h2>
           </div>
           <p>
             תרגום של הסילבוס ללוח עבודה אמיתי. כל כרטיס מייצג שבוע אחד, עם פוקוס ברור

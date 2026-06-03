@@ -3424,6 +3424,11 @@ body[data-theme="cursor"] .button-primary {
 .hero-cta-row {
   display: flex;
   justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+  position: relative;
+  width: 100%;
 }
 .hero-resume-btn {
   font-size: 1.15rem;
@@ -3441,6 +3446,164 @@ body[data-theme="cursor"] .button-primary {
 .hero-resume-btn:hover {
   opacity: 0.9;
   transform: translateY(-2px);
+}
+
+.hero-syllabus-dropdown {
+  position: relative;
+  z-index: 12;
+}
+
+.hero-syllabus-dropdown summary {
+  list-style: none;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 52px;
+  padding: 10px 18px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.hero-syllabus-dropdown summary::-webkit-details-marker {
+  display: none;
+}
+
+.hero-syllabus-dropdown summary:hover,
+.hero-syllabus-dropdown[open] summary {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.28);
+  transform: translateY(-1px);
+}
+
+.hero-syllabus-dropdown summary span {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.68);
+  font-weight: 700;
+}
+
+.hero-syllabus-dropdown summary strong {
+  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.94);
+}
+
+.hero-syllabus-menu {
+  position: absolute;
+  top: calc(100% + 12px);
+  inset-inline-end: 50%;
+  transform: translateX(50%);
+  width: min(720px, calc(100vw - 32px));
+  max-height: min(620px, calc(100vh - 180px));
+  overflow: auto;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(10, 15, 29, 0.96);
+  box-shadow: 0 26px 80px rgba(2, 6, 23, 0.4);
+  backdrop-filter: blur(24px);
+}
+
+.hero-syllabus-case {
+  padding: 14px;
+  margin-bottom: 10px;
+  border-radius: 14px;
+  background: rgba(15, 118, 110, 0.16);
+  border: 1px solid rgba(94, 234, 212, 0.18);
+  text-align: start;
+}
+
+.hero-syllabus-case span,
+.hero-syllabus-week {
+  display: inline-flex;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.62);
+  font-weight: 800;
+}
+
+.hero-syllabus-case strong {
+  display: block;
+  margin-top: 4px;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.hero-syllabus-case p {
+  margin: 6px 0 0;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+  font-size: 0.88rem;
+}
+
+.hero-syllabus-list {
+  display: grid;
+  gap: 8px;
+}
+
+.hero-syllabus-item {
+  display: grid;
+  grid-template-columns: minmax(72px, auto) minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border-radius: 14px;
+  color: #fff;
+  text-align: start;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.055);
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.hero-syllabus-item:hover,
+.hero-syllabus-item.is-next {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.hero-syllabus-copy {
+  display: grid;
+  gap: 3px;
+}
+
+.hero-syllabus-copy strong {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.hero-syllabus-copy span {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.62);
+  line-height: 1.45;
+}
+
+.hero-syllabus-status {
+  justify-self: end;
+  padding: 5px 8px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.hero-syllabus-status.ready {
+  color: #99f6e4;
+  background: rgba(20, 184, 166, 0.14);
+}
+
+.hero-syllabus-status.draft {
+  color: #fde68a;
+  background: rgba(217, 179, 106, 0.16);
+}
+
+.hero-syllabus-status.done {
+  color: #bbf7d0;
+  background: rgba(34, 197, 94, 0.16);
 }
 
 /* How to learn */
@@ -3880,7 +4043,7 @@ mark {
   font-size: 0.88rem;
 }
 
-/* ---- AI Drawer ---- */
+/* ---- 21ST Design Drawer ---- */
 .ai-drawer-overlay {
   position: fixed;
   inset: 0;
@@ -4295,13 +4458,44 @@ mark {
 }
 
 /* CTA button */
-.hero-resume-btn {
-  font-size: 1.05rem !important;
-  padding: 13px 34px !important;
+  .hero-resume-btn {
+    font-size: 1.05rem !important;
+    padding: 13px 34px !important;
+  }
+
+@media (max-width: 640px) {
+  .hero-syllabus-dropdown {
+    width: min(100%, 520px);
+  }
+
+  .hero-syllabus-dropdown summary {
+    width: 100%;
+    align-items: center;
+    text-align: center;
+  }
+
+  .hero-syllabus-menu {
+    position: fixed;
+    top: auto;
+    bottom: 18px;
+    inset-inline: 16px;
+    width: auto;
+    max-height: min(70vh, 620px);
+    transform: none;
+  }
+
+  .hero-syllabus-item {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .hero-syllabus-status {
+    justify-self: start;
+  }
 }
 
-/* How to learn section compact */
-.hero-how-to-learn {
+  /* How to learn section compact */
+  .hero-how-to-learn {
   padding-top: 0 !important;
   width: 100% !important;
 }

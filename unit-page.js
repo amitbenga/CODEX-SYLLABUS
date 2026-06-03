@@ -484,14 +484,15 @@ function initCompletionBar() {
     "data-modeling",
     "business-logic",
     "frontend-architecture",
+    "design-templates-21st",
     "backend-architecture",
     "security",
     "debugging",
-    "git-prs",
+    "git-pr",
     "testing",
     "performance",
-    "agent-leadership",
-    "code-judgment",
+    "agent-work",
+    "code-review",
     "capstone"
   ];
 

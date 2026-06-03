@@ -1,7 +1,12 @@
 const syllabusData = {
   programTitle: "מסלול Technical Product Builder",
   roleTitle: "AI-Native Full-Stack Product Lead",
-  durationWeeks: 16,
+  durationWeeks: 17,
+  runningCase: {
+    title: "מערכת ניהול לידים, פגישות וידע למטפלים",
+    description:
+      "קייס מתגלגל עבור מטפלת נטורופתית ורפלקסולוגית: קליטת לידים, תיאום פגישות, תיעוד ידע מקצועי והכנה להוספת דאטה בהמשך."
+  },
   coreGoal:
     "להוביל בנייה של מערכות בצורה מקצועית, ביקורתית ואחראית, עם מספיק עומק טכני כדי להבין ארכיטקטורה, לשפוט קוד, לנהל delivery ולהכווין סוכנים בלי ללכת לאיבוד בעומק מיותר.",
   pillars: [
@@ -19,7 +24,7 @@ const syllabusData = {
     },
     {
       title: "ניהול עבודה עם סוכנים",
-      description: "לנסח scope, לבקש analysis נכון, ולדרוש diff קטן, בדיקות ותכנית rollback."
+      description: "לנסח scope, לנהל הרשאות וכלים, לבקש analysis נכון, ולדרוש diff קטן, בדיקות ותכנית rollback."
     },
     {
       title: "פרודקשן, אבטחה ותחזוקה",
@@ -202,43 +207,40 @@ const syllabusData = {
       weekLabel: "שבועות 3-4",
       weekStart: 3,
       weekEnd: 4,
-      title: "דאטה מודלינג וחשיבה רלציונית",
-      category: "דאטה וארכיטקטורה",
+      title: "מודלינג נתונים, זיכרון וקטורי ו-State בעולם של סוכנים",
+      category: "דאטה, זיכרון וסוכנים",
       accent: "gold",
       summary:
-        "הלב של מוצרי data-heavy: להבין ישויות, יחסים, constraints ומה לא משכפלים.",
+        "לתכנן שכבת נתונים שמחזיקה אמת רלציונית, זיכרון סמנטי ו-state של סוכנים בלי לתת לקוד אוטומטי לשבור את המערכת.",
       goals: [
-        "לזהות את הישות האמיתית ואת היחסים בינהן.",
-        "להחליט איפה constraint שייך ואיפה derived data צריך לגור.",
-        "להבין מה קורה במחיקה, בשחזור וב-auditability."
+        "לזהות אילו נתונים שייכים ל-SQL, אילו לקבצים/Storage, אילו לווקטורים ואילו ל-agent state.",
+        "לתכנן סכמות, constraints ו-RLS למערכת המטפלים כך שסוכנים לא יעקפו את חוקי הדומיין.",
+        "להבין איך RAG, embeddings ו-Structured Outputs מחברים סוכן הסתברותי למערכת דטרמיניסטית."
       ],
       topics: [
-        "Tables",
-        "Rows",
-        "Primary key",
-        "Foreign key",
-        "Unique constraints",
-        "Junction tables",
-        "One-to-many",
-        "Many-to-many",
-        "Nullable vs required",
-        "Derived data",
-        "Normalization בסיסי",
-        "Soft delete vs hard delete",
-        "Auditability"
+        "Relational source of truth",
+        "Entities, constraints and junction tables",
+        "Supabase, RLS and serverless connection pressure",
+        "Object Storage and signed URLs",
+        "Vector embeddings, chunking and retrieval",
+        "RAG for therapist knowledge",
+        "Agent state, runs, tool calls and audit trail",
+        "MCP as a controlled tool boundary",
+        "Structured Outputs and Zod validation",
+        "SQL injection, prompt injection and slopsquatting"
       ],
       deliverable:
-        "סקירה מלאה של טבלאות המוצר: actors, projects, project_actors, folders, submissions, approvals ו-media references עם constraints וקשרי מחיקה.",
+        "Data architecture pack למערכת המטפלים: ERD ראשוני, טבלת RAG chunks, מודל agent_runs/tool_calls, כללי RLS, ו-checklist הגנה לפני שסוכן כותב ל-DB.",
       exercise:
-        "עבור כל טבלה ענה: מה הישות? מה היחסים? מה אסור לשכפל? איזה constraint הכרחי? מה יקרה במחיקה?",
+        "תכנן פיצ'ר שבו מטפלת מעלה סיכום טיפול וקבצים, וסוכן מציע follow-up: איפה נשמרת האמת, איפה נשמר הקובץ, מה נכנס לווקטורים, ואיזו ולידציה נדרשת לפני כתיבה.",
       understandingTest:
-        "לזהות מיד מתי מישהו דוחף שדה לטבלה הלא נכונה כי זה נוח זמנית.",
+        "לדעת לזהות מתי סוכן מציע פתרון שנראה עובד אבל מערבב SQL, קבצים, וקטורים ו-state בצורה שתשבור פרודקשן.",
       managementLens:
-        "דרוש מכל שינוי DB נימוק לישות, constraints, migration impact ו-rollback plan.",
+        "בכל שינוי דאטה דרוש מהסוכן: מקור אמת, הרשאות, constraints, migration impact, rollback, ולידציה וראיות בדיקה.",
       redFlags: [
-        "status גלובלי כשצריך להיות פר-פרויקט",
-        "כפילויות data 'לנוחות'",
-        "מחיקות שמשמידות יותר ממה שהתכוונת"
+        "קבצים כבדים בתוך JSON או עמודת DB במקום Storage",
+        "סוכן שכותב ישירות ל-DB בלי Structured Output וולידציה",
+        "RAG בלי metadata, הרשאות, מקור ואסטרטגיית מחיקה"
       ]
     },
     {
@@ -325,10 +327,51 @@ const syllabusData = {
       ]
     },
     {
-      id: "backend-architecture",
+      id: "design-templates-21st",
       weekLabel: "שבוע 7",
       weekStart: 7,
       weekEnd: 7,
+      title: "21ST, טמפלייטים ושבירת עיצוב AI גנרי",
+      category: "ממשק וחוויית מוצר",
+      accent: "purple",
+      summary:
+        "להשתמש בספריות UI וטמפלייטים כמו 21st כדי לכוון סוכן קוד לעיצוב ספציפי, עשיר ומתאים למוצר במקום לקבל UI גנרי.",
+      goals: [
+        "להבין למה סוכני AI מייצרים עיצוב גנרי כשאין להם רפרנס, היררכיה ומגבלות עיצוב.",
+        "לדעת לחפש ב-21st קומפוננטות, screens ו-themes לפי תפקיד מוצרי ולא לפי מראה בלבד.",
+        "לתרגם רפרנס עיצובי ל-spec שאפשר לתת לסוכן קוד: layout, tokens, states, components ו-constraints."
+      ],
+      topics: [
+        "Generic AI design patterns",
+        "21st Community components",
+        "Screens and themes as design references",
+        "Magic Chat and Magic MCP as UI exploration tools",
+        "Reference decomposition",
+        "Design tokens",
+        "Component anatomy",
+        "Responsive states",
+        "Accessibility and content fit",
+        "Prompting a coding agent with visual constraints"
+      ],
+      deliverable:
+        "Design reference pack למערכת המטפלים: 3 רפרנסים מ-21st, פירוק layout/tokens/states, ופרומפט עבודה לסוכן שמייצר מסך לידים או פגישות לא גנרי.",
+      exercise:
+        "בחר מסך אחד במערכת המטפלים, למשל lead intake או פגישות קרובות, מצא 3 רפרנסים ב-21st, וכתוב מה לקחת מכל אחד ומה אסור להעתיק.",
+      understandingTest:
+        "לדעת להסביר למה 'תעשה dashboard יפה' כמעט תמיד ייצר UI גנרי, ואיך רפרנס מפורק נכון משנה את התוצאה.",
+      managementLens:
+        "לפני משימת UI לסוכן, דרוש reference pack: מטרת המסך, רפרנסים, tokens, states, מגבלות נגישות ודברים שלא לשנות.",
+      redFlags: [
+        "העתקה עיוורת של hero/gradient שאינה מתאימה למוצר תפעולי",
+        "בחירת קומפוננטה לפי וואו ויזואלי במקום workflow",
+        "פרומפט UI בלי states, responsive behavior או תוכן אמיתי"
+      ]
+    },
+    {
+      id: "backend-architecture",
+      weekLabel: "שבוע 8",
+      weekStart: 8,
+      weekEnd: 8,
       title: "Backend architecture בלי להסתבך",
       category: "מערכת ושרת",
       accent: "navy",
@@ -368,9 +411,9 @@ const syllabusData = {
     },
     {
       id: "security",
-      weekLabel: "שבוע 8",
-      weekStart: 8,
-      weekEnd: 8,
+      weekLabel: "שבוע 9",
+      weekStart: 9,
+      weekEnd: 9,
       title: "אבטחה פרקטית למי שבונה מוצרים",
       category: "איכות ופרודקשן",
       accent: "brick",
@@ -412,9 +455,9 @@ const syllabusData = {
     },
     {
       id: "debugging",
-      weekLabel: "שבוע 9",
-      weekStart: 9,
-      weekEnd: 9,
+      weekLabel: "שבוע 10",
+      weekStart: 10,
+      weekEnd: 10,
       title: "דיבאגינג מקצועי",
       category: "איכות ופרודקשן",
       accent: "teal",
@@ -455,9 +498,9 @@ const syllabusData = {
     },
     {
       id: "git-pr",
-      weekLabel: "שבוע 10",
-      weekStart: 10,
-      weekEnd: 10,
+      weekLabel: "שבוע 11",
+      weekStart: 11,
+      weekEnd: 11,
       title: "Git, branches, PRs ו-review discipline",
       category: "Delivery והובלה",
       accent: "navy",
@@ -495,9 +538,9 @@ const syllabusData = {
     },
     {
       id: "testing",
-      weekLabel: "שבוע 11",
-      weekStart: 11,
-      weekEnd: 11,
+      weekLabel: "שבוע 12",
+      weekStart: 12,
+      weekEnd: 12,
       title: "Testing בלי להיות דתי",
       category: "איכות ופרודקשן",
       accent: "gold",
@@ -534,9 +577,9 @@ const syllabusData = {
     },
     {
       id: "performance",
-      weekLabel: "שבוע 12",
-      weekStart: 12,
-      weekEnd: 12,
+      weekLabel: "שבוע 13",
+      weekStart: 13,
+      weekEnd: 13,
       title: "Performance, scale ותחזוקה",
       category: "איכות ופרודקשן",
       accent: "olive",
@@ -576,9 +619,9 @@ const syllabusData = {
     },
     {
       id: "agent-work",
-      weekLabel: "שבועות 13-14",
-      weekStart: 13,
-      weekEnd: 14,
+      weekLabel: "שבועות 14-15",
+      weekStart: 14,
+      weekEnd: 15,
       title: "עבודה עם סוכנים כמו Tech Lead",
       category: "עבודה עם סוכנים",
       accent: "teal",
@@ -590,25 +633,25 @@ const syllabusData = {
         "לזהות hallucinations, overconfidence ו-'sounds good' שאין מאחוריהם substance."
       ],
       topics: [
-        "איך לנסח משימות לסוכן",
-        "איך לחלק scope",
-        "איך למנוע overreach",
+        "Codex App / CLI / IDE / Web",
+        "Permissions, approvals ו-sandbox boundaries",
+        "MCP, skills, tools ו-subagents",
+        "איך לנסח משימות לסוכן ולחלק scope",
+        "איך למנוע overreach ו-tool over-permission",
         "איך לבקש analysis לפני implementation",
-        "איך לדרוש diff קטן ומבוקר",
+        "איך לדרוש diff קטן, test plan ו-rollback plan",
         "איך לבקש root cause, not patch",
-        "איך לדרוש test plan",
-        "איך לדרוש rollback plan",
-        "איך לזהות hallucination טכנית",
-        "איך לא ליפול ל-'sounds good'"
+        "Traces, evals ו-run evidence",
+        "איך לזהות hallucination טכנית ו-'sounds good'"
       ],
       deliverable:
-        "ספר תבניות לסוכן: feature spec, bug investigation, security review, refactor, PR review ו-production readiness.",
+        "ספר תבניות לסוכן: feature spec, bug investigation, security review, refactor, PR review, tool permissions, eval plan ו-production readiness.",
       exercise:
         "אותה משימה בדיוק: לכתוב גרסה לסוכן ג'וניור, מיד וסניור, ולהתאים scope, פיקוח ו-checkpoints.",
       understandingTest:
         "לדעת להבדיל בין תשובה שנשמעת חכמה לבין עבודה טכנית שאפשר לסמוך עליה.",
       managementLens:
-        "בכל משימה: context קצר, definition of done, constraints, tests, risks ו-what not to touch.",
+        "בכל משימה: context קצר, definition of done, constraints, permissions, allowed tools, tests, risks ו-what not to touch.",
       redFlags: [
         "rewrite מיותר כי הבקשה לא תחמה scope",
         "implementation בלי design pass",
@@ -617,9 +660,9 @@ const syllabusData = {
     },
     {
       id: "code-review",
-      weekLabel: "שבוע 15",
-      weekStart: 15,
-      weekEnd: 15,
+      weekLabel: "שבוע 16",
+      weekStart: 16,
+      weekEnd: 16,
       title: "קריאת קוד והערכת איכות",
       category: "Delivery והובלה",
       accent: "navy",
@@ -658,9 +701,9 @@ const syllabusData = {
     },
     {
       id: "capstone",
-      weekLabel: "שבוע 16",
-      weekStart: 16,
-      weekEnd: 16,
+      weekLabel: "שבוע 17",
+      weekStart: 17,
+      weekEnd: 17,
       title: "Capstone: הובלת פיצ'ר אמיתי מקצה לקצה",
       category: "Capstone",
       accent: "coral",
@@ -691,7 +734,7 @@ const syllabusData = {
       understandingTest:
         "להוביל פיצ'ר אמיתי לפרודקשן בצורה מבוקרת, מדויקת ורב-שכבתית.",
       managementLens:
-        "השלב שבו אתה מפסיק לחשוב כמו 'prompt operator' ומתחיל לעבוד כמו builder-operator.",
+        "השלב שבו אתה מפסיק לחשוב כמו מתפעל פרומפטים ומתחיל לעבוד כמו builder-operator.",
       redFlags: [
         "חוסר alignment בין layers",
         "אין rollout / rollback plan",
@@ -704,20 +747,21 @@ const syllabusData = {
 const weekPlan = [
   { week: 1, unitId: "world-map", focus: "מפת שכבות ומערכות" },
   { week: 2, unitId: "http-api", focus: "זרימות, API ו-errors" },
-  { week: 3, unitId: "data-modeling", focus: "ישויות, יחסים ו-constraints" },
-  { week: 4, unitId: "data-modeling", focus: "מחיקות, auditability ו-derived data" },
+  { week: 3, unitId: "data-modeling", focus: "SQL, entities, constraints ו-RLS" },
+  { week: 4, unitId: "data-modeling", focus: "Vector memory, RAG ו-agent state" },
   { week: 5, unitId: "business-logic", focus: "Business invariants" },
   { week: 6, unitId: "frontend-architecture", focus: "State, screens ו-failure modes" },
-  { week: 7, unitId: "backend-architecture", focus: "Services, handlers ו-data access" },
-  { week: 8, unitId: "security", focus: "Trust boundaries ואבטחה" },
-  { week: 9, unitId: "debugging", focus: "Root cause ו-regression thinking" },
-  { week: 10, unitId: "git-pr", focus: "PR discipline ו-rollbacks" },
-  { week: 11, unitId: "testing", focus: "Test matrix פרקטי" },
-  { week: 12, unitId: "performance", focus: "Scale, cost ו-maintenance" },
-  { week: 13, unitId: "agent-work", focus: "Scope נכון לסוכן" },
-  { week: 14, unitId: "agent-work", focus: "תבניות עבודה ו-hallucinations" },
-  { week: 15, unitId: "code-review", focus: "Code judgment וריוויו" },
-  { week: 16, unitId: "capstone", focus: "Capstone והובלת פיצ'ר" }
+  { week: 7, unitId: "design-templates-21st", focus: "21st, רפרנסים ושבירת UI גנרי" },
+  { week: 8, unitId: "backend-architecture", focus: "Services, handlers ו-data access" },
+  { week: 9, unitId: "security", focus: "Trust boundaries ואבטחה" },
+  { week: 10, unitId: "debugging", focus: "Root cause ו-regression thinking" },
+  { week: 11, unitId: "git-pr", focus: "PR discipline ו-rollbacks" },
+  { week: 12, unitId: "testing", focus: "Test matrix פרקטי" },
+  { week: 13, unitId: "performance", focus: "Scale, cost ו-maintenance" },
+  { week: 14, unitId: "agent-work", focus: "Scope נכון לסוכן" },
+  { week: 15, unitId: "agent-work", focus: "תבניות עבודה ו-hallucinations" },
+  { week: 16, unitId: "code-review", focus: "Code judgment וריוויו" },
+  { week: 17, unitId: "capstone", focus: "Capstone והובלת פיצ'ר" }
 ];
 
 const learningPageBlueprints = [
@@ -854,7 +898,7 @@ const state = {
     sessionId: String(savedDesignLabSession.sessionId || ""),
     configured: false,
     isLoading: false,
-    statusMessage: "בודק חיבור ל־21ST...",
+    statusMessage: "בודק חיבור ל־21ST Design Lab...",
     response: "",
     usage: null
   }
@@ -888,6 +932,7 @@ function cacheElements() {
   elements.heroResumeCta = document.querySelector("#heroResumeCta");
   elements.heroCompletedStat = document.querySelector("#heroCompletedStat");
   elements.heroRhythm = document.querySelector("#heroRhythm");
+  elements.heroSyllabusDropdown = document.querySelector("#heroSyllabusDropdown");
   elements.heroShaderCanvas = document.querySelector("#heroShaderCanvas");
   elements.themePresetChips = document.querySelector("#themePresetChips");
   elements.statsGrid = document.querySelector("#statsGrid");
@@ -929,7 +974,7 @@ function cacheElements() {
   elements.anReset = document.querySelector("#anReset");
   elements.anSessionMeta = document.querySelector("#anSessionMeta");
   elements.anResponse = document.querySelector("#anResponse");
-  // AI Drawer
+  // 21ST Design Drawer
   elements.aiFab = document.querySelector("#aiFab");
   elements.aiDrawer = document.querySelector("#aiDrawer");
   elements.aiDrawerOverlay = document.querySelector("#aiDrawerOverlay");
@@ -1157,6 +1202,7 @@ function renderAll() {
   renderThemePresets();
   renderHeroCta();
   renderHeroRhythm();
+  renderHeroSyllabusDropdown();
   renderStats();
   renderPillars();
   renderFilterChips();
@@ -1221,6 +1267,53 @@ function renderHeroCta() {
   }
 }
 
+function renderHeroSyllabusDropdown() {
+  if (!elements.heroSyllabusDropdown) return;
+
+  const catalog = getUnitPagesCatalog();
+  const nextUnit = syllabusData.units.find((unit) => !state.unitProgress[unit.id]) || syllabusData.units[0];
+  const items = syllabusData.units
+    .map((unit) => {
+      const unitPage = catalog ? catalog.getUnitPage(unit.id) : null;
+      const isSkeleton = Boolean(
+        unitPage?.quickFacts?.some((fact) => ["Code", "Soon"].includes(String(fact.value)))
+      );
+      const isCompleted = Boolean(state.unitProgress[unit.id]);
+      const isNext = unit.id === nextUnit.id;
+      const status = isCompleted ? "הושלמה" : isSkeleton ? "שלד להשלמה" : "יחידת עומק";
+      const statusClass = isCompleted ? "done" : isSkeleton ? "draft" : "ready";
+
+      return `
+        <a class="hero-syllabus-item ${isNext ? "is-next" : ""}" href="${escapeAttribute(buildUnitPageUrl(unit.id, "overview"))}">
+          <span class="hero-syllabus-week">${escapeHtml(unit.weekLabel)}</span>
+          <span class="hero-syllabus-copy">
+            <strong>${escapeHtml(unit.title)}</strong>
+            <span>${escapeHtml(unit.summary)}</span>
+          </span>
+          <span class="hero-syllabus-status ${statusClass}">${escapeHtml(status)}</span>
+        </a>
+      `;
+    })
+    .join("");
+
+  elements.heroSyllabusDropdown.innerHTML = `
+    <summary>
+      <span>סילבוס מלא</span>
+      <strong>${syllabusData.units.length} יחידות עם הסבר קצר לכל שלב</strong>
+    </summary>
+    <div class="hero-syllabus-menu">
+      <div class="hero-syllabus-case">
+        <span>קייס מתגלגל</span>
+        <strong>${escapeHtml(syllabusData.runningCase.title)}</strong>
+        <p>${escapeHtml(syllabusData.runningCase.description)}</p>
+      </div>
+      <div class="hero-syllabus-list">
+        ${items}
+      </div>
+    </div>
+  `;
+}
+
 function renderHeroRhythm() {
   if (!elements.heroRhythm || !syllabusData.weeklyRhythm) return;
 
@@ -1243,11 +1336,11 @@ function renderSectionNav() {
 }
 
 function setupSectionPanels() {
-  // Sections are always visible; pill subnav handles page navigation.
+  // The home screen is intentionally minimal. Full dashboard sections stay in the DOM for later work.
 }
 
 function applySectionPanelState() {
-  // No-op: sections are always visible.
+  // No-op: dashboard sections are hidden from the current minimal home experience.
 }
 
 function toggleSectionPanel(sectionId) {
@@ -2091,7 +2184,7 @@ async function hydrateDesignLab() {
 
   elements.anPrompt.value =
     elements.anPrompt.value ||
-    "הצע 3 כיווני redesign לעמוד הנחיתה של הסילבוס בעברית RTL, עם hero editorial, proof strip, בנטו עדין ו-progressive disclosure.";
+    "מצא 3 כיווני עיצוב מתוך שפת הטמפלייטים של 21ST לעמוד קורס RTL בעברית: hero מינימלי, CTA ברור, dropdown סילבוס והיררכיה נקייה.";
 
   try {
     const response = await fetch("/api/an/status");
@@ -2105,8 +2198,8 @@ async function hydrateDesignLab() {
     }
 
     state.designLab.statusMessage = result.configured
-      ? "השרת מחובר ל־21ST. חסר רק agent slug פעיל."
-      : "השרת המקומי עדיין לא קיבל AN_API_KEY.";
+      ? "השרת מחובר ל־21ST. חסר רק slug של מקור עיצוב פעיל."
+      : "השרת המקומי עדיין לא קיבל AN_API_KEY או API_KEY_21ST.";
   } catch (error) {
     state.designLab.configured = false;
     state.designLab.statusMessage = "לא הצלחתי לבדוק את חיבור ה־21ST מהשרת.";
@@ -2125,14 +2218,14 @@ async function submitDesignLabPrompt() {
   saveStorage(STORAGE_KEYS.designLabSlug, slug);
 
   if (!slug) {
-    state.designLab.statusMessage = "צריך להזין agent slug כדי לדבר עם 21ST.";
+    state.designLab.statusMessage = "צריך להזין slug של 21ST כדי לשלוח בריף עיצובי.";
     renderHeroCta();
     renderDesignLabSessionMeta();
     return;
   }
 
   if (!message) {
-    state.designLab.statusMessage = "צריך לכתוב פרומפט לפני השליחה.";
+    state.designLab.statusMessage = "צריך לכתוב בריף עיצובי לפני השליחה.";
     renderHeroCta();
     renderDesignLabSessionMeta();
     return;
@@ -2169,7 +2262,7 @@ async function submitDesignLabPrompt() {
     state.designLab.threadId = String(result.threadId || state.designLab.threadId || "");
     state.designLab.sessionId = String(result.sessionId || state.designLab.sessionId || "");
     state.designLab.usage = result.usage || null;
-    state.designLab.statusMessage = "התקבלה תשובה מהסוכן.";
+    state.designLab.statusMessage = "התקבלה תשובת עיצוב מ־21ST.";
 
     saveStorage(STORAGE_KEYS.designLabSession, {
       sandboxId: state.designLab.sandboxId,
@@ -2246,7 +2339,7 @@ function renderDesignLabResponse() {
       <div class="empty-state">
         <div>
           <h3>עדיין אין תגובה</h3>
-          <p>הזן slug, כתוב בריף קצר ושלח. התשובה תופיע כאן.</p>
+          <p>הזן slug, כתוב בריף עיצובי קצר ושלח. ההשראה או ההכוונה תופיע כאן.</p>
         </div>
       </div>
     `;
@@ -2256,7 +2349,7 @@ function renderDesignLabResponse() {
   elements.anResponse.innerHTML = `
     <article class="lab-response-shell">
       <div class="chat-bubble chat-bubble-agent">
-        <span class="chat-role">21ST Agent</span>
+        <span class="chat-role">21ST Design</span>
         <pre class="lab-response-text">${escapeHtml(state.designLab.response)}</pre>
       </div>
     </article>
