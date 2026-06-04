@@ -1037,6 +1037,39 @@ Findings:
             ]
           }
         ]
+      },
+      {
+        id: "case-study-lab",
+        label: "מעבדת פיתוח",
+        navShort: "מעבדה",
+        kicker: "Case Study: The Clinic App",
+        title: "מעבדת פיתוח: ממפים את הקליניקה",
+        description: "זה הזמן להוריד את הארכיטקטורה שלמדנו לקרקע, ולתכנן את מערכת המטפלים (CRM לנטורופתית).",
+        blocks: [
+          {
+            type: "card-grid",
+            title: "משימות ארכיטקטורה לשבוע זה",
+            columns: 2,
+            items: [
+              {
+                eyebrow: "Task 1",
+                title: "מיפוי הקליינטים (Clients)",
+                body: "הגדר כמה סוגי 'קליינטים' יש למערכת. האם יש ממשק נפרד למטפלת (דשבורד) וממשק נפרד למטופלים (פורטל לזימון תורים)? רשום זאת במסמך האפיון."
+              },
+              {
+                eyebrow: "Task 2",
+                title: "מיפוי השרת וה-DB",
+                body: "בקש מסוכן ה-AI שלך להקים פרויקט בסיסי (Node.js/Python) ולחבר אותו למסד נתונים (למשל Postgres או Firebase). ודא שהסוכן מגדיר את השרת כישות שמפרידה בין הקליינטים ל-DB."
+              }
+            ]
+          },
+          {
+            type: "callout",
+            tone: "info",
+            title: "פרומפט מומלץ לסוכן שלך",
+            text: "'We are building a CRM for a Naturopath clinic. Generate a high-level system architecture diagram (Mermaid JS) showing the Web Client (React), the Backend Server (Node.js), and the Database (PostgreSQL). Explain the responsibility of each layer.'"
+          }
+        ]
       }
     ]
   };
@@ -1852,6 +1885,39 @@ Findings:
             ]
           }
         ]
+      },
+      {
+        id: "case-study-lab",
+        label: "מעבדת פיתוח",
+        navShort: "מעבדה",
+        kicker: "Case Study: The Clinic App",
+        title: "מעבדת פיתוח: המלצרים של הנטורופתית",
+        description: "בואו נגדיר את תפריט המסעדה (ה-API) עבור מערכת הקליניקה.",
+        blocks: [
+          {
+            type: "card-grid",
+            title: "משימות API לשבוע זה",
+            columns: 2,
+            items: [
+              {
+                eyebrow: "Task 1",
+                title: "תכנון הראוטים המרכזיים",
+                body: "בקש מסוכן ה-AI להגדיר קובץ ראוטים (למשל `routes/appointments.js`) ולייצר לפחות 3 endpoints: יצירת תור (POST), משיכת כל התורים (GET) וביטול תור (DELETE)."
+              },
+              {
+                eyebrow: "Task 2",
+                title: "הגדרת קוד הסטטוס",
+                body: "ודא שהשרת מחזיר 201 (Created) כשנוצר תור חדש, ו-404 (Not Found) אם מנסים למשוך תיק מטופל שלא קיים."
+              }
+            ]
+          },
+          {
+            type: "callout",
+            tone: "info",
+            title: "פרומפט מומלץ לסוכן שלך",
+            text: "'Create an Express router for managing clinic appointments. Define a POST /api/appointments route to book a new session, and a GET /api/appointments route to list all upcoming sessions. Ensure proper HTTP status codes are returned.'"
+          }
+        ]
       }
     ]
   };
@@ -2449,6 +2515,39 @@ Deliver:
             title: "הנחת עבודה לקורס",
             text:
               "אנחנו לא מלמדים כאן להיות DBA או חוקר וקטורים. אנחנו מלמדים Product Builder לזהות החלטות דאטה שיקבעו אם המוצר יחזיק מעמד כשסוכן, משתמש אמיתי ופרודקשן נפגשים."
+          }
+        ]
+      },
+      {
+        id: "case-study-lab",
+        label: "מעבדת פיתוח",
+        navShort: "מעבדה",
+        kicker: "Case Study: The Clinic App",
+        title: "מעבדת פיתוח: קלסר המטופלים",
+        description: "זה הזמן להגדיר איך נראה 'מוח' הקליניקה מבפנים.",
+        blocks: [
+          {
+            type: "card-grid",
+            title: "משימות Data Modeling לשבוע זה",
+            columns: 2,
+            items: [
+              {
+                eyebrow: "Task 1",
+                title: "הגדרת סכמת הנתונים (DB Schema)",
+                body: "בקש מסוכן ה-AI לייצר סכמות לטבלאות: `Patients` (שם, רקע), `Appointments` (תאריך, סטטוס) ו-`Treatments` (סיכום הטיפול)."
+              },
+              {
+                eyebrow: "Task 2",
+                title: "קשרי גומלין (Relations)",
+                body: "ודא שהסוכן מקשר נכון בין הטבלאות. למשל: מטופל אחד (Patient) יכול להיות מקושר להרבה פגישות (Appointments) - יחס של One-to-Many."
+              }
+            ]
+          },
+          {
+            type: "callout",
+            tone: "info",
+            title: "פרומפט מומלץ לסוכן שלך",
+            text: "'Design the database schema for the Naturopath Clinic. We need tables for Patients, Appointments, and Treatment Notes. Use Prisma/Mongoose syntax and define the 1-to-N relationships explicitly.'"
           }
         ]
       }
@@ -3052,6 +3151,39 @@ app.post('/delete-folder', async (req, res) => {
             text: "1. Trust Boundary Violation (שבירת גבולות אמון): השרת מאמין לפרונטאנד לגבי הרשאות (isUserAdmin מגיע מה-body). כל אחד יכול לשלוח isAdmin:true דרך API ולמחוק תיקיות. חובה לשלוף הרשאות מתוך ה-Token של הסשן.\\n2. אין טיפול באינווריאנטים: הקוד מוחק את התיקייה ישירות. מה אם היא לא ריקה או משויכת לפרויקט? חסר פה טיפול במחיקה רכה (Soft Delete) או בדיקות קדם-מחיקה."
           }
         ]
+      },
+      {
+        id: "case-study-lab",
+        label: "מעבדת פיתוח",
+        navShort: "מעבדה",
+        kicker: "Case Study: The Clinic App",
+        title: "מעבדת פיתוח: החוקים של הקליניקה",
+        description: "זמן לאכוף את החוקים והאינווריאנטים של הנטורופתית.",
+        blocks: [
+          {
+            type: "card-grid",
+            title: "משימות לוגיקה עסקית לשבוע זה",
+            columns: 2,
+            items: [
+              {
+                eyebrow: "Task 1",
+                title: "מניעת קביעת תורים כפולים",
+                body: "בקש מסוכן ה-AI להוסיף לראוט קביעת התור (POST /appointments) טרנזקציה שמונעת משני מטופלים לקבוע תור לאותה השעה בדיוק (מניעת תנאי מרוץ)."
+              },
+              {
+                eyebrow: "Task 2",
+                title: "אכיפת אינווריאנטים (Invariants)",
+                body: "ודא שהמערכת בודקת חוקים. למשל: 'אי אפשר לקבוע תור למטופל שלא חתם על טופס הסכמה'. כתוב את הלוגיקה הזו בשרת (ולא בקליינט!)."
+              }
+            ]
+          },
+          {
+            type: "callout",
+            tone: "info",
+            title: "פרומפט מומלץ לסוכן שלך",
+            text: "'Update the POST /appointments route. Add a business logic check to ensure the chosen time slot is not already taken. Use a database transaction to lock the time slot and prevent race conditions. Return a 409 Conflict if the slot is unavailable.'"
+          }
+        ]
       }
     ]
   };
@@ -3258,6 +3390,39 @@ return <Table data={myStudents} />`
             tone: "danger",
             title: "תשובת מנהל המוצר הטכני: אסון ארכיטקטוני ואבטחתי",
             text: "אסון אבטחתי: ה-UI מושך את כל המשתמשים ('get-all-users'). כל מורה יוכל לפתוח Network Tab ולראות מידע אישי של תלמידים שלא שלו!\nאסון ביצועים: להוריד קובץ JSON של רבבות משתמשים יתקע את הדפדפן.\nהפרומפט המתקן: 'Stop! You are filtering data on the Client-side... Move filtering to the Backend... Update the UI to include a Loading State'."
+          }
+        ]
+      },
+      {
+        id: "case-study-lab",
+        label: "מעבדת פיתוח",
+        navShort: "מעבדה",
+        kicker: "Case Study: The Clinic App",
+        title: "מעבדת פיתוח: חדר הטיפולים הדיגיטלי",
+        description: "בואו נבנה את המסך שבו הנטורופתית מנהלת את הטיפול עצמו.",
+        blocks: [
+          {
+            type: "card-grid",
+            title: "משימות Frontend לשבוע זה",
+            columns: 2,
+            items: [
+              {
+                eyebrow: "Task 1",
+                title: "הגדרת מסך 'תיק מטופל'",
+                body: "בקש מסוכן ה-AI לבנות קומפוננטת React המציגה את תיק המטופל. ודא שהוא מחלק את המסך לקומפוננטות קטנות (כותרת, היסטוריית טיפולים, כפתור שמירה)."
+              },
+              {
+                eyebrow: "Task 2",
+                title: "ניהול מצב שגיאה וטעינה",
+                body: "בדוק מה קורה למסך בזמן שממתינים שההיסטוריה תיטען. ודא שהסוכן יישם מצבי Loading ו-Error למסך תיק המטופל."
+              }
+            ]
+          },
+          {
+            type: "callout",
+            tone: "info",
+            title: "פרומפט מומלץ לסוכן שלך",
+            text: "'Create a React component for the Patient File screen. Break it down into smaller components. Add a form to write a new treatment note, keeping the text in Local State. Include a Loading skeleton while fetching the treatment history (Server State).'"
           }
         ]
       }
