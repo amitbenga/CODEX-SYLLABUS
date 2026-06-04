@@ -2020,8 +2020,8 @@ body[data-theme="cursor"] .button-primary {
 .hero-shader-mask {
   z-index: 1;
   background:
-    radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.04), transparent 28%),
-    linear-gradient(180deg, rgba(2, 6, 23, 0.16), rgba(2, 6, 23, 0.44) 58%, rgba(2, 6, 23, 0.7));
+    radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.4), transparent 28%),
+    linear-gradient(180deg, rgba(248, 250, 252, 0.1), rgba(248, 250, 252, 0.5) 58%, rgba(248, 250, 252, 0.95));
 }
 
 .hero-light {

@@ -3246,5 +3246,5 @@ void main(void) {
     col = mix(col, vec3(bg * 0.25, bg * 0.137, bg * 0.05), d);
   }
 
-  O = vec4(col, 1.0);
+  O = vec4(1.0 - col, 1.0);
 }`;
