@@ -2856,6 +2856,206 @@ Deliver:
       }
     ]
   };
+  const businessLogicPage = {
+    id: "business-logic",
+    heroEyebrow: "יחידה 4 · הלוגיקה העסקית",
+    title: "לוגיקה עסקית – מי מחליט, איפה, ולמה? (The Core Brain)",
+    subtitle: "הכנת את הקפה? כי אנחנו נכנסים עכשיו ללב הפועם של הנדסת תוכנה. המקום שבו מנהל המשמרת מקבל החלטות, וסוכני AI נוטים לעגל בו פינות.",
+    quickFacts: [
+      { value: "4", label: "מושגי ליבה" },
+      { value: "3", label: "שכבות הגנה" },
+      { value: "1", label: "Tech Exam" }
+    ],
+    parts: [
+      {
+        id: "validation-layers",
+        label: "הגנה לעומק",
+        navShort: "שכבות",
+        kicker: "Validation at Multiple Layers",
+        title: "עיקרון ההגנה לעומק - למה חוק עסקי נבדק ב-3 מקומות שונים?",
+        description: "טעות נפוצה של סוכני פיתוח היא לממש חוק עסקי רק פעם אחת, לרוב במקום שהכי קל להם. במערכת מקצועית, אנחנו מוודאים חוקים ב-3 שכבות שונות.",
+        blocks: [
+          {
+            type: "lead",
+            eyebrow: "Use Case",
+            title: "תלמיד לא יכול להירשם לאותו קורס פעמיים",
+            text: [
+              "בוא ניקח חוק עסקי בסיסי: 'תלמיד לא יכול להירשם לאותו קורס פעמיים'. נבחן איך הוא נאכף בכל שכבה במערכת."
+            ]
+          },
+          {
+            type: "card-grid",
+            title: "אכיפת הלוגיקה העסקית",
+            columns: 3,
+            items: [
+              {
+                eyebrow: "שכבה 1 (Frontend)",
+                title: "חוקי ממשק (UI Rules)",
+                body: "הכפתור מוסתר או Disabled וכתוב 'כבר נרשמת'. נועד ל-UX בלבד. לעולם אי אפשר לסמוך על הקליינט (אפשר לעקוף דרך DevTools)."
+              },
+              {
+                eyebrow: "שכבה 2 (Backend)",
+                title: "חוקי דומיין (Domain Rules)",
+                body: "השרת בודק ב-DB ומחזיר שגיאה 409. זה שומר הסף והמקום האמיתי לאבטחה. סוכנים חייבים להכניס כאן את הבדיקות."
+              },
+              {
+                eyebrow: "שכבה 3 (Database)",
+                title: "חוקי ברזל (Constraints)",
+                body: "הגדרת אינדקס ייחודי (Unique) על user_id ו-course_id. האמת המוחלטת, תגן על המערכת מפני תקלות שרת או תנאי מרוץ."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: "invariants",
+        label: "אינווריאנטים",
+        navShort: "אינווריאנטים",
+        kicker: "האקסיומות של המערכת",
+        title: "אינווריאנטים (Invariants): מה שלעולם אינו משתנה",
+        description: "אינווריאנט הוא חוק פיזיקה של האפליקציה. אם הוא נשבר - המערכת במצב לא חוקי. כשאנחנו עובדים עם סוכנים, אסור לנו להניח שהם מבינים אותם לבד.",
+        blocks: [
+          {
+            type: "bullet-list",
+            title: "דוגמאות נפוצות מתוך הפלטפורמה",
+            items: [
+              "אינווריאנט 1: שיוך של שחקן (Actor) הוא תמיד ברמת הפרויקט, לא ברמה גלובלית.",
+              "אינווריאנט 2: מחיקת שיוך של שחקן לפרויקט (Project_Actor) לעולם לא מוחקת את השחקן עצמו מהמערכת.",
+              "אינווריאנט 3: סוכן AI יכול לבדוק מבחן רק אם הסטטוס שלו הוא 'הוגש' (Submitted), לעולם לא כשהוא 'בטיוטה' (Draft)."
+            ]
+          },
+          {
+            type: "callout",
+            tone: "warning",
+            title: "התפקיד שלך מול הסוכנים",
+            text: "כשאתה מנסח משימה לסוכן, אתה חייב להכתיב לו את האינווריאנטים בתוך ה-Spec. אם לא תגיד לו 'מחיקת שיוך לא מוחקת שחקן', הוא עלול לכתוב שאילתת מחיקה שרשורית (Cascade Delete) שתמחק את כל המשתמשים בטעות."
+          }
+        ]
+      },
+      {
+        id: "race-conditions",
+        label: "תנאי מרוץ",
+        navShort: "מרוץ",
+        kicker: "כשהזמן משתבש",
+        title: "תנאי מרוץ (Race Conditions) וטרנזקציות: המלכודת של ג'וניורים",
+        description: "זה המקום שבו 90% מהמפתחים וסוכני ה-AI נופלים. קוד שעובד מושלם בבדיקה בודדת נשבר תחת עומס או בקשות מקבילות.",
+        blocks: [
+          {
+            type: "lead",
+            eyebrow: "הבעיה",
+            title: "Race Condition",
+            text: [
+              "תלמיד עם 100 שקלים לוחץ 'קנה' פעמיים מהר. בקשה א' בודקת ויש 100 שקלים. באותה אלפית שנייה גם בקשה ב' בודקת, ולפני שה-DB התעדכן - היא רואה שיש 100 שקלים. התוצאה: שתי הבקשות מאושרות, התלמיד מקבל פעמיים והארנק במינוס 100."
+            ]
+          },
+          {
+            type: "lead",
+            eyebrow: "הפתרון",
+            title: "Database Transactions",
+            text: [
+              "אומרים לשרת ול-DB לעבוד במצב 'טרנזקציה' (Lock). השרת נועל את השורה. בקשה ב' נתקעת מול דלת סגורה וממתינה. כשהמנעול משתחרר, בקשה ב' בודקת שוב ומקבלת סירוב כנדרש.",
+              "פרומפט לסוכן: בכל פיצ'ר שמעורב בו כסף, ציונים או פעולות רגישות, חייבים להוסיף 'Use database transactions to prevent race conditions'."
+            ]
+          }
+        ]
+      },
+      {
+        id: "ai-logic",
+        label: "לוגיקת AI",
+        navShort: "AI",
+        kicker: "The AI Twist",
+        title: "לוגיקה דטרמיניסטית מול לוגיקה הסתברותית",
+        description: "במערכת רגילה השרת דטרמיניסטי. במערכת AI-Native הוספת שחקן חכם, אבל הסתברותי שיכול להיכשל או להתעכב.",
+        blocks: [
+          {
+            type: "callout",
+            tone: "info",
+            title: "כלל ברזל ל-Product Lead",
+            text: "הלוגיקה העסקית חייבת להיות חסינה להתנהגות ה-AI. אם ה-AI קורס או לוקח הרבה זמן, המערכת חייבת לדעת לעשות Retry או לעדכן סטטוס מתאים ('בדיקה נכשלה, ממתין למורה'), ולא להחזיר דף שבור למשתמש."
+          },
+          {
+            type: "code-block",
+            eyebrow: "תרשים זרימה",
+            title: "זרימת לוגיקה עסקית עם טרנזקציות ו-AI",
+            language: "mermaid",
+            code: `sequenceDiagram
+    autonumber
+    participant UI as Frontend (UI Rules)
+    participant Server as Backend (Domain Rules)
+    participant DB as Database (Invariants & Locks)
+    participant AI as AI Agent (Probabilistic)
+
+    Note over UI,Server: UI מונע לחיצה כפולה, אבל לא סומכים עליו
+    UI->>Server: POST /submit-final-project
+    
+    Note over Server,DB: התחלת טרנזקציה לוגית (הגנה ממרוץ)
+    Server->>DB: BEGIN TRANSACTION
+    Server->>DB: Lock User Row
+    
+    Server->>DB: בדיקה: האם כבר הגיש? (Invariant)
+    alt כבר הגיש
+        DB-->>Server: כן
+        Server->>DB: ROLLBACK
+        Server-->>UI: 409 Conflict - כבר הגשת!
+    else לא הגיש
+        DB-->>Server: לא הגיש
+        Server->>DB: שמור סטטוס: "ממתין לבדיקת AI"
+        Server->>DB: COMMIT TRANSACTION
+        
+        Note over Server,AI: ה-DB בטוח. פונים ללוגיקה ההסתברותית
+        Server->>AI: בקש מה-AI לבדוק את הפרויקט
+        alt ה-AI קרס או התעכב (Timeout)
+            AI-->>Server: Error 500
+            Server->>DB: עדכן סטטוס: "שגיאת מערכת, יבדק ידנית"
+        else ה-AI הצליח
+            AI-->>Server: ציון: 95
+            Server->>DB: עדכן סטטוס: "הושלם בהצטיינות"
+        end
+        Server-->>UI: עדכון סטטוס למשתמש
+    end`
+          }
+        ]
+      },
+      {
+        id: "tech-lead-exam",
+        label: "Review Challenge",
+        navShort: "מבחן",
+        kicker: "The Tech Lead Exam",
+        title: "אתגר ה-Code Review של יחידה 4",
+        description: "כדי לתרגל בניית מוצר טכני, בוא נבדוק קוד שסוכן הפיתוח שלך (Cursor או Windsurf) כתב לפי ההנחיות.",
+        blocks: [
+          {
+            type: "code-block",
+            eyebrow: "The Code",
+            title: "קוד שכתב סוכן",
+            language: "javascript",
+            code: `// Backend Route - Delete Folder
+app.post('/delete-folder', async (req, res) => {
+    // 1. Get data from the client request
+    const folderId = req.body.folderId;
+    const isUserAdmin = req.body.isAdmin; // הסוכן מקבל את התפקיד מהפרונטאנד
+
+    // 2. Business Logic Validation
+    if (isUserAdmin === false) {
+        return res.status(403).send("Only admins can delete folders");
+    }
+
+    // 3. Database operation
+    await Database.delete('folders', folderId);
+    return res.status(200).send("Folder deleted successfully");
+});`
+          },
+          {
+            type: "callout",
+            tone: "danger",
+            title: "תשובת מנהל המוצר הטכני: כשלים בקוד",
+            text: "1. Trust Boundary Violation (שבירת גבולות אמון): השרת מאמין לפרונטאנד לגבי הרשאות (isUserAdmin מגיע מה-body). כל אחד יכול לשלוח isAdmin:true דרך API ולמחוק תיקיות. חובה לשלוף הרשאות מתוך ה-Token של הסשן.\\n2. אין טיפול באינווריאנטים: הקוד מוחק את התיקייה ישירות. מה אם היא לא ריקה או משויכת לפרויקט? חסר פה טיפול במחיקה רכה (Soft Delete) או בדיקות קדם-מחיקה."
+          }
+        ]
+      }
+    ]
+  };
+
 
   const legacyUnitAliases = {
     "git-prs": "git-pr",
@@ -2871,6 +3071,7 @@ Deliver:
     "world-map": worldMapPage,
     "http-api": httpApiPage,
     "data-modeling": dataModelingPage,
+    "business-logic": businessLogicPage,
     "design-templates-21st": designTemplatesPage
   };
 
