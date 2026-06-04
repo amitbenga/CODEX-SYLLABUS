@@ -3056,6 +3056,213 @@ app.post('/delete-folder', async (req, res) => {
     ]
   };
 
+  const frontendArchitecturePage = {
+    id: "frontend-architecture",
+    heroEyebrow: "יחידה 5 · החלון לראווה",
+    title: "ארכיטקטורת Frontend למנהלי מוצר (החלון לראווה והאשליות של ה-UI)",
+    subtitle: "אנחנו יוצאים מהמטבח, מהכספות ומהמשרדים של מנהל המסעדה, ועוברים ישר לחדר האוכל. המטרה היא לתת לך משקפי רנטגן לזהות אם הארכיטקטורה של הסוכן רקובה מבפנים.",
+    quickFacts: [
+      { value: "4", label: "עקרונות ליבה" },
+      { value: "3", label: "מצבי ממשק" },
+      { value: "2", label: "אתגרי דיבאג" }
+    ],
+    parts: [
+      {
+        id: "components-props",
+        label: "קומפוננטות",
+        navShort: "קומפוננטות",
+        kicker: "אבני הלגו של המסך",
+        title: "קומפוננטות ופרופס (Components & Props)",
+        description: "בעבר אתרי אינטרנט היו מסמך אחד ארוך. היום, ה-Frontend המודרני בנוי מיחידות עצמאיות בשימוש חוזר.",
+        blocks: [
+          {
+            type: "card-grid",
+            title: "אבני הבניין של ה-Frontend",
+            columns: 2,
+            items: [
+              {
+                eyebrow: "Component",
+                title: "המלצר (הקופסה)",
+                body: "יחידת UI עצמאית. למשל: 'כפתור הגשה', 'כרטיסיית שיעור'. הקסם הוא שימוש חוזר - כותבים פעם אחת, משתמשים ב-50 מסכים שונים."
+              },
+              {
+                eyebrow: "Props",
+                title: "המדים ותג השם (ההוראות)",
+                body: "ההוראות שאתה מעביר לקומפוננטה מבחוץ. במסך אחד תעביר לכפתור טקסט 'הגש', במסך אחר תעביר לו 'הירשם' וצבע כחול."
+              }
+            ]
+          },
+          {
+            type: "callout",
+            tone: "danger",
+            title: "נקודת הכשל של סוכני AI (ספגטי)",
+            text: "מודלים נוטים להתעצל ולכתוב מסך שלם כקומפוננטה אחת מפלצתית של 1,000 שורות. כ-Tech Lead, עליך לדרוש מהסוכן: 'Break this screen down into small, reusable components'."
+          }
+        ]
+      },
+      {
+        id: "state-management",
+        label: "ניהול מצב",
+        navShort: "State",
+        kicker: "הזיכרון של המסך",
+        title: "ניהול מצב (State Management) - המוקש הגדול ביותר",
+        description: "State הוא הזיכרון של המסך בזמן נתון. כאן נופלים רוב הבילדרים שלא למדו ארכיטקטורה - ערבוב בין מצב זמני של ה-UI לבין אמת מוחלטת מהשרת.",
+        blocks: [
+          {
+            type: "card-grid",
+            title: "שני סוגי זיכרון שונים בתכלית",
+            columns: 2,
+            items: [
+              {
+                eyebrow: "Local State",
+                title: "מצב מקומי (זמני)",
+                body: "הזיכרון של ה-UI עכשיו. למשל: תפריט נגלל 'פתוח', או מה שמוקלד כרגע בשורת חיפוש. אם ירעננו את הדף, הזיכרון הזה יימחק."
+              },
+              {
+                eyebrow: "Server State",
+                title: "מצב השרת (אמת מוחלטת)",
+                body: "הנתונים הרשמיים מה-Database. למשל: רשימת הקורסים של התלמיד, הציון שלו, או סטטוס המנוי."
+              }
+            ]
+          },
+          {
+            type: "callout",
+            tone: "warning",
+            title: "החוק הנוקשה לבילדרים",
+            text: "לעולם אל תבלבל ביניהם! הסוכן עלול לכתוב קוד שבו הציון נשמר רק ב-Local State. התלמיד יראה '100', אבל בריענון זה ייעלם כי לא נשלח ל-Database של Anti-Gravity."
+          }
+        ]
+      },
+      {
+        id: "loading-empty-error",
+        label: "משולש הברזל",
+        navShort: "משולש המצבים",
+        kicker: "מעבר ל'נתיב השמח'",
+        title: "Loading, Empty, Error: הציפייה לתקלות",
+        description: "סוכני AI הם אופטימיים חסרי תקנה. הם בונים את ה'נתיב השמח' (Golden Path) שבו האינטרנט מושלם. אתה חייב לנהל את משולש הברזל.",
+        blocks: [
+          {
+            type: "card-grid",
+            title: "שלושת המצבים הקריטיים לכל מסך",
+            columns: 3,
+            items: [
+              {
+                eyebrow: "מצב 1",
+                title: "Loading (טעינה)",
+                body: "החצי שנייה שהדפדפן מחכה לשרת. בלי אנימציית טעינה (Skeleton), המשתמש ילחץ 10 פעמים ויגרום ל-Race condition."
+              },
+              {
+                eyebrow: "מצב 2",
+                title: "Empty (מצב ריק)",
+                body: "תלמיד חדש בלי קורסים לא אמור לראות טבלה ריקה או לקרוס. דרוש מהסוכן לעצב Empty State מזמין: 'לחץ כאן כדי להתחיל'."
+              },
+              {
+                eyebrow: "מצב 3",
+                title: "Error (שגיאה)",
+                body: "השרת נפל? אל תציג מסך לבן שבור. הצג רכיב שגיאה אלגנטי (Error Boundary) שמאפשר למשתמש לנסות שנית."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: "optimistic-ui",
+        label: "אשליית מהירות",
+        navShort: "אופטימיות",
+        kicker: "לגרום למסך לטוס",
+        title: "Optimistic UI: איך אינסטגרם מרגישה כל כך מהירה",
+        description: "עדכון אופטימי אומר שה-Frontend מניח מראש שהשרת יאשר את הבקשה, ומעדכן את המסך מיד כדי לתת חוויה חלקה, ורק מתקן במקרה של כישלון.",
+        blocks: [
+          {
+            type: "callout",
+            tone: "info",
+            title: "פרומפט מנצח לסוכן",
+            text: "'Implement optimistic UI updates so the list feels blazing fast'. ככה ה-UI ישתנה באלפית שנייה (כמו לייק אדום), ויחכה לשרת ברקע."
+          }
+        ]
+      },
+      {
+        id: "component-tree",
+        label: "עץ קומפוננטות",
+        navShort: "ארכיטקטורה",
+        kicker: "אטלס ארכיטקטורות",
+        title: "עץ הקומפוננטות (Component Tree)",
+        description: "תרשים שמראה כיצד מסך ה'קורס' מפורק לקומפוננטות, ואיך ה-State מתחלק בין השרת למסך המקומי.",
+        blocks: [
+          {
+            type: "code-block",
+            eyebrow: "תרשים זרימה",
+            title: "זרימת הפרופס והמצב (Props & State) במסך",
+            language: "mermaid",
+            code: `graph TD
+    classDef page fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px;
+    classDef container fill:#e3f2fd,stroke:#673ab7,stroke-width:2px;
+    classDef component fill:#e1f5fe,stroke:#03a9f4,stroke-width:2px;
+    classDef state fill:#fff3e0,stroke:#ff9800,stroke-width:2px,stroke-dasharray: 5 5;
+
+    CoursePage[עמוד קורס מרכזי]:::page
+    
+    ServerState((Server State:<br/>מושך מה-API את <br/>פרטי הקורס)):::state
+    ServerState -.-> CoursePage
+
+    CoursePage --> Header[כותרת הקורס וסטטוס התקדמות]:::container
+    CoursePage --> VideoPlayer[נגן הוידאו]:::container
+    CoursePage --> QuizSection[אזור המבחן]:::container
+
+    QuizSection --> QuestionDisplay[תצוגת השאלה]:::component
+    QuizSection --> OptionsList[רשימת התשובות האפשריות]:::component
+    QuizSection --> SubmitBtn[כפתור הגשה]:::component
+
+    LocalState((Local State:<br/>איזו תשובה התלמיד<br/>סימן כרגע?)):::state
+    LocalState -.-> OptionsList
+    
+    %% Props flow
+    CoursePage == מעביר Props: <br>נתוני השאלה ==> QuizSection`
+          }
+        ]
+      },
+      {
+        id: "tech-lead-exam",
+        label: "אתגר Review",
+        navShort: "מבחן",
+        kicker: "The Tech Lead Exam",
+        title: "אתגר ה-Code Review לסוכן הפרונטאנד",
+        description: "בדוק האם הפנמת את החשיבה הארכיטקטונית - גם בביצועים וגם באבטחה.",
+        blocks: [
+          {
+            type: "bullet-list",
+            title: "חלק א': מבדק רינדור וביצועים (חיפוש מקליד)",
+            items: [
+              "המשתמש מקליד תו בתיבת חיפוש. איך לא נקריס את השרת?",
+              "א': בקשת API על כל אות. (שגוי - יעשה DDoS לשרת).",
+              "ב': להוריד מראש את כל אלפי השיעורים לקליינט ולסנן רק ב-UI. (שגוי - יהרוג רוחב פס ויתקע את הדפדפן).",
+              "ג': Debounce (השהיה) - הקליינט ימתין 300ms מסיום ההקלדה ורק אז ישלח בקשה מסודרת. (התשובה הנכונה!)."
+            ]
+          },
+          {
+            type: "code-block",
+            eyebrow: "The Code",
+            title: "חלק ב': קוד שכתב סוכן להצגת רשימת תלמידים",
+            language: "javascript",
+            code: `// ה-Frontend קורא ל-API כדי להביא את רשימת התלמידים
+const students = await fetch('/api/get-all-users');
+
+// הסוכן מסנן את הרשימה בתוך הדפדפן (ב-Frontend!)
+const myStudents = students.filter(student => student.courseId === currentTeacherCourse);
+
+// רינדור הטבלה במסך
+return <Table data={myStudents} />`
+          },
+          {
+            type: "callout",
+            tone: "danger",
+            title: "תשובת מנהל המוצר הטכני: אסון ארכיטקטוני ואבטחתי",
+            text: "אסון אבטחתי: ה-UI מושך את כל המשתמשים ('get-all-users'). כל מורה יוכל לפתוח Network Tab ולראות מידע אישי של תלמידים שלא שלו!\nאסון ביצועים: להוריד קובץ JSON של רבבות משתמשים יתקע את הדפדפן.\nהפרומפט המתקן: 'Stop! You are filtering data on the Client-side... Move filtering to the Backend... Update the UI to include a Loading State'."
+          }
+        ]
+      }
+    ]
+  };
 
   const legacyUnitAliases = {
     "git-prs": "git-pr",
@@ -3072,6 +3279,7 @@ app.post('/delete-folder', async (req, res) => {
     "http-api": httpApiPage,
     "data-modeling": dataModelingPage,
     "business-logic": businessLogicPage,
+    "frontend-architecture": frontendArchitecturePage,
     "design-templates-21st": designTemplatesPage
   };
 
