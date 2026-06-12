@@ -1,17 +1,22 @@
 :root {
-  color-scheme: dark;
-  --page-bg: #050816;
-  --page-surface: rgba(10, 14, 30, 0.8);
-  --page-surface-strong: rgba(8, 11, 24, 0.9);
-  --page-border: rgba(255, 255, 255, 0.1);
-  --page-copy: #eef2ff;
-  --page-muted: rgba(226, 232, 240, 0.76);
-  --page-title: #ffffff;
-  --shadow-xl: 0 28px 90px rgba(1, 4, 20, 0.42);
-  --accent: #4fd1c5;
-  --accent-soft: rgba(79, 209, 197, 0.16);
-  --accent-glow: rgba(79, 209, 197, 0.28);
-  --accent-secondary: #7dd3fc;
+  color-scheme: light;
+  --page-bg: #f4ece0;
+  --page-surface: #faf3e7;
+  --page-surface-strong: #ffffff;
+  --page-border: rgba(28, 25, 22, 0.16);
+  --page-border-strong: rgba(28, 25, 22, 0.32);
+  --page-copy: #1c1916;
+  --page-muted: rgba(28, 25, 22, 0.62);
+  --page-soft: rgba(28, 25, 22, 0.78);
+  --page-title: #1c1916;
+  --shadow-xl: 6px 6px 0 rgba(28, 25, 22, 0.08);
+  --accent: #b85a35;
+  --accent-soft: rgba(184, 90, 53, 0.12);
+  --accent-glow: rgba(184, 90, 53, 0.2);
+  --accent-secondary: #0e6e63;
+  --display: "Frank Ruhl Libre", "Secular One", "Assistant", serif;
+  --body: "Assistant", "Segoe UI Variable", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
 }
 
 * {
@@ -25,48 +30,19 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: "Assistant", "Segoe UI Variable", sans-serif;
-  background:
-    radial-gradient(circle at top right, rgba(79, 209, 197, 0.12), transparent 32%),
-    radial-gradient(circle at top left, rgba(125, 211, 252, 0.14), transparent 38%),
-    linear-gradient(180deg, #060914 0%, #070b17 34%, #090d1b 100%);
+  font-family: var(--body);
+  background: var(--page-bg);
   color: var(--page-copy);
 }
 
-body[data-accent="navy"] {
-  --accent: #60a5fa;
-  --accent-soft: rgba(96, 165, 250, 0.16);
-  --accent-glow: rgba(96, 165, 250, 0.26);
-  --accent-secondary: #818cf8;
-}
-
-body[data-accent="gold"] {
-  --accent: #fbbf24;
-  --accent-soft: rgba(251, 191, 36, 0.16);
-  --accent-glow: rgba(251, 191, 36, 0.26);
-  --accent-secondary: #fb7185;
-}
-
-body[data-accent="purple"] {
-  --accent: #a78bfa;
-  --accent-soft: rgba(167, 139, 250, 0.16);
-  --accent-glow: rgba(167, 139, 250, 0.26);
-  --accent-secondary: #38bdf8;
-}
-
-body[data-accent="rose"] {
-  --accent: #fb7185;
-  --accent-soft: rgba(251, 113, 133, 0.16);
-  --accent-glow: rgba(251, 113, 133, 0.26);
-  --accent-secondary: #f59e0b;
-}
-
-body[data-accent="orange"] {
-  --accent: #fb923c;
-  --accent-soft: rgba(251, 146, 60, 0.16);
-  --accent-glow: rgba(251, 146, 60, 0.26);
-  --accent-secondary: #facc15;
-}
+/* Editorial accent system — single coral or teal, no rainbow.
+   Skin variants kept as data-accent so JS doesn't break, but all
+   resolve to ink-and-coral language now. */
+body[data-accent="navy"]   { --accent: #1c1916; --accent-secondary: #b85a35; }
+body[data-accent="gold"]   { --accent: #a8842c; --accent-secondary: #1c1916; }
+body[data-accent="purple"] { --accent: #6a4a7c; --accent-secondary: #1c1916; }
+body[data-accent="rose"]   { --accent: #a8443e; --accent-secondary: #1c1916; }
+body[data-accent="orange"] { --accent: #b85a35; --accent-secondary: #0e6e63; }
 
 .unit-page-orb {
   position: fixed;
@@ -1009,4 +985,399 @@ body[data-accent="orange"] {
   .sequence-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* ============================================================
+   EDITORIAL PRINT OVERLAY — unit page
+   הופך את עמוד היחידה משפת dark-glass לשפת ספר/מגזין:
+   נייר, דיו, קווי הפרדה דקים, סריאף לכותרות, מונוספייס לאקצנטים.
+   ============================================================ */
+
+.unit-page-body {
+  background: var(--page-bg) !important;
+  color: var(--page-copy) !important;
+}
+
+/* Kill orbs */
+.unit-page-orb,
+.unit-page-orb-a,
+.unit-page-orb-b {
+  display: none !important;
+}
+
+/* TOPBAR — paper, square */
+.unit-page-topbar {
+  background: var(--page-surface) !important;
+  border: 1px solid var(--page-border) !important;
+  border-radius: 2px !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.unit-page-back {
+  background: var(--page-copy) !important;
+  color: var(--page-surface-strong) !important;
+  border-radius: 2px !important;
+  box-shadow: none !important;
+  font-family: var(--body) !important;
+}
+
+.unit-page-back:hover {
+  background: var(--accent) !important;
+}
+
+.unit-page-topbar-copy strong {
+  font-family: var(--display) !important;
+  font-weight: 700 !important;
+}
+
+.unit-page-topbar-copy span {
+  font-family: var(--mono) !important;
+  font-size: 0.78rem !important;
+  letter-spacing: 0.06em !important;
+  color: var(--page-muted) !important;
+}
+
+/* HERO — paper, ink border, no glow */
+.unit-page-hero {
+  background: var(--page-surface) !important;
+  border: 1px solid var(--page-copy) !important;
+  border-radius: 2px !important;
+  box-shadow: 6px 6px 0 var(--page-border) !important;
+  overflow: hidden !important;
+}
+
+.unit-page-hero::before,
+.unit-page-hero::after {
+  display: none !important;
+}
+
+.unit-hero-eyebrow {
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid var(--page-border-strong) !important;
+  border-radius: 0 !important;
+  padding: 0 0 6px !important;
+  min-height: 0 !important;
+  font-family: var(--mono) !important;
+  font-size: 0.74rem !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase !important;
+  color: var(--page-muted) !important;
+  font-weight: 500 !important;
+}
+
+.unit-hero-copy h1 {
+  font-family: var(--display) !important;
+  font-weight: 900 !important;
+  color: var(--page-title) !important;
+  letter-spacing: -0.02em !important;
+  line-height: 1.05 !important;
+}
+
+.unit-hero-copy p {
+  color: var(--page-soft) !important;
+  font-family: var(--body) !important;
+}
+
+/* HERO BUTTONS — solid ink, square */
+.unit-hero-button,
+.unit-hero-button-ghost {
+  border-radius: 2px !important;
+  box-shadow: none !important;
+  font-family: var(--body) !important;
+  font-weight: 700 !important;
+}
+
+.unit-hero-button {
+  background: var(--page-copy) !important;
+  color: var(--page-surface-strong) !important;
+  border: 1px solid var(--page-copy) !important;
+}
+
+.unit-hero-button:hover {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+}
+
+.unit-hero-button-ghost {
+  background: transparent !important;
+  color: var(--page-copy) !important;
+  border: 1px solid var(--page-border-strong) !important;
+}
+
+.unit-hero-button-ghost:hover {
+  border-color: var(--page-copy) !important;
+}
+
+/* FACT CARDS — paper, thin ink rule */
+.unit-fact-card {
+  background: var(--page-surface-strong) !important;
+  border: 1px solid var(--page-border) !important;
+  border-radius: 2px !important;
+  box-shadow: none !important;
+}
+
+.unit-fact-value {
+  font-family: var(--mono) !important;
+  color: var(--page-copy) !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+.unit-fact-label {
+  font-family: var(--body) !important;
+  color: var(--page-muted) !important;
+}
+
+/* NAV — table-row pills */
+.unit-page-nav {
+  background: var(--page-surface) !important;
+  border: 1px solid var(--page-border) !important;
+  border-radius: 2px !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  padding: 8px !important;
+}
+
+.unit-nav-button {
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  border-radius: 2px !important;
+  color: var(--page-soft) !important;
+  font-family: var(--body) !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+}
+
+.unit-nav-button:hover {
+  background: var(--accent-soft) !important;
+  color: var(--page-copy) !important;
+}
+
+.unit-nav-button.active {
+  background: var(--page-copy) !important;
+  color: var(--page-surface-strong) !important;
+  border-color: var(--page-copy) !important;
+  box-shadow: none !important;
+}
+
+/* SIDEBAR + CONTENT — paper sheets with ink border */
+.unit-page-sidebar,
+.unit-page-content {
+  background: var(--page-surface) !important;
+  border: 1px solid var(--page-border) !important;
+  border-radius: 2px !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.sidebar-label {
+  color: var(--accent) !important;
+  font-family: var(--mono) !important;
+  font-size: 0.74rem !important;
+  letter-spacing: 0.12em !important;
+}
+
+.sidebar-title {
+  font-family: var(--display) !important;
+  font-weight: 700 !important;
+  color: var(--page-title) !important;
+}
+
+.sidebar-copy,
+.sidebar-list {
+  color: var(--page-soft) !important;
+}
+
+.sidebar-pager a {
+  background: transparent !important;
+  border: 1px solid var(--page-border) !important;
+  border-radius: 2px !important;
+  color: var(--page-copy) !important;
+  font-family: var(--body) !important;
+}
+
+.sidebar-pager a:hover {
+  border-color: var(--page-copy) !important;
+  background: var(--accent-soft) !important;
+}
+
+/* LESSON BLOCKS — bordered paper, no glass */
+.lesson-block {
+  background: var(--page-surface-strong) !important;
+  border: 1px solid var(--page-border) !important;
+  border-radius: 2px !important;
+  box-shadow: none !important;
+}
+
+.lesson-part-kicker {
+  font-family: var(--mono) !important;
+  color: var(--accent) !important;
+  font-size: 0.78rem !important;
+  letter-spacing: 0.12em !important;
+}
+
+.lesson-part-header h2 {
+  font-family: var(--display) !important;
+  font-weight: 900 !important;
+  color: var(--page-title) !important;
+  letter-spacing: -0.02em !important;
+}
+
+.lesson-part-description {
+  color: var(--page-soft) !important;
+}
+
+.block-eyebrow {
+  background: transparent !important;
+  border: 1px solid var(--accent) !important;
+  border-radius: 2px !important;
+  color: var(--accent) !important;
+  font-family: var(--mono) !important;
+  font-size: 0.7rem !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  min-height: 28px !important;
+}
+
+.block-title {
+  font-family: var(--display) !important;
+  font-weight: 700 !important;
+  color: var(--page-title) !important;
+}
+
+.block-copy,
+.block-list {
+  color: var(--page-soft) !important;
+}
+
+/* CALLOUT CARDS — replace orange/blue washes with paper + accent rule */
+.callout-card {
+  background: var(--page-surface-strong) !important;
+  border: 1px solid var(--page-border) !important;
+}
+
+.callout-card::before {
+  background: var(--accent) !important;
+  width: 3px !important;
+}
+
+.callout-card[data-tone="warm"] {
+  background: var(--accent-soft) !important;
+  border-color: var(--accent) !important;
+}
+
+.callout-card[data-tone="info"] {
+  background: var(--page-surface-strong) !important;
+  border-color: var(--accent-secondary) !important;
+}
+
+.callout-card[data-tone="info"]::before {
+  background: var(--accent-secondary) !important;
+}
+
+.callout-card[data-tone="quiet"] {
+  background: var(--page-surface) !important;
+}
+
+/* ANALOGY / TOOL / SEQUENCE cards */
+.analogy-card,
+.tool-card,
+.sequence-step {
+  background: var(--page-surface-strong) !important;
+  border: 1px solid var(--page-border) !important;
+  border-radius: 2px !important;
+  box-shadow: none !important;
+}
+
+.analogy-tag {
+  background: transparent !important;
+  border: 1px solid var(--accent) !important;
+  border-radius: 2px !important;
+  color: var(--accent) !important;
+  font-family: var(--mono) !important;
+  font-size: 0.7rem !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+}
+
+.analogy-card h4,
+.tool-card h4,
+.sequence-step h4 {
+  font-family: var(--display) !important;
+  font-weight: 700 !important;
+  color: var(--page-title) !important;
+}
+
+.analogy-caption,
+.sequence-step p,
+.tool-card p {
+  color: var(--page-soft) !important;
+}
+
+.analogy-risk {
+  border-top: 1px solid var(--page-border-strong) !important;
+  color: var(--page-copy) !important;
+}
+
+/* STACK MAP — bordered paper layers */
+.stack-layer {
+  background: var(--page-surface-strong) !important;
+  border: 1px solid var(--page-border) !important;
+  border-radius: 2px !important;
+  box-shadow: none !important;
+}
+
+.stack-layer::before {
+  background: var(--accent) !important;
+  width: 3px !important;
+  border-radius: 0 !important;
+}
+
+.stack-layer h4 {
+  font-family: var(--display) !important;
+  color: var(--page-title) !important;
+}
+
+.stack-layer p {
+  color: var(--page-soft) !important;
+}
+
+/* COMPLETION BAR — solid ink, square */
+.unit-completion-bar {
+  background: var(--page-copy) !important;
+  border: none !important;
+  border-top: 1px solid var(--page-copy) !important;
+  border-radius: 0 !important;
+  box-shadow: 0 -4px 24px rgba(28, 25, 22, 0.12) !important;
+  backdrop-filter: none !important;
+}
+
+.unit-completion-label {
+  color: var(--page-surface-strong) !important;
+  font-family: var(--body) !important;
+}
+
+.unit-complete-btn {
+  background: var(--accent) !important;
+  color: var(--page-surface-strong) !important;
+  border: 1px solid var(--accent) !important;
+  border-radius: 2px !important;
+  box-shadow: none !important;
+  font-family: var(--body) !important;
+  font-weight: 700 !important;
+}
+
+.unit-complete-btn:hover {
+  background: var(--page-surface-strong) !important;
+  color: var(--page-copy) !important;
+  border-color: var(--page-surface-strong) !important;
+}
+
+/* Generic white-rgba sweep — anything still hardcoded with translucent
+   white borders/backgrounds inside .unit-page-content gets ink instead */
+.unit-page-content .lesson-block,
+.unit-page-content [class*="card"],
+.unit-page-content [class*="grid"] > * {
+  color: var(--page-copy);
 }

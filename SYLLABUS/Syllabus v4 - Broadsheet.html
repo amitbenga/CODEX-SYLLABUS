@@ -257,8 +257,6 @@ function Feature({ unit, done, onComplete, onBack, onNav }) {
   const idx = SYLLABUS.units.findIndex(u => u.id === unit.id);
   const prev = SYLLABUS.units[idx - 1];
   const next = SYLLABUS.units[idx + 1];
-  let secNum = 0;
-  const sec = () => pad2(++secNum);
 
   React.useEffect(() => {
     document.documentElement.scrollTop = 0; document.body.scrollTop = 0;
@@ -288,22 +286,8 @@ function Feature({ unit, done, onComplete, onBack, onNav }) {
 
       <div className="rule"></div>
 
-      {/* §01 – Intro */}
-      {unit.intro && (
-        <React.Fragment>
-          <section className="fsec">
-            <Sub no={sec()} en="Introduction" he="פתיח" />
-            <div className="intro-paras">
-              {unit.intro.map((p, i) => <p className="intro__p" key={i}>{p}</p>)}
-            </div>
-          </section>
-          <div className="fsec__rule"></div>
-        </React.Fragment>
-      )}
-
-      {/* §02 – Goals */}
       <section className="fsec">
-        <Sub no={sec()} en="Goals" he="מטרות" />
+        <Sub no="01" en="Goals" he="מטרות" />
         <div className="goals">
           {unit.goals.map((g, i) => (
             <div className="goal" key={i}><span className="goal__m mono">—</span><span className="goal__t">{g}</span></div>
@@ -312,189 +296,50 @@ function Feature({ unit, done, onComplete, onBack, onNav }) {
       </section>
       <div className="fsec__rule"></div>
 
-      {/* §03 – Topics */}
       <section className="fsec">
-        <Sub no={sec()} en="Topics" he="נושאים" />
+        <Sub no="02" en="Topics" he="נושאים" />
         <div className="topics">
           {unit.topics.map((tp, i) => <span className="topic" key={i}>{tp}</span>)}
         </div>
       </section>
       <div className="fsec__rule"></div>
 
-      {/* §04 – Concept Map */}
-      {unit.conceptMap && unit.conceptMap.length > 0 && (
-        <React.Fragment>
-          <section className="fsec">
-            <Sub no={sec()} en="Concept Map" he="מפת מושגים" />
-            <div className="concept-map">
-              {unit.conceptMap.map((c, i) => (
-                <div className="concept" key={i}>
-                  <div className="concept__term mono">{c.term}</div>
-                  <div className="concept__def">{c.definition}</div>
-                  {c.example && <div className="concept__eg"><span className="concept__eg-lbl mono">דוגמה:</span> {c.example}</div>}
-                </div>
-              ))}
-            </div>
-          </section>
-          <div className="fsec__rule"></div>
-        </React.Fragment>
-      )}
-
-      {/* §05 – Deep Dive */}
-      {unit.deepDive && unit.deepDive.length > 0 && (
-        <React.Fragment>
-          <section className="fsec">
-            <Sub no={sec()} en="Deep Dive" he="צלילה לעומק" />
-            <div className="deep-dive">
-              {unit.deepDive.map((dd, i) => (
-                <div className="deep-dive__item" key={i}>
-                  <h4 className="deep-dive__title">{dd.title}</h4>
-                  {dd.paragraphs.map((p, j) => <p className="deep-dive__p" key={j}>{p}</p>)}
-                </div>
-              ))}
-            </div>
-          </section>
-          <div className="fsec__rule"></div>
-        </React.Fragment>
-      )}
-
-      {/* §06 – Deliverable + Exercise */}
       <section className="fsec">
         <div className="cols2">
           <div>
-            <Sub no={sec()} en="Deliverable" he="תוצר" />
+            <Sub no="03" en="Deliverable" he="תוצר" />
             <div className="deliverable">{unit.deliverable}</div>
-            {unit.deliverableItems && (
-              <div className="deliverable-items">
-                {unit.deliverableItems.map((d, i) => (
-                  <div className="deliverable-item" key={i}><span className="deliverable-item__m mono">→</span><span>{d}</span></div>
-                ))}
-              </div>
-            )}
           </div>
           <div>
-            <Sub no={sec()} en="Exercise" he="תרגיל מרכזי" />
+            <Sub no="04" en="Exercise" he="תרגיל מרכזי" />
             <div className="exercise">{unit.exercise}</div>
-            {unit.exerciseSteps && (
-              <div className="exercise-steps">
-                {unit.exerciseSteps.map((s, i) => (
-                  <div className="exercise-step" key={i}><span className="exercise-step__n mono">{pad2(i+1)}</span><span>{s}</span></div>
-                ))}
-              </div>
-            )}
           </div>
         </div>
       </section>
       <div className="fsec__rule"></div>
 
-      {/* §08 – Case Study */}
-      {unit.caseStudy && (
-        <React.Fragment>
-          <section className="fsec">
-            <Sub no={sec()} en="Case Study" he="מעבדת פיתוח — הקליניקה" />
-            <div className="case-study">
-              <p className="case-study__lead">{unit.caseStudy.lead}</p>
-              {unit.caseStudy.tasks && (
-                <div className="case-study__tasks">
-                  {unit.caseStudy.tasks.map((t, i) => (
-                    <div className="case-study__task" key={i}>
-                      <div className="case-study__task-n mono">TASK {pad2(i+1)}</div>
-                      <div className="case-study__task-title">{t.title}</div>
-                      <p className="case-study__task-body">{t.body}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-              {unit.caseStudy.prompt && (
-                <div className="case-study__prompt">
-                  <span className="case-study__prompt-lbl mono">פרומפט מומלץ לסוכן:</span>
-                  <p>{unit.caseStudy.prompt}</p>
-                </div>
-              )}
-            </div>
-          </section>
-          <div className="fsec__rule"></div>
-        </React.Fragment>
-      )}
-
-      {/* §09 – Understanding Test + Management Lens */}
       <section className="fsec">
         <div className="cols2">
           <div>
-            <Sub no={sec()} en="Understanding Test" he="מבחן הבנה" />
+            <Sub no="05" en="Understanding Test" he="מבחן הבנה" />
             <p className="utest">״{unit.understandingTest}״</p>
           </div>
           <div>
-            <Sub no={sec()} en="Management Lens" he="עדשת ניהול" />
+            <Sub no="06" en="Management Lens" he="עדשת ניהול" />
             <p className="lens">{unit.managementLens}</p>
           </div>
         </div>
       </section>
       <div className="fsec__rule"></div>
 
-      {/* §11 – Red Flags */}
       <section className="fsec">
-        <Sub no={sec()} en="Red Flags" he="דגלים אדומים" />
+        <Sub no="07" en="Red Flags" he="דגלים אדומים" />
         <div className="redflags">
           {unit.redFlags.map((f, i) => (
-            <div className="redflag" key={i}><span className="redflag__m">▲</span><span className="redflag__t">{typeof f === "string" ? f : f.flag}</span></div>
+            <div className="redflag" key={i}><span className="redflag__m">▲</span><span className="redflag__t">{f}</span></div>
           ))}
         </div>
       </section>
-      <div className="fsec__rule"></div>
-
-      {/* §12 – Pitfalls */}
-      {unit.pitfalls && unit.pitfalls.length > 0 && (
-        <React.Fragment>
-          <section className="fsec">
-            <Sub no={sec()} en="Pitfalls & Mitigations" he="מלכודות ודרכי מניעה" />
-            <div className="pitfalls">
-              {unit.pitfalls.map((p, i) => (
-                <div className="pitfall" key={i}>
-                  <div className="pitfall__bad"><span className="pitfall__icon">✗</span>{p.pitfall}</div>
-                  <div className="pitfall__good"><span className="pitfall__icon">✓</span>{p.mitigation}</div>
-                </div>
-              ))}
-            </div>
-          </section>
-          <div className="fsec__rule"></div>
-        </React.Fragment>
-      )}
-
-      {/* §13 – Checklist */}
-      {unit.checklist && unit.checklist.length > 0 && (
-        <React.Fragment>
-          <section className="fsec">
-            <Sub no={sec()} en="Checklist" he="צ׳קליסט לפני שממשיכים" />
-            <div className="checklist">
-              {unit.checklist.map((c, i) => (
-                <div className="check-item" key={i}>
-                  <span className="check-item__box mono">☐</span>
-                  <span className="check-item__t">{c}</span>
-                </div>
-              ))}
-            </div>
-          </section>
-          <div className="fsec__rule"></div>
-        </React.Fragment>
-      )}
-
-      {/* §14 – Sources */}
-      {unit.sources && unit.sources.length > 0 && (
-        <React.Fragment>
-          <section className="fsec">
-            <Sub no={sec()} en="Sources" he="מקורות מומלצים" />
-            <div className="sources">
-              {unit.sources.map((s, i) => (
-                <div className="source" key={i}>
-                  <span className="source__n mono">{pad2(i+1)}</span>
-                  <span className="source__t">{s}</span>
-                </div>
-              ))}
-            </div>
-          </section>
-        </React.Fragment>
-      )}
 
       <div className="rule"></div>
       <div className="pager">

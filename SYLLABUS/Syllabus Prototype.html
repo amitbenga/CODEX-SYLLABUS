@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Technical Product Builder</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="units-data.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-family: 'Heebo', sans-serif; }
+  body { overflow-x: hidden; }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 3px; }
+
+  /* Tweaks panel */
+  #tweaks-panel {
+    position: fixed; bottom: 24px; left: 24px; z-index: 9999;
+    background: white; border-radius: 16px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+    padding: 20px; width: 260px;
+    display: none; flex-direction: column; gap: 16px;
+    font-family: 'Heebo', sans-serif;
+    direction: rtl;
+  }
+  #tweaks-panel.open { display: flex; }
+  .tweaks-title { font-size: 13px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #888; }
+  .tweak-row { display: flex; flex-direction: column; gap: 8px; }
+  .tweak-label { font-size: 13px; font-weight: 500; color: #333; }
+  .tweak-options { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tweak-btn {
+    padding: 6px 12px; border-radius: 8px; border: 1.5px solid #E5E5E5;
+    font-size: 12px; font-weight: 500; cursor: pointer; background: white; color: #333;
+    transition: all 0.15s;
+  }
+  .tweak-btn.active { color: white; border-color: transparent; }
+  .tweak-swatch {
+    width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+    border: 3px solid transparent; transition: all 0.15s;
+  }
+  .tweak-swatch.active { border-color: #333; transform: scale(1.1); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div id="tweaks-panel">
+  <div class="tweaks-title">Tweaks</div>
+  <div class="tweak-row">
+    <div class="tweak-label">צבע accent</div>
+    <div class="tweak-options" id="tweak-accent"></div>
+  </div>
+  <div class="tweak-row">
+    <div class="tweak-label">סגנון קלפים</div>
+    <div class="tweak-options" id="tweak-style"></div>
+  </div>
+  <div class="tweak-row">
+    <div class="tweak-label">צפיפות</div>
+    <div class="tweak-options" id="tweak-density"></div>
+  </div>
+</div>
+
+<script type="text/babel">
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "accent": "amber",
+  "cardStyle": "warm",
+  "density": "comfortable"
+}/*EDITMODE-END*/;
+
+const ACCENTS = {
+  amber:  { label: "ענבר",  color: "#E8901A", light: "#FEF3C7", dark: "#92400E" },
+  teal:   { label: "טורקיז", color: "#0D9488", light: "#CCFBF1", dark: "#134E4A" },
+  indigo: { label: "אינדיגו", color: "#4F46E5", light: "#EEF2FF", dark: "#1E1B4B" },
+};
+
+const PHASES = {
+  "יסודות": { color: "#F59E0B", range: "שבועות 1–4" },
+  "בנייה":  { color: "#10B981", range: "שבועות 5–8" },
+  "סוכנים": { color: "#6366F1", range: "שבועות 9–12" },
+  "delivery": { color: "#EF4444", range: "שבועות 13–16" },
+};
+
+// ─── Theme ─────────────────────────────────────────────────
+function getTheme(dark, accent) {
+  const a = ACCENTS[accent];
+  return {
+    bg:          dark ? "#1C1A17" : "#FAF8F5",
+    surface:     dark ? "#28251F" : "#FFFFFF",
+    surfaceAlt:  dark ? "#332F27" : "#F4F1EC",
+    border:      dark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)",
+    text:        dark ? "#F5F0E8" : "#1C1A17",
+    textMuted:   dark ? "#9C9080" : "#8A7D6E",
+    textFaint:   dark ? "#5A5248" : "#C4B9AA",
+    accent:      a.color,
+    accentLight: dark ? a.dark : a.light,
+    accentDark:  a.dark,
+    shadow:      dark ? "0 2px 16px rgba(0,0,0,0.4)" : "0 2px 16px rgba(0,0,0,0.07)",
+    shadowLg:    dark ? "0 8px 40px rgba(0,0,0,0.5)" : "0 8px 40px rgba(0,0,0,0.1)",
+  };
+}
+
+// ─── Progress Bar ───────────────────────────────────────────
+function ProgressBar({ completed, total, t }) {
+  const pct = Math.round((completed / total) * 100);
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+      <div style={{ flex: 1, height: 6, background: t.border, borderRadius: 99, overflow: "hidden" }}>
+        <div style={{
+          height: "100%", width: `${pct}%`, background: t.accent,
+          borderRadius: 99, transition: "width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)"
+        }}/>
+      </div>
+      <span style={{ fontSize: 13, fontWeight: 600, color: t.textMuted, whiteSpace: "nowrap" }}>
+        {completed}/{total}
+      </span>
+    </div>
+  );
+}
+
+// ─── Unit Card ──────────────────────────────────────────────
+function UnitCard({ unit, status, onClick, t, cardStyle, density }) {
+  const [hovered, setHovered] = React.useState(false);
+  const isLocked = status === "locked";
+  const isDone = status === "done";
+  const pad = density === "compact" ? "16px 20px" : "20px 24px";
+
+  const phaseColor = PHASES[unit.phase]?.color || t.accent;
+
+  return (
+    <div
+      onClick={() => !isLocked && onClick(unit)}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        background: isDone ? t.accentLight : t.surface,
+        border: `1.5px solid ${isDone ? t.accent + "44" : hovered && !isLocked ? t.accent + "66" : t.border}`,
+        borderRadius: cardStyle === "sharp" ? 8 : 16,
+        padding: pad,
+        cursor: isLocked ? "not-allowed" : "pointer",
+        opacity: isLocked ? 0.45 : 1,
+        transition: "all 0.18s ease",
+        transform: hovered && !isLocked ? "translateY(-2px)" : "none",
+        boxShadow: hovered && !isLocked ? t.shadowLg : t.shadow,
+        position: "relative",
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+        gap: 10,
+      }}
+    >
+      {/* Big decorative number */}
+      <div style={{
+        position: "absolute",
+        top: -10, left: -4,
+        fontSize: 80, fontWeight: 900,
+        color: isDone ? t.accent + "22" : t.textFaint + "88",
+        lineHeight: 1,
+        fontVariantNumeric: "tabular-nums",
+        userSelect: "none",
+        pointerEvents: "none",
+        direction: "ltr",
+      }}>
+        {String(unit.id).padStart(2, "0")}
+      </div>
+
+      {/* Header row */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", paddingTop: 4 }}>
+        <div style={{
+          fontSize: 11, fontWeight: 700, letterSpacing: "0.06em",
+          color: phaseColor, textTransform: "uppercase", opacity: 0.85,
+        }}>
+          שבוע {unit.week}
+        </div>
+        <div style={{ fontSize: 18, lineHeight: 1 }}>
+          {isDone ? "✓" : isLocked ? "🔒" : ""}
+        </div>
+      </div>
+
+      {/* Title */}
+      <div>
+        <div style={{
+          fontSize: density === "compact" ? 16 : 18,
+          fontWeight: 700,
+          color: isDone ? t.accentDark : t.text,
+          lineHeight: 1.3,
+          marginBottom: 4,
+        }}>
+          {unit.title}
+        </div>
+        <div style={{ fontSize: 12, color: t.textMuted, fontWeight: 400 }}>
+          {unit.titleEn}
+        </div>
+      </div>
+
+      {/* Description */}
+      <div style={{
+        fontSize: 13, color: t.textMuted, lineHeight: 1.5,
+        display: density === "compact" ? "none" : "block",
+      }}>
+        {unit.description}
+      </div>
+
+      {/* CTA */}
+      {!isLocked && !isDone && (
+        <div style={{
+          marginTop: 4,
+          fontSize: 12, fontWeight: 600, color: t.accent,
+          display: "flex", alignItems: "center", gap: 4
+        }}>
+          התחל יחידה ←
+        </div>
+      )}
+      {isDone && (
+        <div style={{ fontSize: 12, fontWeight: 600, color: t.accentDark + "cc" }}>
+          הושלם ✓
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Navigator ──────────────────────────────────────────────
+function Navigator({ completed, onSelect, t, cardStyle, density, dark }) {
+  const [search, setSearch] = React.useState("");
+  const units = UNITS_DATA;
+
+  const getStatus = (unit) => {
+    if (completed.has(unit.id)) return "done";
+    const prevDone = unit.id === 1 || completed.has(unit.id - 1);
+    return prevDone ? "available" : "locked";
+  };
+
+  const phases = ["יסודות", "בנייה", "סוכנים", "delivery"];
+  const phaseLabels = { delivery: "Delivery" };
+
+  const filtered = search
+    ? units.filter(u =>
+        u.title.includes(search) ||
+        u.titleEn.toLowerCase().includes(search.toLowerCase()) ||
+        u.description.includes(search)
+      )
+    : null;
+
+  return (
+    <div style={{ maxWidth: 920, margin: "0 auto", padding: "0 24px 80px" }}>
+      {/* Search */}
+      <div style={{ marginBottom: 40, position: "relative" }}>
+        <input
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="חיפוש יחידה..."
+          style={{
+            width: "100%", padding: "14px 20px 14px 48px",
+            background: t.surface, border: `1.5px solid ${t.border}`,
+            borderRadius: 12, fontSize: 15, color: t.text,
+            outline: "none", fontFamily: "Heebo, sans-serif",
+            transition: "border-color 0.15s",
+          }}
+          onFocus={e => e.target.style.borderColor = t.accent}
+          onBlur={e => e.target.style.borderColor = t.border}
+        />
+        <span style={{
+          position: "absolute", top: "50%", left: 16, transform: "translateY(-50%)",
+          fontSize: 18, opacity: 0.4, pointerEvents: "none"
+        }}>🔍</span>
+      </div>
+
+      {search && filtered ? (
+        <div>
+          <div style={{ fontSize: 13, color: t.textMuted, marginBottom: 16 }}>
+            {filtered.length} תוצאות עבור "{search}"
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 16 }}>
+            {filtered.map(u => (
+              <UnitCard key={u.id} unit={u} status={getStatus(u)} onClick={onSelect} t={t} cardStyle={cardStyle} density={density}/>
+            ))}
+          </div>
+        </div>
+      ) : (
+        phases.map(phase => {
+          const phaseUnits = units.filter(u => u.phase === phase);
+          const phaseInfo = PHASES[phase];
+          return (
+            <div key={phase} style={{ marginBottom: 52 }}>
+              {/* Phase header */}
+              <div style={{
+                display: "flex", alignItems: "baseline", gap: 12,
+                marginBottom: 20, paddingBottom: 14,
+                borderBottom: `2px solid ${phaseInfo.color}22`
+              }}>
+                <div style={{
+                  width: 10, height: 10, borderRadius: "50%",
+                  background: phaseInfo.color, flexShrink: 0,
+                  alignSelf: "center",
+                }}/>
+                <div style={{ fontSize: 20, fontWeight: 800, color: t.text }}>
+                  {phaseLabels[phase] || phase}
+                </div>
+                <div style={{ fontSize: 13, color: t.textMuted, fontWeight: 400 }}>
+                  {phaseInfo.range}
+                </div>
+              </div>
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+                gap: density === "compact" ? 10 : 14
+              }}>
+                {phaseUnits.map(u => (
+                  <UnitCard key={u.id} unit={u} status={getStatus(u)} onClick={onSelect} t={t} cardStyle={cardStyle} density={density}/>
+                ))}
+              </div>
+            </div>
+          );
+        })
+      )}
+    </div>
+  );
+}
+
+// ─── Quiz Tab ───────────────────────────────────────────────
+function QuizTab({ unit, t, onComplete }) {
+  const [answers, setAnswers] = React.useState({});
+  const [submitted, setSubmitted] = React.useState(false);
+
+  const score = submitted
+    ? unit.quiz.filter((q, i) => answers[i] === q.correct).length
+    : 0;
+  const allAnswered = unit.quiz.every((_, i) => answers[i] !== undefined);
+
+  const handleSubmit = () => {
+    setSubmitted(true);
+    if (score === unit.quiz.length) {
+      setTimeout(() => onComplete(), 1200);
+    }
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
+      {unit.quiz.map((q, qi) => (
+        <div key={qi} style={{
+          background: t.surfaceAlt, borderRadius: 14, padding: "20px 24px",
+          border: `1.5px solid ${submitted
+            ? answers[qi] === q.correct ? "#10B981" + "44" : "#EF4444" + "44"
+            : t.border}`
+        }}>
+          <div style={{ fontSize: 15, fontWeight: 600, color: t.text, marginBottom: 14, lineHeight: 1.4 }}>
+            {qi + 1}. {q.q}
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {q.options.map((opt, oi) => {
+              const isSelected = answers[qi] === oi;
+              const isCorrect = oi === q.correct;
+              let bg = t.surface;
+              let border = t.border;
+              let textColor = t.text;
+              if (submitted) {
+                if (isCorrect) { bg = "#10B98122"; border = "#10B981"; textColor = "#065F46"; }
+                else if (isSelected && !isCorrect) { bg = "#EF444422"; border = "#EF4444"; textColor = "#991B1B"; }
+              } else if (isSelected) {
+                bg = t.accentLight; border = t.accent; textColor = t.text;
+              }
+              return (
+                <button
+                  key={oi}
+                  onClick={() => !submitted && setAnswers(a => ({ ...a, [qi]: oi }))}
+                  style={{
+                    background: bg, border: `1.5px solid ${border}`, borderRadius: 10,
+                    padding: "10px 16px", fontSize: 14, color: textColor,
+                    cursor: submitted ? "default" : "pointer", textAlign: "right",
+                    fontFamily: "Heebo, sans-serif", fontWeight: isSelected || (submitted && isCorrect) ? 600 : 400,
+                    transition: "all 0.15s", display: "flex", gap: 10, alignItems: "center"
+                  }}
+                >
+                  <span style={{ fontSize: 14 }}>
+                    {submitted && isCorrect ? "✓ " : submitted && isSelected && !isCorrect ? "✗ " : ""}
+                  </span>
+                  {opt}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+
+      {!submitted ? (
+        <button
+          onClick={handleSubmit}
+          disabled={!allAnswered}
+          style={{
+            padding: "14px 32px", background: allAnswered ? t.accent : t.border,
+            color: allAnswered ? "white" : t.textMuted,
+            border: "none", borderRadius: 12, fontSize: 15, fontWeight: 700,
+            cursor: allAnswered ? "pointer" : "not-allowed", alignSelf: "flex-start",
+            transition: "all 0.2s", fontFamily: "Heebo, sans-serif"
+          }}
+        >
+          בדוק תשובות
+        </button>
+      ) : (
+        <div style={{
+          padding: "16px 24px", background: score === unit.quiz.length ? "#10B98122" : "#F59E0B22",
+          border: `1.5px solid ${score === unit.quiz.length ? "#10B981" : "#F59E0B"}`,
+          borderRadius: 12, fontSize: 15, fontWeight: 600,
+          color: score === unit.quiz.length ? "#065F46" : "#92400E"
+        }}>
+          {score === unit.quiz.length
+            ? `מושלם! 🎉 ${score}/${unit.quiz.length} נכון. מסמן את היחידה כהושלמה...`
+            : `${score}/${unit.quiz.length} נכון. עיין שוב בהסברים ונסה שוב.`}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Unit Page ──────────────────────────────────────────────
+function UnitPage({ unit, onBack, onComplete, isCompleted, t }) {
+  const [tab, setTab] = React.useState("learn");
+
+  const tabs = [
+    { id: "learn", label: "Learn", icon: "📖" },
+    { id: "build", label: "Build", icon: "🔨" },
+    { id: "quiz",  label: "Quiz",  icon: "📝" },
+  ];
+
+  const phaseColor = PHASES[unit.phase]?.color || t.accent;
+
+  return (
+    <div style={{ maxWidth: 720, margin: "0 auto", padding: "0 24px 80px" }}>
+      {/* Back */}
+      <button
+        onClick={onBack}
+        style={{
+          background: "none", border: "none", color: t.textMuted,
+          fontSize: 14, fontWeight: 600, cursor: "pointer",
+          display: "flex", alignItems: "center", gap: 6,
+          padding: "0 0 32px", fontFamily: "Heebo, sans-serif"
+        }}
+      >
+        → Back to syllabus
+      </button>
+
+      {/* Unit Header */}
+      <div style={{ marginBottom: 36 }}>
+        <div style={{
+          display: "flex", gap: 10, alignItems: "center", marginBottom: 10
+        }}>
+          <span style={{
+            fontSize: 11, fontWeight: 700, letterSpacing: "0.07em",
+            color: phaseColor, textTransform: "uppercase",
+            background: phaseColor + "18", padding: "3px 10px", borderRadius: 99
+          }}>
+            {unit.phase}
+          </span>
+          <span style={{ fontSize: 12, color: t.textMuted, fontWeight: 500 }}>
+            שבוע {unit.week} · יחידה {unit.id}
+          </span>
+          {isCompleted && (
+            <span style={{
+              fontSize: 11, fontWeight: 700, color: "#10B981",
+              background: "#10B98118", padding: "3px 10px", borderRadius: 99
+            }}>✓ הושלם</span>
+          )}
+        </div>
+
+        <h1 style={{
+          fontSize: 36, fontWeight: 900, color: t.text,
+          lineHeight: 1.2, marginBottom: 8
+        }}>
+          {unit.title}
+        </h1>
+        <p style={{ fontSize: 16, color: t.textMuted, lineHeight: 1.6 }}>
+          {unit.description}
+        </p>
+
+        {/* Objectives */}
+        <div style={{
+          marginTop: 20, padding: "16px 20px",
+          background: t.accentLight, borderRadius: 12,
+          border: `1px solid ${t.accent}30`
+        }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: t.accent, marginBottom: 10, letterSpacing: "0.05em", textTransform: "uppercase" }}>
+            מה תלמד ביחידה הזו
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            {unit.objectives.map((obj, i) => (
+              <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                <span style={{ color: t.accent, fontSize: 14, flexShrink: 0, marginTop: 1 }}>→</span>
+                <span style={{ fontSize: 14, color: t.text, lineHeight: 1.4 }}>{obj}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Tab Bar */}
+      <div style={{
+        display: "flex", gap: 4, marginBottom: 28,
+        background: t.surfaceAlt, padding: 4, borderRadius: 12,
+      }}>
+        {tabs.map(tb => (
+          <button
+            key={tb.id}
+            onClick={() => setTab(tb.id)}
+            style={{
+              flex: 1, padding: "10px 8px",
+              background: tab === tb.id ? t.surface : "transparent",
+              border: "none", borderRadius: 9,
+              boxShadow: tab === tb.id ? t.shadow : "none",
+              color: tab === tb.id ? t.text : t.textMuted,
+              fontSize: 14, fontWeight: tab === tb.id ? 700 : 500,
+              cursor: "pointer", transition: "all 0.15s",
+              display: "flex", gap: 6, alignItems: "center", justifyContent: "center",
+              fontFamily: "Heebo, sans-serif"
+            }}
+          >
+            <span>{tb.icon}</span> {tb.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Tab Content */}
+      {tab === "learn" && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+          {unit.learnContent.map((section, i) => (
+            <div key={i} style={{
+              background: t.surface, borderRadius: 14,
+              padding: "22px 26px", border: `1.5px solid ${t.border}`
+            }}>
+              <h3 style={{ fontSize: 18, fontWeight: 700, color: t.text, marginBottom: 10 }}>
+                {section.heading}
+              </h3>
+              <p style={{ fontSize: 15, color: t.textMuted, lineHeight: 1.7 }}>
+                {section.body}
+              </p>
+            </div>
+          ))}
+          <button
+            onClick={() => setTab("build")}
+            style={{
+              padding: "14px 28px", background: t.accent, color: "white",
+              border: "none", borderRadius: 12, fontSize: 15, fontWeight: 700,
+              cursor: "pointer", alignSelf: "flex-start", fontFamily: "Heebo, sans-serif",
+              transition: "opacity 0.15s"
+            }}
+            onMouseEnter={e => e.target.style.opacity = "0.88"}
+            onMouseLeave={e => e.target.style.opacity = "1"}
+          >
+            ← המשך למשימה
+          </button>
+        </div>
+      )}
+
+      {tab === "build" && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+          <div style={{
+            background: t.surface, borderRadius: 14,
+            padding: "24px 28px", border: `1.5px solid ${t.border}`
+          }}>
+            <div style={{
+              fontSize: 11, fontWeight: 700, letterSpacing: "0.07em",
+              color: t.accent, textTransform: "uppercase", marginBottom: 10
+            }}>
+              Task
+            </div>
+            <h3 style={{ fontSize: 20, fontWeight: 800, color: t.text, marginBottom: 10 }}>
+              {unit.task.title}
+            </h3>
+            <p style={{ fontSize: 15, color: t.textMuted, lineHeight: 1.7, marginBottom: 16 }}>
+              {unit.task.description}
+            </p>
+
+            <div style={{
+              padding: "12px 16px", background: t.accentLight,
+              borderRadius: 10, border: `1px solid ${t.accent}30`,
+              fontSize: 13, color: t.text, marginBottom: 16
+            }}>
+              <strong>Deliverable:</strong> {unit.task.deliverable}
+            </div>
+
+            {unit.task.tips.map((tip, i) => (
+              <div key={i} style={{
+                display: "flex", gap: 10, alignItems: "flex-start",
+                fontSize: 13, color: t.textMuted, marginBottom: 6
+              }}>
+                <span style={{ color: t.accent, flexShrink: 0 }}>💡</span>
+                {tip}
+              </div>
+            ))}
+          </div>
+
+          <button
+            onClick={() => setTab("quiz")}
+            style={{
+              padding: "14px 28px", background: t.accent, color: "white",
+              border: "none", borderRadius: 12, fontSize: 15, fontWeight: 700,
+              cursor: "pointer", alignSelf: "flex-start", fontFamily: "Heebo, sans-serif"
+            }}
+          >
+            ← המשך לבחן
+          </button>
+        </div>
+      )}
+
+      {tab === "quiz" && (
+        <QuizTab unit={unit} t={t} onComplete={() => { onComplete(unit.id); setTab("learn"); }} />
+      )}
+    </div>
+  );
+}
+
+// ─── App ────────────────────────────────────────────────────
+function App() {
+  const [dark, setDark] = React.useState(() => {
+    try { return JSON.parse(localStorage.getItem("syllabus_dark") || "false"); } catch { return false; }
+  });
+  const [completed, setCompleted] = React.useState(() => {
+    try { return new Set(JSON.parse(localStorage.getItem("syllabus_done") || "[]")); } catch { return new Set(); }
+  });
+  const [selectedUnit, setSelectedUnit] = React.useState(() => {
+    try {
+      const id = parseInt(localStorage.getItem("syllabus_unit") || "0");
+      return id ? UNITS_DATA.find(u => u.id === id) || null : null;
+    } catch { return null; }
+  });
+
+  // Tweaks state
+  const [tweaks, setTweaks] = React.useState(() => {
+    try { return { ...TWEAK_DEFAULTS, ...JSON.parse(localStorage.getItem("syllabus_tweaks") || "{}") }; }
+    catch { return TWEAK_DEFAULTS; }
+  });
+  const [tweaksVisible, setTweaksVisible] = React.useState(false);
+
+  const t = getTheme(dark, tweaks.accent);
+
+  // Persist state
+  React.useEffect(() => {
+    localStorage.setItem("syllabus_dark", JSON.stringify(dark));
+  }, [dark]);
+  React.useEffect(() => {
+    localStorage.setItem("syllabus_done", JSON.stringify([...completed]));
+  }, [completed]);
+  React.useEffect(() => {
+    if (selectedUnit) localStorage.setItem("syllabus_unit", selectedUnit.id);
+    else localStorage.removeItem("syllabus_unit");
+  }, [selectedUnit]);
+  React.useEffect(() => {
+    localStorage.setItem("syllabus_tweaks", JSON.stringify(tweaks));
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits: tweaks }, '*');
+  }, [tweaks]);
+
+  // Tweaks host protocol
+  React.useEffect(() => {
+    const handler = (e) => {
+      if (e.data?.type === '__activate_edit_mode') setTweaksVisible(true);
+      if (e.data?.type === '__deactivate_edit_mode') setTweaksVisible(false);
+    };
+    window.addEventListener('message', handler);
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+
+    // Wire up tweaks DOM
+    const accentEl = document.getElementById('tweak-accent');
+    const styleEl = document.getElementById('tweak-style');
+    const densityEl = document.getElementById('tweak-density');
+
+    if (accentEl) {
+      accentEl.innerHTML = '';
+      Object.entries(ACCENTS).forEach(([key, val]) => {
+        const sw = document.createElement('div');
+        sw.className = 'tweak-swatch' + (tweaks.accent === key ? ' active' : '');
+        sw.style.background = val.color;
+        sw.title = val.label;
+        sw.onclick = () => setTweaks(p => ({ ...p, accent: key }));
+        accentEl.appendChild(sw);
+      });
+    }
+    if (styleEl) {
+      styleEl.innerHTML = '';
+      [['warm', 'עגול'], ['sharp', 'חד']].forEach(([key, label]) => {
+        const btn = document.createElement('button');
+        btn.className = 'tweak-btn' + (tweaks.cardStyle === key ? ' active' : '');
+        btn.textContent = label;
+        if (tweaks.cardStyle === key) btn.style.background = ACCENTS[tweaks.accent].color;
+        btn.onclick = () => setTweaks(p => ({ ...p, cardStyle: key }));
+        styleEl.appendChild(btn);
+      });
+    }
+    if (densityEl) {
+      densityEl.innerHTML = '';
+      [['comfortable', 'רגיל'], ['compact', 'צפוף']].forEach(([key, label]) => {
+        const btn = document.createElement('button');
+        btn.className = 'tweak-btn' + (tweaks.density === key ? ' active' : '');
+        btn.textContent = label;
+        if (tweaks.density === key) btn.style.background = ACCENTS[tweaks.accent].color;
+        btn.onclick = () => setTweaks(p => ({ ...p, density: key }));
+        densityEl.appendChild(btn);
+      });
+    }
+
+    const panel = document.getElementById('tweaks-panel');
+    if (panel) {
+      panel.style.display = tweaksVisible ? 'flex' : 'none';
+    }
+
+    return () => window.removeEventListener('message', handler);
+  }, [tweaks, tweaksVisible]);
+
+  React.useEffect(() => {
+    const panel = document.getElementById('tweaks-panel');
+    if (panel) panel.className = tweaksVisible ? 'open' : '';
+  }, [tweaksVisible]);
+
+  const handleComplete = (unitId) => {
+    setCompleted(prev => new Set([...prev, unitId]));
+    setTimeout(() => setSelectedUnit(null), 800);
+  };
+
+  return (
+    <div style={{
+      minHeight: "100vh",
+      background: t.bg,
+      color: t.text,
+      fontFamily: "Heebo, sans-serif",
+      transition: "background 0.3s, color 0.3s"
+    }}>
+      {/* Header */}
+      <header style={{
+        position: "sticky", top: 0, zIndex: 100,
+        background: t.bg + "ee",
+        backdropFilter: "blur(12px)",
+        borderBottom: `1px solid ${t.border}`,
+        padding: "0 24px",
+      }}>
+        <div style={{
+          maxWidth: 920, margin: "0 auto",
+          display: "flex", alignItems: "center",
+          gap: 20, height: 64
+        }}>
+          {selectedUnit && (
+            <button
+              onClick={() => setSelectedUnit(null)}
+              style={{
+                background: t.surfaceAlt, border: `1px solid ${t.border}`,
+                color: t.textMuted, borderRadius: 8, padding: "6px 12px",
+                fontSize: 13, fontWeight: 600, cursor: "pointer",
+                fontFamily: "Heebo, sans-serif", flexShrink: 0
+              }}
+            >
+              ← Back
+            </button>
+          )}
+
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{
+              fontSize: 11, fontWeight: 700, letterSpacing: "0.07em",
+              color: t.textMuted, textTransform: "uppercase", marginBottom: 2
+            }}>
+              Technical Product Builder
+            </div>
+            <ProgressBar completed={completed.size} total={14} t={t} />
+          </div>
+
+          {/* Dark mode toggle */}
+          <button
+            onClick={() => setDark(d => !d)}
+            style={{
+              background: t.surfaceAlt, border: `1px solid ${t.border}`,
+              borderRadius: 20, padding: "6px 14px",
+              fontSize: 13, cursor: "pointer", color: t.textMuted,
+              transition: "all 0.2s", flexShrink: 0,
+              fontFamily: "Heebo, sans-serif"
+            }}
+          >
+            {dark ? "☀ Light" : "☾ Dark"}
+          </button>
+        </div>
+      </header>
+
+      {/* Hero (only on Navigator) */}
+      {!selectedUnit && (
+        <div style={{
+          maxWidth: 920, margin: "0 auto",
+          padding: "52px 24px 40px"
+        }}>
+          <div style={{
+            fontSize: 12, fontWeight: 700, letterSpacing: "0.08em",
+            color: t.accent, textTransform: "uppercase", marginBottom: 12
+          }}>
+            Syllabus Navigator
+          </div>
+          <h1 style={{
+            fontSize: "clamp(28px, 5vw, 44px)", fontWeight: 900,
+            color: t.text, lineHeight: 1.15, marginBottom: 14,
+            letterSpacing: "-0.02em"
+          }}>
+            לומדים לבנות<br/>
+            <span style={{ color: t.accent }}>מוצר טכני</span>
+          </h1>
+          <p style={{ fontSize: 16, color: t.textMuted, maxWidth: 500, lineHeight: 1.65 }}>
+            16 שבועות · 14 יחידות · מ-prompt operator ל-technical lead
+          </p>
+
+          {completed.size > 0 && (
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: 10, marginTop: 20,
+              padding: "10px 18px", background: t.accentLight, borderRadius: 10,
+              border: `1px solid ${t.accent}30`
+            }}>
+              <span style={{ fontSize: 20 }}>🔥</span>
+              <span style={{ fontSize: 14, fontWeight: 600, color: t.text }}>
+                {completed.size} מתוך 14 יחידות הושלמו
+              </span>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Main Content */}
+      {selectedUnit ? (
+        <UnitPage
+          unit={selectedUnit}
+          onBack={() => setSelectedUnit(null)}
+          onComplete={handleComplete}
+          isCompleted={completed.has(selectedUnit.id)}
+          t={t}
+        />
+      ) : (
+        <Navigator
+          completed={completed}
+          onSelect={setSelectedUnit}
+          t={t}
+          cardStyle={tweaks.cardStyle}
+          density={tweaks.density}
+          dark={dark}
+        />
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

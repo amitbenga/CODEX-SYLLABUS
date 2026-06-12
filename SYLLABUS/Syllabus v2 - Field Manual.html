@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Technical Product Builder — Syllabus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700;900&family=IBM+Plex+Sans+Hebrew:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="syllabus-data.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: auto; }
+  body {
+    font-family: 'IBM Plex Sans Hebrew', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(128,120,108,0.3); border-radius: 0; }
+  ::selection { background: rgba(14,107,98,0.18); }
+  button { font-family: inherit; }
+  .unit-row { transition: background 0.14s ease; }
+  .unit-row:hover { background: var(--row-hover) !important; }
+  .unit-row:hover .row-arrow { opacity: 1 !important; transform: translateX(-4px); }
+  .row-arrow { transition: all 0.18s ease; }
+  .week-cell { transition: all 0.14s ease; cursor: pointer; }
+  .week-cell:hover { background: var(--row-hover) !important; }
+  .fade-in { animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { transform: translateY(6px); } to { transform: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    .fade-in { animation: none; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel">
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "accent": "#0E6B62",
+  "displayFont": "serif",
+  "showCase": true
+}/*EDITMODE-END*/;
+
+const ACCENT_OPTIONS = ["#0E6B62", "#8D4228", "#22354A", "#6B7D31"];
+
+// ─── Theme ─────────────────────────────────────────────────
+function buildTheme(dark, accent) {
+  return dark ? {
+    bg: "#16191B", surface: "#1C2023", inset: "#22272B",
+    ink: "#E9E4D9", muted: "#9BA39F", faint: "#6A716E",
+    line: "rgba(233,228,217,0.13)", lineStrong: "rgba(233,228,217,0.32)",
+    accent: lighten(accent), accentInk: "#16191B",
+    rowHover: "rgba(233,228,217,0.045)",
+    danger: "#C97B6A", done: lighten(accent),
+  } : {
+    bg: "#F5F1E9", surface: "#FBF8F2", inset: "#EFEAE0",
+    ink: "#1C2227", muted: "#5D6660", faint: "#9AA09A",
+    line: "rgba(28,34,39,0.14)", lineStrong: "rgba(28,34,39,0.42)",
+    accent: accent, accentInk: "#FBF8F2",
+    rowHover: "rgba(28,34,39,0.035)",
+    danger: "#A4452F", done: accent,
+  };
+}
+function lighten(hex) {
+  // simple lift for dark mode accents
+  const map = { "#0E6B62": "#4FA89D", "#8D4228": "#C98E6B", "#22354A": "#7E9BBC", "#6B7D31": "#A3B566" };
+  return map[hex] || hex;
+}
+
+const MONO = "'IBM Plex Mono', monospace";
+const SERIF = "'Frank Ruhl Libre', serif";
+const SANS = "'IBM Plex Sans Hebrew', sans-serif";
+
+// ─── Small primitives ──────────────────────────────────────
+function MonoLabel({ children, t, color, size = 11 }) {
+  return (
+    <span style={{
+      fontFamily: MONO, fontSize: size, fontWeight: 500,
+      letterSpacing: "0.14em", textTransform: "uppercase",
+      color: color || t.muted, direction: "ltr", unicodeBidi: "embed",
+    }}>{children}</span>
+  );
+}
+
+function Rule({ t, strong }) {
+  return <div style={{ height: 1, background: strong ? t.lineStrong : t.line }}></div>;
+}
+
+// ─── Masthead ──────────────────────────────────────────────
+function Masthead({ t, completed, total, dark, setDark, onHome, view }) {
+  const pct = Math.round((completed / total) * 100);
+  return (
+    <header style={{
+      position: "sticky", top: 0, zIndex: 50,
+      background: t.bg, borderBottom: `1px solid ${t.lineStrong}`,
+    }}>
+      <div style={{
+        maxWidth: 1060, margin: "0 auto", padding: "0 32px",
+        display: "flex", alignItems: "center", gap: 24, height: 58,
+      }}>
+        <button onClick={onHome} style={{
+          background: "none", border: "none", cursor: "pointer",
+          display: "flex", alignItems: "baseline", gap: 10, padding: 0,
+        }}>
+          <span style={{
+            fontFamily: MONO, fontSize: 13, fontWeight: 600, color: t.ink,
+            letterSpacing: "0.08em", direction: "ltr",
+          }}>TPB</span>
+          <span style={{
+            fontFamily: MONO, fontSize: 11, color: t.muted,
+            letterSpacing: "0.12em", direction: "ltr",
+          }}>SYLLABUS·17W</span>
+        </button>
+
+        <div style={{ flex: 1 }}></div>
+
+        {/* progress meter */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12, direction: "ltr" }}>
+          <div style={{ width: 120, height: 2, background: t.line, position: "relative" }}>
+            <div style={{
+              position: "absolute", insetInlineStart: 0, top: 0, bottom: 0,
+              width: `${pct}%`, background: t.accent, transition: "width 0.5s ease",
+            }}></div>
+          </div>
+          <span style={{ fontFamily: MONO, fontSize: 11, color: t.muted, letterSpacing: "0.06em" }}>
+            {String(completed).padStart(2, "0")}/{total}
+          </span>
+        </div>
+
+        <button onClick={() => setDark(d => !d)} style={{
+          background: "none", border: `1px solid ${t.line}`, color: t.muted,
+          fontFamily: MONO, fontSize: 10, letterSpacing: "0.1em",
+          padding: "5px 12px", cursor: "pointer", direction: "ltr",
+        }}>
+          {dark ? "LIGHT" : "DARK"}
+        </button>
+      </div>
+    </header>
+  );
+}
+
+// ─── Index header ──────────────────────────────────────────
+function IndexHeader({ t, displayFont, showCase, completed }) {
+  const display = displayFont === "serif" ? SERIF : SANS;
+  return (
+    <div style={{ padding: "72px 0 56px" }}>
+      <div style={{ display: "flex", alignItems: "baseline", gap: 16, marginBottom: 24 }}>
+        <MonoLabel t={t} color={t.accent}>Course of study — 2026</MonoLabel>
+        <div style={{ flex: 1, height: 1, background: t.line }}></div>
+      </div>
+
+      <h1 style={{
+        fontFamily: display, fontWeight: 900, color: t.ink,
+        fontSize: "clamp(40px, 6vw, 64px)", lineHeight: 1.06,
+        letterSpacing: displayFont === "serif" ? "0" : "-0.02em",
+        marginBottom: 20, maxWidth: 700,
+      }}>
+        Technical Product Builder
+      </h1>
+
+      <div style={{
+        display: "grid", gridTemplateColumns: "minmax(0, 1.6fr) minmax(0, 1fr)",
+        gap: 48, alignItems: "start",
+      }}>
+        <p style={{
+          fontSize: 17, lineHeight: 1.75, color: t.muted, maxWidth: "58ch",
+          textWrap: "pretty",
+        }}>
+          {SYLLABUS.coreGoal}
+        </p>
+
+        {showCase && (
+          <div style={{ borderRight: `2px solid ${t.accent}`, paddingRight: 18 }}>
+            <MonoLabel t={t} size={10}>Running case</MonoLabel>
+            <div style={{ fontSize: 14, fontWeight: 600, color: t.ink, margin: "6px 0 4px", lineHeight: 1.45 }}>
+              {SYLLABUS.runningCase.title}
+            </div>
+            <div style={{ fontSize: 13, color: t.muted, lineHeight: 1.6 }}>
+              {SYLLABUS.runningCase.description}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Week strip ────────────────────────────────────────────
+function WeekStrip({ t, completed, onSelect }) {
+  return (
+    <div style={{ marginBottom: 64 }}>
+      <div style={{ display: "flex", alignItems: "baseline", gap: 16, marginBottom: 14 }}>
+        <MonoLabel t={t}>Week plan</MonoLabel>
+        <div style={{ flex: 1, height: 1, background: t.line }}></div>
+      </div>
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(17, 1fr)",
+        border: `1px solid ${t.line}`,
+        direction: "ltr",
+      }}>
+        {SYLLABUS.weekPlan.map((wp, i) => {
+          const unit = SYLLABUS.units.find(u => u.id === wp.unitId);
+          const isDone = completed.has(wp.unitId);
+          return (
+            <div
+              key={wp.week}
+              className="week-cell"
+              title={`${wp.focus}`}
+              onClick={() => onSelect(unit)}
+              style={{
+                aspectRatio: "1 / 1.5",
+                borderLeft: i > 0 ? `1px solid ${t.line}` : "none",
+                display: "flex", flexDirection: "column",
+                alignItems: "center", justifyContent: "space-between",
+                padding: "8px 2px",
+                background: isDone ? (t.accent + "14") : "transparent",
+              }}
+            >
+              <span style={{ fontFamily: MONO, fontSize: 10, color: t.faint }}>
+                {String(wp.week).padStart(2, "0")}
+              </span>
+              <span style={{
+                width: 5, height: 5, borderRadius: "50%",
+                background: isDone ? t.accent : "transparent",
+                border: isDone ? "none" : `1px solid ${t.faint}`,
+              }}></span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ─── Unit index rows ───────────────────────────────────────
+function UnitIndex({ t, completed, onSelect, displayFont }) {
+  const display = displayFont === "serif" ? SERIF : SANS;
+  // group by category preserving order
+  const groups = [];
+  SYLLABUS.units.forEach(u => {
+    const g = groups.find(g => g.category === u.category);
+    if (g) g.units.push(u); else groups.push({ category: u.category, units: [u] });
+  });
+
+  return (
+    <div style={{ marginBottom: 80 }}>
+      <div style={{ display: "flex", alignItems: "baseline", gap: 16, marginBottom: 4 }}>
+        <MonoLabel t={t}>Index of units</MonoLabel>
+        <div style={{ flex: 1, height: 1, background: t.line }}></div>
+        <MonoLabel t={t} size={10}>15 units</MonoLabel>
+      </div>
+
+      {groups.map(group => (
+        <div key={group.category}>
+          <div style={{
+            padding: "28px 0 10px",
+            fontSize: 13, fontWeight: 700, color: t.accent,
+          }}>
+            {group.category}
+          </div>
+          <Rule t={t} strong />
+          {group.units.map(u => {
+            const isDone = completed.has(u.id);
+            return (
+              <div key={u.id}>
+                <div
+                  className="unit-row"
+                  onClick={() => onSelect(u)}
+                  style={{
+                    "--row-hover": t.rowHover,
+                    display: "grid",
+                    gridTemplateColumns: "64px 110px minmax(0,1fr) 28px",
+                    gap: 20, alignItems: "baseline",
+                    padding: "20px 8px", cursor: "pointer",
+                  }}
+                >
+                  <span style={{
+                    fontFamily: MONO, fontSize: 22, fontWeight: 400,
+                    color: isDone ? t.accent : t.faint, direction: "ltr",
+                    fontFeatureSettings: "'tnum'",
+                  }}>
+                    {isDone ? "✓" : ""}{String(u.num).padStart(2, "0")}
+                  </span>
+                  <span style={{ fontFamily: MONO, fontSize: 11, color: t.muted, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>
+                    {u.weekLabel}
+                  </span>
+                  <span style={{ minWidth: 0 }}>
+                    <span style={{
+                      display: "block",
+                      fontFamily: display, fontWeight: 700, fontSize: 20,
+                      color: t.ink, lineHeight: 1.3, marginBottom: 4,
+                    }}>
+                      {u.title}
+                    </span>
+                    <span style={{ display: "block", fontSize: 14, color: t.muted, lineHeight: 1.6, maxWidth: "72ch", textWrap: "pretty" }}>
+                      {u.summary}
+                    </span>
+                  </span>
+                  <span className="row-arrow" style={{
+                    opacity: 0, color: t.accent, fontSize: 18,
+                    alignSelf: "center",
+                  }}>←</span>
+                </div>
+                <Rule t={t} />
+              </div>
+            );
+          })}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ─── Success levels ────────────────────────────────────────
+function SuccessLevels({ t, displayFont }) {
+  const display = displayFont === "serif" ? SERIF : SANS;
+  return (
+    <div style={{ marginBottom: 96 }}>
+      <div style={{ display: "flex", alignItems: "baseline", gap: 16, marginBottom: 24 }}>
+        <MonoLabel t={t}>Levels of mastery</MonoLabel>
+        <div style={{ flex: 1, height: 1, background: t.line }}></div>
+      </div>
+      <div style={{
+        display: "grid", gridTemplateColumns: "repeat(5, 1fr)",
+        border: `1px solid ${t.line}`,
+      }}>
+        {SYLLABUS.successLevels.map((lvl, i) => (
+          <div key={lvl.level} style={{
+            padding: "20px 18px 24px",
+            borderRight: i > 0 ? `1px solid ${t.line}` : "none",
+            display: "flex", flexDirection: "column", gap: 8,
+          }}>
+            <span style={{ fontFamily: MONO, fontSize: 24, color: t.faint, direction: "ltr" }}>
+              {String(lvl.level).padStart(2, "0")}
+            </span>
+            <span style={{ fontFamily: display, fontWeight: 700, fontSize: 16, color: t.ink, lineHeight: 1.3 }}>
+              {lvl.title}
+            </span>
+            <span style={{ fontSize: 12.5, color: t.muted, lineHeight: 1.6, textWrap: "pretty" }}>
+              {lvl.description}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Unit page ─────────────────────────────────────────────
+function SectionHead({ no, en, he, t }) {
+  return (
+    <div style={{ display: "flex", alignItems: "baseline", gap: 14, marginBottom: 18 }}>
+      <span style={{ fontFamily: MONO, fontSize: 11, color: t.faint, direction: "ltr" }}>{no}</span>
+      <MonoLabel t={t} size={11}>{en}</MonoLabel>
+      <span style={{ fontSize: 14, fontWeight: 700, color: t.ink }}>{he}</span>
+      <div style={{ flex: 1, height: 1, background: t.line }}></div>
+    </div>
+  );
+}
+
+function UnitPage({ unit, t, displayFont, completed, onToggleDone, onBack, onNav }) {
+  const display = displayFont === "serif" ? SERIF : SANS;
+  const isDone = completed.has(unit.id);
+  const idx = SYLLABUS.units.findIndex(u => u.id === unit.id);
+  const prev = SYLLABUS.units[idx - 1];
+  const next = SYLLABUS.units[idx + 1];
+
+  React.useEffect(() => {
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, [unit.id]);
+
+  return (
+    <div className="fade-in" data-screen-label={`Unit ${unit.num}`}>
+      {/* breadcrumb */}
+      <div style={{ padding: "28px 0 0" }}>
+        <button onClick={onBack} style={{
+          background: "none", border: "none", cursor: "pointer",
+          fontFamily: MONO, fontSize: 11, letterSpacing: "0.1em",
+          color: t.muted, padding: 0, direction: "ltr",
+        }}>
+          ← INDEX
+        </button>
+      </div>
+
+      {/* header */}
+      <div style={{
+        display: "grid", gridTemplateColumns: "150px minmax(0,1fr)",
+        gap: 40, padding: "40px 0 48px", alignItems: "start",
+      }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <span style={{
+            fontFamily: MONO, fontSize: 64, fontWeight: 400, lineHeight: 1,
+            color: isDone ? t.accent : t.faint, direction: "ltr",
+          }}>
+            {String(unit.num).padStart(2, "0")}
+          </span>
+          <span style={{ fontFamily: MONO, fontSize: 11, color: t.muted, letterSpacing: "0.06em" }}>
+            {unit.weekLabel}
+          </span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: t.accent }}>
+            {unit.category}
+          </span>
+        </div>
+
+        <div>
+          <h1 style={{
+            fontFamily: display, fontWeight: 900, fontSize: "clamp(28px, 4vw, 42px)",
+            color: t.ink, lineHeight: 1.15, marginBottom: 16, textWrap: "pretty",
+          }}>
+            {unit.title}
+          </h1>
+          <p style={{ fontSize: 17, color: t.muted, lineHeight: 1.7, maxWidth: "60ch", textWrap: "pretty" }}>
+            {unit.summary}
+          </p>
+
+          <button
+            onClick={() => onToggleDone(unit.id)}
+            style={{
+              marginTop: 24,
+              background: isDone ? "transparent" : t.accent,
+              color: isDone ? t.accent : t.accentInk,
+              border: `1px solid ${t.accent}`,
+              fontFamily: MONO, fontSize: 11, letterSpacing: "0.12em",
+              padding: "10px 22px", cursor: "pointer", direction: "ltr",
+            }}
+          >
+            {isDone ? "✓ COMPLETED — UNDO" : "MARK COMPLETE"}
+          </button>
+        </div>
+      </div>
+
+      <Rule t={t} strong />
+
+      {/* GOALS */}
+      <section style={{ padding: "40px 0" }}>
+        <SectionHead no="01" en="Goals" he="מטרות" t={t} />
+        <div style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: "68ch" }}>
+          {unit.goals.map((g, i) => (
+            <div key={i} style={{ display: "flex", gap: 16, alignItems: "baseline" }}>
+              <span style={{ fontFamily: MONO, fontSize: 12, color: t.accent, flexShrink: 0, direction: "ltr" }}>—</span>
+              <span style={{ fontSize: 15.5, color: t.ink, lineHeight: 1.65, textWrap: "pretty" }}>{g}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+      <Rule t={t} />
+
+      {/* TOPICS */}
+      <section style={{ padding: "40px 0" }}>
+        <SectionHead no="02" en="Topics" he="נושאים" t={t} />
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {unit.topics.map((topic, i) => (
+            <span key={i} style={{
+              border: `1px solid ${t.line}`, padding: "6px 14px",
+              fontSize: 13, color: t.muted, fontFamily: SANS,
+              background: t.surface,
+            }}>{topic}</span>
+          ))}
+        </div>
+      </section>
+      <Rule t={t} />
+
+      {/* DELIVERABLE + EXERCISE side by side */}
+      <section style={{ padding: "40px 0" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40 }}>
+          <div>
+            <SectionHead no="03" en="Deliverable" he="תוצר" t={t} />
+            <div style={{
+              background: t.inset, borderRight: `2px solid ${t.accent}`,
+              padding: "20px 22px", fontSize: 15, color: t.ink, lineHeight: 1.7, textWrap: "pretty",
+            }}>
+              {unit.deliverable}
+            </div>
+          </div>
+          <div>
+            <SectionHead no="04" en="Exercise" he="תרגיל מרכזי" t={t} />
+            <div style={{ fontSize: 15, color: t.ink, lineHeight: 1.7, padding: "20px 0", textWrap: "pretty" }}>
+              {unit.exercise}
+            </div>
+          </div>
+        </div>
+      </section>
+      <Rule t={t} />
+
+      {/* UNDERSTANDING + LENS */}
+      <section style={{ padding: "40px 0" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40 }}>
+          <div>
+            <SectionHead no="05" en="Understanding test" he="מבחן הבנה" t={t} />
+            <p style={{ fontFamily: display, fontSize: 19, fontWeight: 500, color: t.ink, lineHeight: 1.55, textWrap: "pretty" }}>
+              ״{unit.understandingTest}״
+            </p>
+          </div>
+          <div>
+            <SectionHead no="06" en="Management lens" he="עדשת ניהול" t={t} />
+            <p style={{ fontSize: 15, color: t.ink, lineHeight: 1.7, textWrap: "pretty" }}>
+              {unit.managementLens}
+            </p>
+          </div>
+        </div>
+      </section>
+      <Rule t={t} />
+
+      {/* RED FLAGS */}
+      <section style={{ padding: "40px 0 56px" }}>
+        <SectionHead no="07" en="Red flags" he="דגלים אדומים" t={t} />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 1, background: t.line, border: `1px solid ${t.line}` }}>
+          {unit.redFlags.map((flag, i) => (
+            <div key={i} style={{
+              background: t.surface, padding: "18px 20px",
+              display: "flex", gap: 12, alignItems: "baseline",
+            }}>
+              <span style={{ color: t.danger, fontSize: 12, flexShrink: 0 }}>▲</span>
+              <span style={{ fontSize: 14, color: t.ink, lineHeight: 1.6, textWrap: "pretty" }}>{flag}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* prev / next */}
+      <Rule t={t} strong />
+      <div style={{ display: "flex", justifyContent: "space-between", padding: "24px 0 80px" }}>
+        {prev ? (
+          <button onClick={() => onNav(prev)} style={{
+            background: "none", border: "none", cursor: "pointer", textAlign: "right", padding: 0,
+          }}>
+            <MonoLabel t={t} size={10}>Prev — {String(prev.num).padStart(2, "0")}</MonoLabel>
+            <div style={{ fontSize: 14, fontWeight: 600, color: t.ink, marginTop: 4 }}>{prev.title}</div>
+          </button>
+        ) : <span></span>}
+        {next ? (
+          <button onClick={() => onNav(next)} style={{
+            background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: 0,
+          }}>
+            <MonoLabel t={t} size={10}>Next — {String(next.num).padStart(2, "0")}</MonoLabel>
+            <div style={{ fontSize: 14, fontWeight: 600, color: t.ink, marginTop: 4 }}>{next.title}</div>
+          </button>
+        ) : <span></span>}
+      </div>
+    </div>
+  );
+}
+
+// ─── App ───────────────────────────────────────────────────
+function App() {
+  const [tw, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  const [dark, setDark] = React.useState(() => {
+    try { return JSON.parse(localStorage.getItem("tpb_dark") || "false"); } catch { return false; }
+  });
+  const [completed, setCompleted] = React.useState(() => {
+    try { return new Set(JSON.parse(localStorage.getItem("tpb_done") || "[]")); } catch { return new Set(); }
+  });
+  const [unitId, setUnitId] = React.useState(() => localStorage.getItem("tpb_unit") || null);
+
+  const t = buildTheme(dark, tw.accent);
+  const unit = unitId ? SYLLABUS.units.find(u => u.id === unitId) : null;
+
+  React.useEffect(() => { localStorage.setItem("tpb_dark", JSON.stringify(dark)); }, [dark]);
+  React.useEffect(() => { localStorage.setItem("tpb_done", JSON.stringify([...completed])); }, [completed]);
+  React.useEffect(() => {
+    if (unitId) localStorage.setItem("tpb_unit", unitId);
+    else localStorage.removeItem("tpb_unit");
+  }, [unitId]);
+
+  const toggleDone = (id) => {
+    setCompleted(prev => {
+      const nx = new Set(prev);
+      if (nx.has(id)) nx.delete(id); else nx.add(id);
+      return nx;
+    });
+  };
+
+  return (
+    <div style={{
+      minHeight: "100vh", background: t.bg, color: t.ink,
+      transition: "background 0.25s ease",
+    }}>
+      <Masthead
+        t={t} completed={completed.size} total={SYLLABUS.units.length}
+        dark={dark} setDark={setDark}
+        onHome={() => setUnitId(null)}
+      />
+
+      <main style={{ maxWidth: 1060, margin: "0 auto", padding: "0 32px" }}>
+        {unit ? (
+          <UnitPage
+            unit={unit} t={t} displayFont={tw.displayFont}
+            completed={completed}
+            onToggleDone={toggleDone}
+            onBack={() => setUnitId(null)}
+            onNav={(u) => setUnitId(u.id)}
+          />
+        ) : (
+          <div className="fade-in" data-screen-label="Index">
+            <IndexHeader t={t} displayFont={tw.displayFont} showCase={tw.showCase} completed={completed} />
+            <WeekStrip t={t} completed={completed} onSelect={(u) => u && setUnitId(u.id)} />
+            <UnitIndex t={t} completed={completed} onSelect={(u) => setUnitId(u.id)} displayFont={tw.displayFont} />
+            <SuccessLevels t={t} displayFont={tw.displayFont} />
+          </div>
+        )}
+      </main>
+
+      <TweaksPanel>
+        <TweakSection label="Color" />
+        <TweakColor label="Accent" value={tw.accent} options={ACCENT_OPTIONS}
+          onChange={(v) => setTweak("accent", v)} />
+        <TweakSection label="Type" />
+        <TweakRadio label="Display font" value={tw.displayFont}
+          options={["serif", "sans"]}
+          onChange={(v) => setTweak("displayFont", v)} />
+        <TweakSection label="Layout" />
+        <TweakToggle label="Running case" value={tw.showCase}
+          onChange={(v) => setTweak("showCase", v)} />
+      </TweaksPanel>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
