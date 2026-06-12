@@ -43,7 +43,7 @@
     "design-templates-21st": {
       id: "design-templates-21st",
       weekLabel: "שבוע 7",
-      title: "21ST, טמפלייטים ושבירת עיצוב AI גנרי",
+      title: "ספריות עיצוב (Shadcn, v0, Mobbin) ושבירת עיצוב AI גנרי",
       category: "Product Design",
       accent: "purple",
       summary: "להשתמש ברפרנסים, קומפוננטות וטמפלייטים כדי לכוון סוכן קוד ל-UI שאינו גנרי."
@@ -1037,6 +1037,39 @@ Findings:
             ]
           }
         ]
+      },
+      {
+        id: "case-study-lab",
+        label: "מעבדת פיתוח",
+        navShort: "מעבדה",
+        kicker: "Case Study: The Clinic App",
+        title: "מעבדת פיתוח: ממפים את הקליניקה",
+        description: "זה הזמן להוריד את הארכיטקטורה שלמדנו לקרקע, ולתכנן את מערכת המטפלים (CRM לנטורופתית).",
+        blocks: [
+          {
+            type: "card-grid",
+            title: "משימות ארכיטקטורה לשבוע זה",
+            columns: 2,
+            items: [
+              {
+                eyebrow: "Task 1",
+                title: "מיפוי הקליינטים (Clients)",
+                body: "הגדר כמה סוגי 'קליינטים' יש למערכת. האם יש ממשק נפרד למטפלת (דשבורד) וממשק נפרד למטופלים (פורטל לזימון תורים)? רשום זאת במסמך האפיון."
+              },
+              {
+                eyebrow: "Task 2",
+                title: "מיפוי השרת וה-DB",
+                body: "בקש מסוכן ה-AI שלך להקים פרויקט בסיסי (Node.js/Python) ולחבר אותו למסד נתונים (למשל Postgres או Firebase). ודא שהסוכן מגדיר את השרת כישות שמפרידה בין הקליינטים ל-DB."
+              }
+            ]
+          },
+          {
+            type: "callout",
+            tone: "info",
+            title: "פרומפט מומלץ לסוכן שלך",
+            text: "'We are building a CRM for a Naturopath clinic. Generate a high-level system architecture diagram (Mermaid JS) showing the Web Client (React), the Backend Server (Node.js), and the Database (PostgreSQL). Explain the responsibility of each layer.'"
+          }
+        ]
       }
     ]
   };
@@ -1852,6 +1885,39 @@ Findings:
             ]
           }
         ]
+      },
+      {
+        id: "case-study-lab",
+        label: "מעבדת פיתוח",
+        navShort: "מעבדה",
+        kicker: "Case Study: The Clinic App",
+        title: "מעבדת פיתוח: המלצרים של הנטורופתית",
+        description: "בואו נגדיר את תפריט המסעדה (ה-API) עבור מערכת הקליניקה.",
+        blocks: [
+          {
+            type: "card-grid",
+            title: "משימות API לשבוע זה",
+            columns: 2,
+            items: [
+              {
+                eyebrow: "Task 1",
+                title: "תכנון הראוטים המרכזיים",
+                body: "בקש מסוכן ה-AI להגדיר קובץ ראוטים (למשל `routes/appointments.js`) ולייצר לפחות 3 endpoints: יצירת תור (POST), משיכת כל התורים (GET) וביטול תור (DELETE)."
+              },
+              {
+                eyebrow: "Task 2",
+                title: "הגדרת קוד הסטטוס",
+                body: "ודא שהשרת מחזיר 201 (Created) כשנוצר תור חדש, ו-404 (Not Found) אם מנסים למשוך תיק מטופל שלא קיים."
+              }
+            ]
+          },
+          {
+            type: "callout",
+            tone: "info",
+            title: "פרומפט מומלץ לסוכן שלך",
+            text: "'Create an Express router for managing clinic appointments. Define a POST /api/appointments route to book a new session, and a GET /api/appointments route to list all upcoming sessions. Ensure proper HTTP status codes are returned.'"
+          }
+        ]
       }
     ]
   };
@@ -2451,411 +2517,1409 @@ Deliver:
               "אנחנו לא מלמדים כאן להיות DBA או חוקר וקטורים. אנחנו מלמדים Product Builder לזהות החלטות דאטה שיקבעו אם המוצר יחזיק מעמד כשסוכן, משתמש אמיתי ופרודקשן נפגשים."
           }
         ]
-      }
-    ]
-  };
-
-  const designTemplatesPage = {
-    id: "design-templates-21st",
-    heroEyebrow: "יחידה 7 · Product Design",
-    title: "21ST, טמפלייטים ושבירת עיצוב AI גנרי",
-    subtitle:
-      "יחידה שמלמדת איך להשתמש ב-21st כ-library של רפרנסים, קומפוננטות, screens ו-themes כדי לכוון סוכן קוד ל-UI ספציפי, שימושי ולא גנרי.",
-    quickFacts: [
-      { value: "8", label: "חלקי לימוד" },
-      { value: "3", label: "רפרנסים חובה" },
-      { value: "1", label: "Reference Pack" }
-    ],
-    parts: [
-      {
-        id: "summary",
-        label: "תקציר",
-        navShort: "תקציר",
-        kicker: "למה זה נכנס לקורס",
-        title: "עיצוב AI גנרי הוא בעיית input, לא רק בעיית טעם",
-        description:
-          "אם מבקשים מסוכן 'תעשה יפה', הוא חוזר לתבניות הכי נפוצות: cards, gradients, hero ענק, icons כלליים וטקסט שיווקי. היחידה הזאת מלמדת איך לתת לו רפרנס עיצובי מפורק.",
-        blocks: [
-          {
-            type: "lead",
-            eyebrow: "Executive Summary",
-            title: "המטרה היא לא להעתיק 21st, אלא להפוך אותו לשפת הכוונה",
-            text: [
-              "21st הוא מקור טוב לרפרנסים כי הוא מרכז קומפוננטות React/Tailwind, screens, themes ו-Magic Chat שמייצר וריאציות עם preview. זה לא אומר שהקורס צריך להפוך לקורס 21st; זה אומר שמנהל מוצר טכני צריך לדעת לקחת השראה איכותית ולתרגם אותה ל-spec שסוכן קוד יכול לבצע.",
-              "הקייס המתגלגל שלנו הוא מערכת ניהול לידים, פגישות וידע למטפלת נטורופתית ורפלקסולוגית. זו מערכת תפעולית, לא landing page נוצץ. לכן הרפרנסים צריכים לעזור לנו לבנות lead intake, dashboard פגישות, כרטיס לקוח, notes וידע מקצועי בצורה נעימה, אמינה וסקנבילית.",
-              "בסוף היחידה יהיה לך Reference Pack: שלושה רפרנסים, פירוק של מה לקחת מכל אחד, מה לא לקחת, tokens, states ופרומפט עבודה שמכוון סוכן קוד בלי לתת לו להמציא UI מהאוויר."
-            ]
-          },
-          {
-            type: "card-grid",
-            title: "מה יוצא מהיחידה",
-            columns: 3,
-            items: [
-              {
-                eyebrow: "Artifact",
-                title: "Reference Pack",
-                body: "3 רפרנסים מ-21st או Magic Chat, עם פירוק layout, components, states ו-tokens."
-              },
-              {
-                eyebrow: "Artifact",
-                title: "Anti-generic checklist",
-                body: "צ'קליסט שמונע cards אחידים, gradient אקראי, icons בלי משמעות ותוכן placeholder."
-              },
-              {
-                eyebrow: "Artifact",
-                title: "Prompt לסוכן קוד",
-                body: "בריף UI למסך lead intake או פגישות קרובות במערכת המטפלים."
-              }
-            ]
-          }
-        ]
       },
       {
-        id: "why-generic",
-        label: "למה AI גנרי",
-        navShort: "גנריות",
-        kicker: "אבחון הבעיה",
-        title: "למה סוכן קוד מייצר אותו UI שוב ושוב",
-        description:
-          "AI לא יודע מה 'יפה' בהקשר שלך. הוא מנחש מתוך דפוסים נפוצים. כדי לקבל עיצוב טוב צריך לתת לו החלטות מוצר, תוכן אמיתי ורפרנסים.",
+        id: "case-study-lab",
+        label: "מעבדת פיתוח",
+        navShort: "מעבדה",
+        kicker: "Case Study: The Clinic App",
+        title: "מעבדת פיתוח: קלסר המטופלים",
+        description: "זה הזמן להגדיר איך נראה 'מוח' הקליניקה מבפנים.",
         blocks: [
-          {
-            type: "table",
-            title: "דפוסי AI גנריים ומה מחליף אותם",
-            columns: ["דפוס גנרי", "למה זה קורה", "מה לדרוש במקום"],
-            rows: [
-              [
-                "Hero ענק גם לאפליקציה תפעולית",
-                "המודל מושך מדפוסי landing pages",
-                "מסך עבודה ראשון: לידים חדשים, פגישות היום, משימות follow-up"
-              ],
-              [
-                "Cards זהים בכל מקום",
-                "קל לייצר grid נקי בלי לחשוב על היררכיה",
-                "Card types לפי תפקיד: lead urgent, appointment, client summary, knowledge note"
-              ],
-              [
-                "Gradient/blur/orbs בלי משמעות",
-                "קישוטים נפוצים ב-AI UI",
-                "פלטה שקטה שמשרתת אמון, בריאות, פרטיות וקריאות"
-              ],
-              [
-                "Placeholder content",
-                "אין קייס אמיתי או data shape",
-                "שמות, מצבים ושדות אמיתיים ממערכת המטפלים"
-              ]
-            ]
-          },
-          {
-            type: "scenario-quiz",
-            scenarioTitle: "תרחיש",
-            prompt:
-              "סוכן קוד מציע dashboard למטפלת עם hero גדול, כפתור Get Started, שלוש סטטיסטיקות כלליות וגריד cards צבעוני.",
-            question: "מה הבעיה העיקרית, ומה היית מבקש ממנו לעשות מחדש?",
-            revealLabel: "לחשוף ניתוח",
-            answerTitle: "הניתוח",
-            answer: [
-              "המסך מתנהג כמו landing page במקום workspace.",
-              "אין תעדוף של לידים, פגישות או follow-up.",
-              "אין states אמיתיים: ליד חדש, ליד שלא ענה, פגישה שעברה, הערה חסרה.",
-              "העיצוב לא נובע מהקייס של מטפלת אלא מתבנית SaaS כללית."
-            ],
-            correctionTitle: "הבקשה המתוקנת",
-            correction:
-              "בנה dashboard תפעולי למטפלת: עמודה ללידים דחופים, פגישות היום, לקוחות להמשך טיפול וידע רלוונטי. השתמש ברפרנס מ-21st רק עבור מבנה ה-card וה-spacing, לא עבור hero שיווקי."
-          }
-        ]
-      },
-      {
-        id: "how-21st-works",
-        label: "איך עובדים עם 21st",
-        navShort: "21st",
-        kicker: "Research workflow",
-        title: "21st כמנוע רפרנסים: Components, Screens, Themes, Magic Chat ו-MCP",
-        description:
-          "העבודה הנכונה היא retrieval לפני generation: קודם מחפשים דפוסים קיימים, אחר כך מבקשים מסוכן הקוד להרכיב מסך שמתאים למוצר.",
-        blocks: [
-          {
-            type: "sequence",
-            title: "Workflow מומלץ",
-            items: [
-              {
-                step: "1",
-                title: "להגדיר את תפקיד המסך",
-                body: "לא 'dashboard יפה', אלא 'מסך שמחליט איזה ליד דורש חזרה היום'."
-              },
-              {
-                step: "2",
-                title: "לחפש ב-21st לפי תפקיד",
-                body: "components עבור forms, cards, tables, command bars, CTAs או screens דומים."
-              },
-              {
-                step: "3",
-                title: "לאסוף 3 רפרנסים",
-                body: "רפרנס layout, רפרנס interaction, ורפרנס visual tone או theme."
-              },
-              {
-                step: "4",
-                title: "לפרק ולא להעתיק",
-                body: "לכתוב מה לקחת: density, spacing, hierarchy, component anatomy, empty/error states."
-              },
-              {
-                step: "5",
-                title: "לתת לסוכן קוד spec",
-                body: "כולל תוכן אמיתי, מגבלות, states, responsive behavior ודברים שאסור לשנות."
-              }
-            ]
-          },
           {
             type: "card-grid",
-            title: "מקורות ב-21st ומה התפקיד שלהם",
+            title: "משימות Data Modeling לשבוע זה",
             columns: 2,
             items: [
               {
-                title: "Community Components",
-                body: "קומפוננטות React/Tailwind שאפשר להשתמש בהן כ-building blocks או כהשראה למבנה."
+                eyebrow: "Task 1",
+                title: "הגדרת סכמת הנתונים (DB Schema)",
+                body: "בקש מסוכן ה-AI לייצר סכמות לטבלאות: `Patients` (שם, רקע), `Appointments` (תאריך, סטטוס) ו-`Treatments` (סיכום הטיפול)."
               },
               {
-                title: "Screens",
-                body: "מסכי אפליקציה אמיתיים להשראה על קומפוזיציה, היררכיה וצפיפות מידע."
-              },
-              {
-                title: "Themes",
-                body: "כיווני צבע וטיפוגרפיה שמונעים palette אקראי."
-              },
-              {
-                title: "Magic Chat / Magic MCP",
-                body: "דרך לייצר וריאציות או לשלוף רפרנסים בתוך workflow של קוד, אבל תמיד עם ביקורת אנושית."
+                eyebrow: "Task 2",
+                title: "קשרי גומלין (Relations)",
+                body: "ודא שהסוכן מקשר נכון בין הטבלאות. למשל: מטופל אחד (Patient) יכול להיות מקושר להרבה פגישות (Appointments) - יחס של One-to-Many."
               }
-            ]
-          }
-        ]
-      },
-      {
-        id: "reference-decomposition",
-        label: "פירוק רפרנס",
-        navShort: "פירוק",
-        kicker: "Design judgment",
-        title: "איך מפרקים טמפלייט בלי להעתיק אותו עיוור",
-        description:
-          "רפרנס טוב הוא לא screenshot שמבקשים לשכפל. הוא אוסף החלטות שאפשר להסביר, לבחור ולדחות.",
-        blocks: [
-          {
-            type: "table",
-            title: "טבלת פירוק רפרנס",
-            columns: ["שכבה", "מה בודקים", "שאלה לקייס המטפלים"],
-            rows: [
-              ["Layout", "Grid, sidebar, header, density", "האם המסך מאפשר לראות לידים ופגישות בלי גלילה מיותרת?"],
-              ["Hierarchy", "מה הכי בולט ומה משני", "האם ליד דחוף נראה דחוף יותר מלקוח רגיל?"],
-              ["Components", "Cards, tables, forms, filters", "אילו קומפוננטות חוזרות במערכת: lead card, session note, follow-up task?"],
-              ["States", "Loading, empty, error, completed", "מה קורה כשאין פגישות היום או כשאין טלפון לליד?"],
-              ["Tokens", "Colors, radius, spacing, typography", "האם השפה מרגישה טיפולית ואמינה, לא צעצועית או SaaS גנרית?"],
-              ["Accessibility", "Contrast, focus, touch targets", "האם מטפלת יכולה לעבוד מהר גם במובייל בין פגישות?"]
-            ]
-          },
-          {
-            type: "bullet-list",
-            title: "מה אסור לקחת מרפרנס",
-            items: [
-              "לא להעתיק visual wow אם הוא פוגע בקריאות או בשימוש חוזר.",
-              "לא לקחת hero שיווקי למסך עבודה תפעולי.",
-              "לא להעתיק צבעים בלי לבדוק שהם מתאימים למותג, לקהל ולנגישות.",
-              "לא להכניס dependency רק כי קומפוננטה נראית יפה.",
-              "לא להשאיר content placeholder במקום נתונים אמיתיים מהקייס."
-            ]
-          }
-        ]
-      },
-      {
-        id: "therapist-case",
-        label: "קייס המטפלים",
-        navShort: "קייס",
-        kicker: "יישום על המערכת",
-        title: "איך 21st עוזר לעצב מערכת לידים ופגישות למטפלת",
-        description:
-          "הקייס שלנו דורש UI תפעולי, רגוע ואמין. המטרה היא לעזור למטפלת להבין למי לחזור, מה קרה בטיפול ומה צריך לקרות עכשיו.",
-        blocks: [
-          {
-            type: "zone-diagram",
-            title: "מסכי יעד ראשונים",
-            note: "כל אחד מהמסכים האלה יכול לקבל Reference Pack נפרד.",
-            zones: [
-              {
-                label: "Lead Intake",
-                items: ["טופס פנייה", "מקור ליד", "תעדוף", "סטטוס חזרה"]
-              },
-              {
-                label: "Appointments",
-                items: ["פגישות היום", "פגישה הבאה", "ביטולים", "follow-up"]
-              },
-              {
-                label: "Client Profile",
-                items: ["פרטים אישיים", "מטרות טיפול", "היסטוריה", "notes"]
-              },
-              {
-                label: "Knowledge Base",
-                items: ["מאמרים", "פרוטוקולים", "תזכורות", "קישורים ללקוח"]
-              }
-            ]
-          },
-          {
-            type: "card-grid",
-            title: "מה לחפש ב-21st עבור הקייס",
-            columns: 2,
-            items: [
-              {
-                title: "Form components",
-                body: "לטופס קליטת ליד: שם, טלפון, מקור, כאב מרכזי, העדפה לפגישה, הערות."
-              },
-              {
-                title: "Dashboard / cards",
-                body: "לסיכום יומי: לידים חדשים, פגישות היום, משימות חזרה ולקוחות במעקב."
-              },
-              {
-                title: "Tables / lists",
-                body: "לניהול pipeline של לידים עם סטטוס, תאריך פנייה, מקור וחזרה אחרונה."
-              },
-              {
-                title: "Knowledge / note layouts",
-                body: "לתיעוד ידע אישי, session notes וקישורים לפרוטוקולים או המלצות."
-              }
-            ]
-          }
-        ]
-      },
-      {
-        id: "agent-prompt",
-        label: "פרומפט לסוכן",
-        navShort: "פרומפט",
-        kicker: "From reference to implementation",
-        title: "איך כותבים לסוכן קוד בקשה שלא תייצר UI גנרי",
-        description:
-          "הסוכן צריך לדעת מה לבנות, למה, לפי אילו רפרנסים, ומה לא לעשות. בלי זה הוא חוזר לברירת המחדל.",
-        blocks: [
-          {
-            type: "code-block",
-            eyebrow: "Template",
-            title: "תבנית פרומפט ל-UI מבוסס רפרנסים",
-            language: "text",
-            note: "התבנית מיועדת לסוכן קוד, לא ל-21st עצמו.",
-            code: `[UI Reference Implementation]
-Context:
-- Product: מערכת ניהול לידים, פגישות וידע למטפלת נטורופתית ורפלקסולוגית.
-- Screen: [lead intake / appointments / client profile / knowledge base].
-- User goal: [מה המטפלת צריכה להחליט או לבצע במסך].
-
-References from 21st:
-1. [שם/קישור רפרנס] - take: [layout / card anatomy / form grouping]. Do not take: [gradient / marketing copy / animation].
-2. [שם/קישור רפרנס] - take: [spacing / table density / empty state]. Do not take: [unrelated colors].
-3. [שם/קישור רפרנס] - take: [theme / typography / interaction]. Do not take: [dependency if not needed].
-
-Design constraints:
-- Quiet operational UI, not landing page.
-- RTL Hebrew-ready.
-- Cards at radius 8px or less unless existing CSS says otherwise.
-- Real content, no lorem ipsum.
-- Include loading, empty, error and completed states.
-- Mobile and desktop must fit without text overlap.
-
-Deliver:
-- Small scoped diff.
-- Explain what files changed.
-- Include manual test checklist.`
-          },
-          {
-            type: "callout",
-            tone: "warning",
-            title: "הניסוח שמייצר גנריות",
-            text:
-              "אל תכתוב רק 'תעשה dashboard מודרני ויפה'. זה משאיר לסוכן לבחור את כל ההחלטות החשובות: היררכיה, density, tone, states ותוכן. במקום זה, תן לו reference pack ותפקיד מסך ברור."
-          }
-        ]
-      },
-      {
-        id: "exercises",
-        label: "תרגילים",
-        navShort: "תרגול",
-        kicker: "Hands-on",
-        title: "תרגילים שמכריחים עבודה עם רפרנסים במקום העתקה",
-        description:
-          "התרגילים כאן בונים את הארטיפקטים שצריך כדי להנחות סוכן קוד ולבקר את התוצאה.",
-        blocks: [
-          {
-            type: "table",
-            title: "תרגילי היחידה",
-            columns: ["תרגיל", "תוצר", "Pass / Strong / Excellent"],
-            rows: [
-              [
-                "מצא 3 רפרנסים ב-21st",
-                "רשימת רפרנסים עם קישורים ותפקיד לכל אחד",
-                [
-                  "Pass: 3 קישורים.",
-                  "Strong: כל קישור מסביר מה לקחת ומה לא.",
-                  "Excellent: הרפרנסים מכסים layout, interaction ו-theme."
-                ]
-              ],
-              [
-                "פרק רפרנס אחד לשכבות",
-                "טבלת layout / hierarchy / components / states / tokens",
-                [
-                  "Pass: פירוק בסיסי.",
-                  "Strong: כולל שאלות לקייס המטפלים.",
-                  "Excellent: כולל מגבלות נגישות ומובייל."
-                ]
-              ],
-              [
-                "כתוב פרומפט לסוכן קוד",
-                "Prompt מלא למסך lead intake או appointments",
-                [
-                  "Pass: כולל רפרנסים.",
-                  "Strong: כולל states ותוכן אמיתי.",
-                  "Excellent: כולל what not to touch ו-test checklist."
-                ]
-              ],
-              [
-                "בקר תוצאה של AI",
-                "Review findings על UI גנרי",
-                [
-                  "Pass: מזהה 3 בעיות.",
-                  "Strong: מציע תיקונים לפי רפרנס.",
-                  "Excellent: מפריד בין בעיית מוצר, בעיית UX ובעיית visual polish."
-                ]
-              ]
-            ]
-          }
-        ]
-      },
-      {
-        id: "sources",
-        label: "מקורות",
-        navShort: "מקורות",
-        kicker: "מה קראנו",
-        title: "מקורות והנחות עבודה",
-        description:
-          "היחידה מבוססת על העבודה הרשמית של 21st עם Magic Chat, Community components, screens, themes ו-MCP.",
-        blocks: [
-          {
-            type: "bullet-list",
-            title: "מקורות מומלצים",
-            items: [
-              "21st Welcome Docs - Magic Chat ו-Community components/screens/themes",
-              "21st Magic Chat Overview - live preview, variants, community context, copy prompt",
-              "21st Magic Chat Quick Start - הוספת context, צפייה ב-preview, איטרציה והעתקת קוד/פרומפט",
-              "21st MCP page - Inspiration Search, SVG Icon Search ו-Magic Generate",
-              "Lovable 21st.dev Integration - workflow של copy prompt כדי לשבור עיצוב גנרי"
             ]
           },
           {
             type: "callout",
             tone: "info",
-            title: "הנחת עבודה",
-            text:
-              "21st הוא לא מקור אמת למוצר שלך. הוא ספר רפרנסים. ההחלטות החשובות עדיין מגיעות מהקייס, מהמשתמש, מה-flow ומהאילוצים של הקוד הקיים."
+            title: "פרומפט מומלץ לסוכן שלך",
+            text: "'Design the database schema for the Naturopath Clinic. We need tables for Patients, Appointments, and Treatment Notes. Use Prisma/Mongoose syntax and define the 1-to-N relationships explicitly.'"
           }
         ]
       }
     ]
   };
+
+  const designTemplatesPage = {
+  "id": "design-templates-libraries",
+  "heroEyebrow": "יחידה 7 · Product Design",
+  "title": "ספריות עיצוב ושבירת ה-AI הגנרי",
+  "subtitle": "כלי AI לא יודעים 'לעצב' יש מאין. כשהם מנסים, הם מייצרים ממשקים גנריים של Bootstrap 2015 או SaaS כחול ומשעמם. ביחידה זו נלמד איך מנהל מוצר משתמש בספריות רפרנסים (Shadcn, v0, Mobbin ועוד) כדי להכריח את הסוכן לייצר UI מוקפד, ספציפי, ומותאם אישית למטפלת שלנו.",
+  "quickFacts": [
+    {
+      "value": "5",
+      "label": "מקורות רפרנס"
+    },
+    {
+      "value": "3",
+      "label": "טכניקות שבירה"
+    },
+    {
+      "value": "1",
+      "label": "Workflow מוכח"
+    }
+  ],
+  "parts": [
+    {
+      "id": "why-ai-ui-fails",
+      "label": "מלכודת הגנריות",
+      "navShort": "מלכודת",
+      "kicker": "The Generic AI Look",
+      "title": "למה סוכני AI מייצרים UI גרוע (ולמה אי אפשר רק 'לבקש יפה')",
+      "description": "הבנת המגבלות של מודלי שפה בייצור ויזואלי והצורך ב-Retrieval ויזואלי במקום Generation ישיר.",
+      "blocks": [
+        {
+          "type": "lead",
+          "eyebrow": "Concept",
+          "title": "הבעיה: סטטיסטיקה מול כוונה",
+          "text": [
+            "סוכן AI מבוסס על סטטיסטיקה של טקסטים. כשהוא מתבקש 'לבנות דאשבורד יפה למטפלת', הוא לא מדמיין קליניקה מרגיעה עם מרווחים נעימים ופלטת צבעים חמה. הוא פולט את המבנה השכיח ביותר של לוח בקרה באינטרנט.",
+            "התוצאה: ממשק שמזכיר מערכת פיננסית או קונסולת שרתים. כדי לשבור את זה, אנחנו לא צריכים 'לפרומפט' אותו להיות יצירתי - אנחנו צריכים לספק לו רפרנסים קונקרטיים וחוקים ויזואליים."
+          ]
+        },
+        {
+          "type": "callout",
+          "tone": "danger",
+          "title": "הפרומפט הגרוע ביותר:",
+          "text": "'Make it look modern, beautiful, and user friendly'. המילים האלו לא אומרות כלום לקוד. במקומן צריך לתת Tokens מדויקים: Radius, Spacing, Typography, Colors."
+        }
+      ]
+    },
+    {
+      "id": "atlas-of-libraries",
+      "label": "אטלס הספריות",
+      "navShort": "ספריות",
+      "kicker": "Your Visual Arsenal",
+      "title": "אטלס הספריות: מתי משתמשים במה?",
+      "description": "הכרת הכלים שעומדים לרשות מנהל המוצר כדי להביא השראה וקוד לסוכן.",
+      "blocks": [
+        {
+          "type": "card-grid",
+          "title": "ארגז הכלים הוויזואלי",
+          "columns": 2,
+          "items": [
+            {
+              "eyebrow": "Shadcn & v0",
+              "title": "לבלוקים פונקציונליים",
+              "body": "Shadcn מספק רכיבי UI מושלמים (כפתורים, דיאלוגים, טפסים) שנטמעים ישר בקוד. v0 מאפשר לייצר עמוד שלם מבוסס Shadcn ב-Prompt."
+            },
+            {
+              "eyebrow": "Mobbin",
+              "title": "לזרימות משתמש (UX Flows)",
+              "body": "הספרייה הטובה ביותר לראות איך אפליקציות אמיתיות פתרו בעיות. נשתמש בה כדי להבין איך נראה 'תיק רפואי' באפליקציות בריאות קיימות."
+            },
+            {
+              "eyebrow": "21st.dev",
+              "title": "למיקרו-אינטראקציות ועיצוב",
+              "body": "מנוע חיפוש לקומפוננטות ריאקט מורכבות ועיצובים ייחודיים שחורגים מהסטנדרט. מעולה למציאת טבלאות מתקדמות או כרטיסיות מעניינות."
+            },
+            {
+              "eyebrow": "UIverse",
+              "title": "לאלמנטים כיפיים",
+              "body": "כפתורים עם אנימציות, לודרים ייחודיים או צ'קבוקסים. טוב לנקודות מגע קטנות שדורשות 'Delight'."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prompting-for-design",
+      "label": "פרומפט העיצוב",
+      "navShort": "הפרומפט",
+      "kicker": "Implementation",
+      "title": "הפרומפט המנצח: איך להעביר עיצוב לסוכן",
+      "description": "הדרך הנכונה לשלב רפרנסים ולדרוש מהסוכן להיצמד אליהם.",
+      "blocks": [
+        {
+          "type": "lead",
+          "eyebrow": "Workflow",
+          "title": "פירוק והרכבה",
+          "text": [
+            "אחרי שמצאנו רפרנס (למשל, מסך Lead Intake מ-Mobbin או קומפוננטת כרטיסייה מ-21st), אנחנו צריכים להסביר לסוכן מה לקחת ממנו.",
+            "אל תבקש 'תעתיק את זה'. בקש: 'קח את הריווחים, את טיפוגרפיית הכותרות, ואת המבנה של הטופס. אבל השתמש בצבעי המותג שלנו (Soft Earth) ובטל את האנימציות שלא רלוונטיות לקליניקה'."
+          ]
+        },
+        {
+          "type": "code-block",
+          "language": "text",
+          "title": "תבנית לפרומפט UI עם רפרנס",
+          "code": `[UI Implementation Task]\nContext: Building the Therapist Lead Intake form.\n\nReferences provided:\n1. URL/Image of Mobbin health app form -> Use this for layout (split screen, steps on left, form on right).\n2. Shadcn 'Card' component -> Use this exact component for the form container.\n\nDesign Constraints:\n- Tokens: Primary color #4A5D23 (Olive), Radius: xl, Font: Inter.\n- Do NOT use harsh shadows. Use subtle borders.\n- Ensure form inputs are large enough for mobile taps (min 44px height).\n- Focus states should be highly visible (accessibility).`
+        }
+      ]
+    }
+  ]
+};
+  const businessLogicPage = {
+  id: "business-logic",
+  heroEyebrow: "יחידה 5 · הלוגיקה העסקית",
+  title: "לוגיקה עסקית: איפה היא צריכה לשבת (The Core Brain)",
+  subtitle: "ניהול נכון של לוגיקה עסקית הוא מה שמבדיל בין אפליקציית צעצוע למערכת Production ארכיטקטונית ויציבה. בתור Product Lead, פה אתה מוודא שהקליניקה לא תקרוס בגלל החלטות 'עצלניות' של סוכני AI.",
+  quickFacts: [
+    { value: "4", label: "מושגי ליבה" },
+    { value: "3", label: "שכבות הגנה" },
+    { value: "1", label: "Tech Exam" }
+  ],
+  parts: [
+    {
+      id: "defense-in-depth",
+      label: "הגנה לעומק",
+      navShort: "שכבות",
+      kicker: "Validation at Multiple Layers",
+      title: "הגנה לעומק - האשליה של ה-Frontend",
+      description: "למה סוכני AI נוטים למקם את חוקי העסק ב-UI, ולמה זה אסון למערכת.",
+      blocks: [
+        {
+          type: "lead",
+          eyebrow: "Use Case",
+          title: "תור ב-02:00 בלילה",
+          text: [
+            "הטעות הקלאסית שסוכני AI עושים היא למקם את חוקי העסק ב-Frontend (בממשק המשתמש) רק כי זה מהיר וקל למימוש שם.",
+            "נניח שהקליניקה של הנטורופתית עובדת עד 18:00. מטופל מנסה לקבוע תור לשעה 02:00 בלילה. הסוכן כנראה ייצר פתרון שבו הכפתור מוסתר. אבל ה-Frontend נשלט על ידי המשתמש - אפשר להסיר את חסימת הכפתור ב-DevTools.",
+            "לכן חייבים מודל של 3 שכבות: ה-UI חוסם לחווית משתמש, ה-Backend בודק שוב בתור שומר סף, וה-Database דוחה רשומות לא חוקיות."
+          ]
+        }
+      ]
+    },
+    {
+      id: "invariants",
+      label: "אינווריאנטים",
+      navShort: "Invariants",
+      kicker: "חוקי ברזל",
+      title: "אינווריאנטים - חוקי הברזל של הקליניקה",
+      description: "חוקים פיזיקליים של המערכת שלעולם אינם משתנים.",
+      blocks: [
+        {
+          type: "card-grid",
+          title: "החוקים שאסור לסוכן להפר",
+          columns: 2,
+          items: [
+            {
+              eyebrow: "חוק 1",
+              title: "תור שייך למטופל קיים",
+              body: "אי אפשר לייצר פגישת רפלקסולוגיה 'באוויר'. חייב להיות מזהה מטופל חוקי (Foreign Key ב-DB)."
+            },
+            {
+              eyebrow: "חוק 2",
+              title: "No Hard Deletes",
+              body: "היסטוריה רפואית לעולם לא נמחקת פיזית. אם לא תזהיר את הסוכן, הוא עלול לייצר מחיקה שתעלים מטופל מהרקורד במקום מחיקה רכה (Soft Delete)."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "race-conditions",
+      label: "Transactions",
+      navShort: "Transactions",
+      kicker: "מניעת התנגשויות",
+      title: "מניעת Race Conditions עם Transactions",
+      description: "המקום שבו 90% מהמערכות נופלות במבחן המציאות.",
+      blocks: [
+        {
+          type: "lead",
+          eyebrow: "התרחיש",
+          title: "תור כפול",
+          text: [
+            "שני מטופלים שונים מסתכלים על יומן הקליניקה ולוחצים על קביעת תור לאותה שעה באותה אלפית שנייה. השרת שואל את ה-DB שפעמיים אומר 'פנוי', והתוצאה היא תור כפול.",
+            "הפתרון: כשמנחים את הסוכן לכתוב את קביעת התורים, דורשים מפורשות: 'Use database transactions and locks to prevent race conditions'."
+          ]
+        }
+      ]
+    },
+    {
+      id: "state-machines",
+      label: "מכונות מצבים",
+      navShort: "State Machines",
+      kicker: "מחזור חיים",
+      title: "מכונות מצבים - מסע הלקוח בקוד",
+      description: "מיפוי מחזור החיים של הליד כדי למנוע סטטוסים לא חוקיים.",
+      blocks: [
+        {
+          type: "callout",
+          tone: "warning",
+          title: "סכנת סטטוסים חופשיים",
+          text: "סוכן AI עלול לכתוב API שמאפשר להפוך תור ש'בוטל' ל'הושלם בהצלחה'. הגישה הפרגמטית היא לדרוש מהסוכן לבנות State Machine עם מעברים חוקיים בלבד."
+        }
+      ]
+    },
+    {
+      id: "checklists",
+      label: "צ'קליסטים ותבניות",
+      navShort: "צ'קליסט",
+      kicker: "Review & Guidelines",
+      title: "צ'קליסט Tech Lead ל-Review",
+      description: "מה בודקים כשהסוכן מגיש את ה-Pull Request של הלוגיקה.",
+      blocks: [
+        {
+          type: "bullet-list",
+          title: "צ'קליסט בדיקת לוגיקה עסקית מסוכנים",
+          items: [
+            "האם קיימת ולידציה בשרת (Backend) ולא רק ב-UI?",
+            "האם ישויות דאטה עברו Soft Delete במקום Hard Delete?",
+            "האם פעולות קריטיות עטופות בטרנזקציה (Transactions & Locks)?",
+            "האם ההרשאות מחולצות מטוקן האימות בשרת (Auth Token) ולא מהקליינט?",
+            "האם נשמרים האינווריאנטים ומכונות המצבים?"
+          ]
+        }
+      ]
+    }
+  ]
+};
+
+
+  const frontendArchitecturePage = {
+    id: "frontend-architecture",
+    heroEyebrow: "יחידה 5 · החלון לראווה",
+    title: "ארכיטקטורת Frontend למנהלי מוצר (החלון לראווה והאשליות של ה-UI)",
+    subtitle: "אנחנו יוצאים מהמטבח, מהכספות ומהמשרדים של מנהל המסעדה, ועוברים ישר לחדר האוכל. המטרה היא לתת לך משקפי רנטגן לזהות אם הארכיטקטורה של הסוכן רקובה מבפנים.",
+    quickFacts: [
+      { value: "4", label: "עקרונות ליבה" },
+      { value: "3", label: "מצבי ממשק" },
+      { value: "2", label: "אתגרי דיבאג" }
+    ],
+    parts: [
+      {
+        id: "components-props",
+        label: "קומפוננטות",
+        navShort: "קומפוננטות",
+        kicker: "אבני הלגו של המסך",
+        title: "קומפוננטות ופרופס (Components & Props)",
+        description: "בעבר אתרי אינטרנט היו מסמך אחד ארוך. היום, ה-Frontend המודרני בנוי מיחידות עצמאיות בשימוש חוזר.",
+        blocks: [
+          {
+            type: "card-grid",
+            title: "אבני הבניין של ה-Frontend",
+            columns: 2,
+            items: [
+              {
+                eyebrow: "Component",
+                title: "המלצר (הקופסה)",
+                body: "יחידת UI עצמאית. למשל: 'כפתור הגשה', 'כרטיסיית שיעור'. הקסם הוא שימוש חוזר - כותבים פעם אחת, משתמשים ב-50 מסכים שונים."
+              },
+              {
+                eyebrow: "Props",
+                title: "המדים ותג השם (ההוראות)",
+                body: "ההוראות שאתה מעביר לקומפוננטה מבחוץ. במסך אחד תעביר לכפתור טקסט 'הגש', במסך אחר תעביר לו 'הירשם' וצבע כחול."
+              }
+            ]
+          },
+          {
+            type: "callout",
+            tone: "danger",
+            title: "נקודת הכשל של סוכני AI (ספגטי)",
+            text: "מודלים נוטים להתעצל ולכתוב מסך שלם כקומפוננטה אחת מפלצתית של 1,000 שורות. כ-Tech Lead, עליך לדרוש מהסוכן: 'Break this screen down into small, reusable components'."
+          }
+        ]
+      },
+      {
+        id: "state-management",
+        label: "ניהול מצב",
+        navShort: "State",
+        kicker: "הזיכרון של המסך",
+        title: "ניהול מצב (State Management) - המוקש הגדול ביותר",
+        description: "State הוא הזיכרון של המסך בזמן נתון. כאן נופלים רוב הבילדרים שלא למדו ארכיטקטורה - ערבוב בין מצב זמני של ה-UI לבין אמת מוחלטת מהשרת.",
+        blocks: [
+          {
+            type: "card-grid",
+            title: "שני סוגי זיכרון שונים בתכלית",
+            columns: 2,
+            items: [
+              {
+                eyebrow: "Local State",
+                title: "מצב מקומי (זמני)",
+                body: "הזיכרון של ה-UI עכשיו. למשל: תפריט נגלל 'פתוח', או מה שמוקלד כרגע בשורת חיפוש. אם ירעננו את הדף, הזיכרון הזה יימחק."
+              },
+              {
+                eyebrow: "Server State",
+                title: "מצב השרת (אמת מוחלטת)",
+                body: "הנתונים הרשמיים מה-Database. למשל: רשימת הקורסים של התלמיד, הציון שלו, או סטטוס המנוי."
+              }
+            ]
+          },
+          {
+            type: "callout",
+            tone: "warning",
+            title: "החוק הנוקשה לבילדרים",
+            text: "לעולם אל תבלבל ביניהם! הסוכן עלול לכתוב קוד שבו הציון נשמר רק ב-Local State. התלמיד יראה '100', אבל בריענון זה ייעלם כי לא נשלח ל-Database של Anti-Gravity."
+          }
+        ]
+      },
+      {
+        id: "loading-empty-error",
+        label: "משולש הברזל",
+        navShort: "משולש המצבים",
+        kicker: "מעבר ל'נתיב השמח'",
+        title: "Loading, Empty, Error: הציפייה לתקלות",
+        description: "סוכני AI הם אופטימיים חסרי תקנה. הם בונים את ה'נתיב השמח' (Golden Path) שבו האינטרנט מושלם. אתה חייב לנהל את משולש הברזל.",
+        blocks: [
+          {
+            type: "card-grid",
+            title: "שלושת המצבים הקריטיים לכל מסך",
+            columns: 3,
+            items: [
+              {
+                eyebrow: "מצב 1",
+                title: "Loading (טעינה)",
+                body: "החצי שנייה שהדפדפן מחכה לשרת. בלי אנימציית טעינה (Skeleton), המשתמש ילחץ 10 פעמים ויגרום ל-Race condition."
+              },
+              {
+                eyebrow: "מצב 2",
+                title: "Empty (מצב ריק)",
+                body: "תלמיד חדש בלי קורסים לא אמור לראות טבלה ריקה או לקרוס. דרוש מהסוכן לעצב Empty State מזמין: 'לחץ כאן כדי להתחיל'."
+              },
+              {
+                eyebrow: "מצב 3",
+                title: "Error (שגיאה)",
+                body: "השרת נפל? אל תציג מסך לבן שבור. הצג רכיב שגיאה אלגנטי (Error Boundary) שמאפשר למשתמש לנסות שנית."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: "optimistic-ui",
+        label: "אשליית מהירות",
+        navShort: "אופטימיות",
+        kicker: "לגרום למסך לטוס",
+        title: "Optimistic UI: איך אינסטגרם מרגישה כל כך מהירה",
+        description: "עדכון אופטימי אומר שה-Frontend מניח מראש שהשרת יאשר את הבקשה, ומעדכן את המסך מיד כדי לתת חוויה חלקה, ורק מתקן במקרה של כישלון.",
+        blocks: [
+          {
+            type: "callout",
+            tone: "info",
+            title: "פרומפט מנצח לסוכן",
+            text: "'Implement optimistic UI updates so the list feels blazing fast'. ככה ה-UI ישתנה באלפית שנייה (כמו לייק אדום), ויחכה לשרת ברקע."
+          }
+        ]
+      },
+      {
+        id: "component-tree",
+        label: "עץ קומפוננטות",
+        navShort: "ארכיטקטורה",
+        kicker: "אטלס ארכיטקטורות",
+        title: "עץ הקומפוננטות (Component Tree)",
+        description: "תרשים שמראה כיצד מסך ה'קורס' מפורק לקומפוננטות, ואיך ה-State מתחלק בין השרת למסך המקומי.",
+        blocks: [
+          {
+            type: "code-block",
+            eyebrow: "תרשים זרימה",
+            title: "זרימת הפרופס והמצב (Props & State) במסך",
+            language: "mermaid",
+            code: `graph TD
+    classDef page fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px;
+    classDef container fill:#e3f2fd,stroke:#673ab7,stroke-width:2px;
+    classDef component fill:#e1f5fe,stroke:#03a9f4,stroke-width:2px;
+    classDef state fill:#fff3e0,stroke:#ff9800,stroke-width:2px,stroke-dasharray: 5 5;
+
+    CoursePage[עמוד קורס מרכזי]:::page
+    
+    ServerState((Server State:<br/>מושך מה-API את <br/>פרטי הקורס)):::state
+    ServerState -.-> CoursePage
+
+    CoursePage --> Header[כותרת הקורס וסטטוס התקדמות]:::container
+    CoursePage --> VideoPlayer[נגן הוידאו]:::container
+    CoursePage --> QuizSection[אזור המבחן]:::container
+
+    QuizSection --> QuestionDisplay[תצוגת השאלה]:::component
+    QuizSection --> OptionsList[רשימת התשובות האפשריות]:::component
+    QuizSection --> SubmitBtn[כפתור הגשה]:::component
+
+    LocalState((Local State:<br/>איזו תשובה התלמיד<br/>סימן כרגע?)):::state
+    LocalState -.-> OptionsList
+    
+    %% Props flow
+    CoursePage == מעביר Props: <br>נתוני השאלה ==> QuizSection`
+          }
+        ]
+      },
+      {
+        id: "tech-lead-exam",
+        label: "אתגר Review",
+        navShort: "מבחן",
+        kicker: "The Tech Lead Exam",
+        title: "אתגר ה-Code Review לסוכן הפרונטאנד",
+        description: "בדוק האם הפנמת את החשיבה הארכיטקטונית - גם בביצועים וגם באבטחה.",
+        blocks: [
+          {
+            type: "bullet-list",
+            title: "חלק א': מבדק רינדור וביצועים (חיפוש מקליד)",
+            items: [
+              "המשתמש מקליד תו בתיבת חיפוש. איך לא נקריס את השרת?",
+              "א': בקשת API על כל אות. (שגוי - יעשה DDoS לשרת).",
+              "ב': להוריד מראש את כל אלפי השיעורים לקליינט ולסנן רק ב-UI. (שגוי - יהרוג רוחב פס ויתקע את הדפדפן).",
+              "ג': Debounce (השהיה) - הקליינט ימתין 300ms מסיום ההקלדה ורק אז ישלח בקשה מסודרת. (התשובה הנכונה!)."
+            ]
+          },
+          {
+            type: "code-block",
+            eyebrow: "The Code",
+            title: "חלק ב': קוד שכתב סוכן להצגת רשימת תלמידים",
+            language: "javascript",
+            code: `// ה-Frontend קורא ל-API כדי להביא את רשימת התלמידים
+const students = await fetch('/api/get-all-users');
+
+// הסוכן מסנן את הרשימה בתוך הדפדפן (ב-Frontend!)
+const myStudents = students.filter(student => student.courseId === currentTeacherCourse);
+
+// רינדור הטבלה במסך
+return <Table data={myStudents} />`
+          },
+          {
+            type: "callout",
+            tone: "danger",
+            title: "תשובת מנהל המוצר הטכני: אסון ארכיטקטוני ואבטחתי",
+            text: "אסון אבטחתי: ה-UI מושך את כל המשתמשים ('get-all-users'). כל מורה יוכל לפתוח Network Tab ולראות מידע אישי של תלמידים שלא שלו!\nאסון ביצועים: להוריד קובץ JSON של רבבות משתמשים יתקע את הדפדפן.\nהפרומפט המתקן: 'Stop! You are filtering data on the Client-side... Move filtering to the Backend... Update the UI to include a Loading State'."
+          }
+        ]
+      },
+      {
+        id: "case-study-lab",
+        label: "מעבדת פיתוח",
+        navShort: "מעבדה",
+        kicker: "Case Study: The Clinic App",
+        title: "מעבדת פיתוח: חדר הטיפולים הדיגיטלי",
+        description: "בואו נבנה את המסך שבו הנטורופתית מנהלת את הטיפול עצמו.",
+        blocks: [
+          {
+            type: "card-grid",
+            title: "משימות Frontend לשבוע זה",
+            columns: 2,
+            items: [
+              {
+                eyebrow: "Task 1",
+                title: "הגדרת מסך 'תיק מטופל'",
+                body: "בקש מסוכן ה-AI לבנות קומפוננטת React המציגה את תיק המטופל. ודא שהוא מחלק את המסך לקומפוננטות קטנות (כותרת, היסטוריית טיפולים, כפתור שמירה)."
+              },
+              {
+                eyebrow: "Task 2",
+                title: "ניהול מצב שגיאה וטעינה",
+                body: "בדוק מה קורה למסך בזמן שממתינים שההיסטוריה תיטען. ודא שהסוכן יישם מצבי Loading ו-Error למסך תיק המטופל."
+              }
+            ]
+          },
+          {
+            type: "callout",
+            tone: "info",
+            title: "פרומפט מומלץ לסוכן שלך",
+            text: "'Create a React component for the Patient File screen. Break it down into smaller components. Add a form to write a new treatment note, keeping the text in Local State. Include a Loading skeleton while fetching the treatment history (Server State).'"
+          }
+        ]
+      }
+    ]
+  };
+
+  const backendArchitecturePage = {
+  "id": "backend-architecture",
+  "heroEyebrow": "יחידה 8 · בקאנד",
+  "title": "Backend architecture בלי להסתבך",
+  "subtitle": "מערכת צד-השרת (Backend) היא המנוע של הקליניקה. סוכני AI (כמו Cursor או Claude Code) נוטים לדחוף את כל הלוגיקה למקום אחד רק כדי שזה יעבוד מהר. היחידה הזו תלמד אותך איך להכריח אותם לבנות בקאנד נקי, מודולרי ועמיד, בלי ליצור קוד ספגטי שיקרוס כשנרצה להוסיף פיצ'רים.",
+  "quickFacts": [
+    {
+      "value": "4",
+      "label": "שכבות ארכיטקטורה"
+    }
+  ],
+  "parts": [
+    {
+      "id": "routers-and-controllers",
+      "label": "Routers & Controllers",
+      "navShort": "Routes",
+      "kicker": "The Front Desk",
+      "title": "ראוטינג וקונטרולרים - פקיד הקבלה של המערכת",
+      "description": "איך בקשות נכנסות לשרת ולמה תפקיד פקיד הקבלה חייב להישאר ממוקד ופשוט.",
+      "blocks": [
+        {
+          "type": "lead",
+          "eyebrow": "Use Case",
+          "title": "קבלת פנים לבקשת ה-HTTP",
+          "text": [
+            "תדמיין את הקליניקה הנטורופתית שלך: כשמטופל נכנס, פקיד הקבלה מברך אותו, לוקח ממנו את טופס הבקשה ומוודא שהוא הגיע למקום הנכון. הפקיד לעולם לא מבצע את הטיפול הרפואי בעצמו.",
+            "בעולם השרתים, ה-Router הוא דלת הכניסה המנתבת את הבקשה, וה-Controller הוא פקיד הקבלה. תפקידם בלעדי: לקבל את בקשת ה-HTTP, לחלץ ממנה את הנתונים ולהעביר אותם הלאה לגורם המטפל."
+          ]
+        },
+        {
+          "type": "callout",
+          "tone": "danger",
+          "title": "סכנת ה-Fat Controllers (קוד ספגטי מבוסס AI)",
+          "text": "הנטייה הטבעית של סוכני AI היא לכתוב את הלוגיקה העסקית, פניות למסד הנתונים ואפילו שליחת אימיילים בתוך ה-Controller. זה יוצר 'קונטרולר שמן' (Fat Controller). כ-Product Builder, זה תמרור אזהרה. עליך לדרוש מהסוכן להפריד את הלוגיקה העסקית החוצה כדי לשמור על קוד שניתן לתחזק ולבדוק בקלות."
+        }
+      ]
+    },
+    {
+      "id": "services-and-orchestration",
+      "label": "Services & Orchestration",
+      "navShort": "Services",
+      "kicker": "The Core Engine",
+      "title": "הלב הפועם: Services & Orchestration",
+      "description": "ניתוק הלוגיקה העסקית מהאינטרנט ויצירת מודולריות.",
+      "blocks": [
+        {
+          "type": "lead",
+          "eyebrow": "Business Logic",
+          "title": "הפרדת רשויות והגדרת שירותים",
+          "text": [
+            "שכבת ה-Services היא ה'מטפלת' עצמה. כאן מתבצעת העבודה האמיתית: בדיקה האם המטופל יכול לקבוע תור, חישוב עלות הטיפול הרפלקסולוגי והקצאת המשאבים.",
+            "חוק ברזל: שכבת השירות צריכה להיות 'עיוורת' לכך שהבקשה הגיעה מהאינטרנט. אסור לה להכיר אובייקטים כמו HTTP Request או Response. ההפרדה הזו (Orchestration) מאפשרת לנו להפעיל את אותו תהליך בדיוק מתוך פקודת שרת מתוזמנת (Cron Job) או מממשק ה-API, מבלי לשכפל קוד."
+          ]
+        },
+        {
+          "type": "code-block",
+          "language": "mermaid",
+          "content": "graph LR\n  Client[ממשק משתמש] -->|HTTP POST| Router[Router]\n  Router --> Controller[Controller - מחלץ נתונים]\n  Controller -->|קריאה לפונקציה| Service[Service Layer - לוגיקה עסקית]\n  Service --> DB[(Database)]\n  Service --> API[External API / יומן גוגל]"
+        }
+      ]
+    },
+    {
+      "id": "validation",
+      "label": "Validation Layer",
+      "navShort": "Validation",
+      "kicker": "The Gatekeeper",
+      "title": "שומר הסף: Validation ברמת הבקאנד",
+      "description": "הגנה על המערכת מנתוני זבל ומבקשות זדוניות.",
+      "blocks": [
+        {
+          "type": "lead",
+          "eyebrow": "Defense in Depth",
+          "title": "לעולם אל תסמוך על ה-Client",
+          "text": [
+            "גם אם ממשק המשתמש (Frontend) בודק שכתובת האימייל של הליד תקנית, אסור לסמוך על כך! משתמשים זדוניים או שגיאות רשת יכולים לעקוף את צד הלקוח ולשלוח נתוני זבל ישירות לשרת.",
+            "על ה-Backend לבצע ולידציה נוקשה. כשתבקש מסוכן לבנות Endpoint ליצירת פגישה, ודא שהוא משתמש בספריית ולידציה (כמו Zod או Joi) כדי להבטיח ששעת הפגישה היא בעתיד, מספר הטלפון חוקי, ומזהה המטופל קיים במערכת."
+          ]
+        },
+        {
+          "type": "card-grid",
+          "title": "רמות של ולידציה",
+          "columns": 2,
+          "items": [
+            {
+              "eyebrow": "Syntax Validation",
+              "title": "תקינות המבנה",
+              "body": "האם שדה האימייל הוא באמת מחרוזת טקסט בפורמט חוקי של דואר אלקטרוני?"
+            },
+            {
+              "eyebrow": "Business Validation",
+              "title": "תקינות עסקית",
+              "body": "האם המטופל מנסה לקבוע פגישת רפלקסולוגיה בשעה שהקליניקה כבר סגורה?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "error-handling",
+      "label": "Error Handling",
+      "navShort": "Errors",
+      "kicker": "The Dark Side",
+      "title": "הצד האפל: ניהול שגיאות (Error Handling)",
+      "description": "מה קורה כשהמערכת נכשלת, ואיך מונעים מהשרת לקרוס.",
+      "blocks": [
+        {
+          "type": "lead",
+          "eyebrow": "Resilience",
+          "title": "לנהל כשלים בצורה אלגנטית",
+          "text": [
+            "תאר לעצמך שליד קובע פגישה, אך ה-API של יומן גוגל החיצוני קרס בדיוק באותו רגע. האם השרת שלך יקרוס? האם הפגישה תישמר במסד הנתונים אבל לא ביומן?",
+            "ניהול שגיאות חכם דורש שימוש בלוקים של Try/Catch, עטיפת פעולות קריטיות בטרנזקציות (כך שאם פעולה אחת נכשלת - הכל מבוטל), והחזרת קודי סטטוס HTTP נכונים (למשל 400 לטעות לקוח, 500 לטעות שרת) במקום דליפת מידע פנימי למשתמש (Stack Trace)."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tech-exam",
+      "label": "Tech Exam",
+      "navShort": "Exam",
+      "kicker": "Builder's Review",
+      "title": "אתגר ה-Builder: איך לבקר קוד שרת של סוכן",
+      "description": "זיהוי כשלים ארכיטקטוניים בקוד שהופק על ידי AI.",
+      "blocks": [
+        {
+          "type": "lead",
+          "eyebrow": "Code Review",
+          "title": "התרחיש",
+          "text": [
+            "ביקשת מהסוכן (למשל ב-Cursor) לכתוב פונקציה שמאפשרת למטפלת למחוק פגישה מיומן הקליניקה. הסוכן החזיר לך את קוד השרת הבא. עליך לזהות מה שגוי בו ארכיטקטורית ואבטחתית."
+          ]
+        },
+        {
+          "type": "code-block",
+          "language": "javascript",
+          "content": "app.post('/api/delete-appointment', async (req, res) => {\n  const appointmentId = req.body.id;\n  const isTherapist = req.body.isTherapist;\n  \n  if (isTherapist === false) {\n    return res.send('Error: Only therapist can delete');\n  }\n  \n  await db.query('DELETE FROM appointments WHERE id =?', [appointmentId]);\n  res.send('Appointment deleted successfully!');\n});"
+        },
+        {
+          "type": "bullet-list",
+          "title": "הערות הריוויו שלך לסוכן (הפרומפט המתקן):",
+          "items": [
+            "Fat Controller: הלוגיקה יושבת ישירות בראוטר במקום לעבור ל-Service ואין כאן בלוק Try/Catch לניהול שגיאות בגישה ל-DB.",
+            "חור אבטחה חמור (Trust Boundary): השרת סומך על `req.body.isTherapist` שמגיע מהקליינט. צריך לחלץ את ההרשאה מה-Token בסשן מאובטח בשרת.",
+            "מתודת HTTP שגויה: פעולת מחיקה צריכה להשתמש בפועל `DELETE` ולא `POST`.",
+            "Hard Delete במקום Soft Delete: בקליניקה רפואית לרוב לא מוחקים רשומות פיזית (DELETE), אלא מסמנים כסטטוס מבוטל (Canceled) למטרות תיעוד וביקורת."
+          ]
+        }
+      ]
+    }
+  ]
+};
+
+  const securityPage = {
+  "id": "security",
+  "heroEyebrow": "יחידה 9 · אבטחה",
+  "title": "אבטחה פרקטית (בלי להיות פראנואיד)",
+  "subtitle": "כמנהל מוצר, אתה לא חייב להיות מומחה סייבר. אבל אם סוכן ה-AI שלך בונה מערכת בלי Auth נכון או עם הרשאות פרוצות, הקליניקה חשופה לתביעות ענק על דליפת מידע רפואי.",
+  "quickFacts": [
+    {
+      "value": "3",
+      "label": "וקטורי תקיפה"
+    },
+    {
+      "value": "1",
+      "label": "חוק ברזל"
+    },
+    {
+      "value": "2",
+      "label": "תרגילים"
+    }
+  ],
+  "parts": [
+    {
+      "id": "authentication",
+      "label": "אימות מול הרשאה",
+      "navShort": "Auth",
+      "kicker": "Who are you?",
+      "title": "אימות (Authentication) לעומת הרשאה (Authorization)",
+      "description": "הבלבול הכי גדול של בילדרים מתחיל כאן.",
+      "blocks": [
+        {
+          "type": "card-grid",
+          "title": "שני המושגים שחובה להפריד",
+          "columns": 2,
+          "items": [
+            {
+              "eyebrow": "Authentication (AuthN)",
+              "title": "מי אתה?",
+              "body": "אימות הזהות. המשתמש מכניס אימייל וסיסמה (או מתחבר עם Google) והשרת מנפיק לו Token שאומר 'זה יוסי'."
+            },
+            {
+              "eyebrow": "Authorization (AuthZ)",
+              "title": "מה מותר לך לעשות?",
+              "body": "בדיקת ההרשאות. האם ליוסי מותר לצפות בתיק הרפואי של שרה? זוהי שאלה שהשרת שואל בכל בקשה מחדש."
+            }
+          ]
+        },
+        {
+          "type": "callout",
+          "tone": "danger",
+          "title": "הטעות של סוכני קוד",
+          "text": "סוכנים נוטים לבנות ממשק שמסתיר כפתורים ממי שאינו מנהל, אבל לא חוסמים את הפעולה בשרת (Backend). התוצאה: האקר יכול לשלוח בקשת API ישירה ולמחוק מטופלים, כי השרת רק שאל 'מי אתה' אבל לא 'האם מותר לך'."
+        }
+      ]
+    },
+    {
+      "id": "secrets-management",
+      "label": "ניהול סודות",
+      "navShort": "Secrets",
+      "kicker": "Keep it Secret",
+      "title": "סודות, מפתחות, ו-Environment Variables",
+      "description": "איך לא לשרוף את תקציב הענן שלך בטעות אחת קטנה ב-Git.",
+      "blocks": [
+        {
+          "type": "lead",
+          "eyebrow": "Concept",
+          "title": ".env Files",
+          "text": [
+            "מפתחות גישה ל-OpenAI, סיסמאות למסד הנתונים וטוקנים של סליקת אשראי לעולם לא נשמרים בתוך הקוד עצמו.",
+            "הם נשמרים בקובץ הגדרות סביבה (.env) שמיועד לא לצאת מהמחשב המקומי שלך או מהשרת המאובטח, ולעולם אינו נדחף ל-GitHub."
+          ]
+        },
+        {
+          "type": "bullet-list",
+          "title": "כללי אצבע לסודות",
+          "items": [
+            "ודא שקובץ '.env' תמיד נמצא בתוך '.gitignore'.",
+            "סוכן ה-AI לעולם לא אמור לבקש ממך להדביק מפתח אמיתי לפרומפט שלו - השתמש במפתחות דמה (Dummy Keys) בזמן הקידוד.",
+            "אם בטעות דחפת מפתח ל-Git, מחק אותו מהספק באופן מיידי (Rotate). מחיקה מקוד המקור לא עוזרת, ההיסטוריה כבר שם."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "file-uploads",
+      "label": "העלאת קבצים",
+      "navShort": "Uploads",
+      "kicker": "Trojan Horses",
+      "title": "סכנות בהעלאת קבצים (Uploads)",
+      "description": "מה קורה כשהלקוח של הקליניקה מעלה קובץ PDF נגוע בוירוס?",
+      "blocks": [
+        {
+          "type": "lead",
+          "eyebrow": "Use Case",
+          "title": "הטופס התמים של המטפלת",
+          "text": [
+            "המטפלת מבקשת מהלקוח החדש להעלות בדיקות דם (PDF). הלקוח מעלה קובץ מתחזה שמכיל קוד עוין.",
+            "אם סוכן ה-AI בנה מנגנון העלאה 'פשוט', הקובץ נשמר ישירות על השרת, ומריץ את הקוד העוין. המערכת נפרצה."
+          ]
+        },
+        {
+          "type": "card-grid",
+          "title": "פרוטוקול העלאה מאובטח",
+          "columns": 2,
+          "items": [
+            {
+              "eyebrow": "שלב 1",
+              "title": "Validation עמוק",
+              "body": "אל תסמוך על סיומת הקובץ (.pdf). דרוש מהסוכן לבדוק את ה-MIME Type האמיתי בשרת."
+            },
+            {
+              "eyebrow": "שלב 2",
+              "title": "Storage חיצוני",
+              "body": "קבצים לעולם לא נשמרים על השרת המריץ את הלוגיקה. שומרים אותם ב-S3 (AWS) או ב-Firebase Storage."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+};
+
+  const debuggingPage = {
+  "id": "debugging",
+  "heroEyebrow": "יחידה 10 · אופרציה",
+  "title": "דיבאגינג שיטתי למנהלי מוצר",
+  "subtitle": "מנהל מוצר שסומך על סוכן ה-AI שיתקן באגים על עיוור - ימצא את עצמו בלופ אין-סופי של תקלות. ביחידה זו נלמד איך לאתר את שכבת הכשל בצורה מדעית.",
+  "quickFacts": [
+    {
+      "value": "4",
+      "label": "שכבות מערכת"
+    },
+    {
+      "value": "1",
+      "label": "שיטת חקירה"
+    },
+    {
+      "value": "2",
+      "label": "כלים מובנים"
+    }
+  ],
+  "parts": [
+    {
+      "id": "the-blind-ai-loop",
+      "label": "לופ האשליות",
+      "navShort": "לופ ה-AI",
+      "kicker": "The Endless Loop",
+      "title": "למה סוכני AI גרועים בדיבאגינג עיוור",
+      "description": "כשאתה כותב לסוכן 'זה לא עובד, תתקן', אתה מזמין אסון.",
+      "blocks": [
+        {
+          "type": "lead",
+          "eyebrow": "Concept",
+          "title": "לדבג בעזרת תקווה",
+          "text": [
+            "סוכן שגיאה מקבל שגיאה שהוא לא מבין עד הסוף, ומנחש תיקון פוטנציאלי במקום אחר בקוד.",
+            "הוא עשוי למחוק פונקציה שעובדת כדי 'לפתור' בעיית CSS במסך אחר. התוצאה היא משחק 'הכה את החפרפרת' (Whack-a-Mole) של באגים."
+          ]
+        },
+        {
+          "type": "callout",
+          "tone": "danger",
+          "title": "החוק הראשון של דיבאגינג",
+          "text": "אל תיתן ל-AI לתקן באג עד שלא בודדתם יחד באיזו שכבה בדיוק הוא קורה: UI, Network, Backend, או Database."
+        }
+      ]
+    },
+    {
+      "id": "isolating-the-layer",
+      "label": "בידוד השכבה",
+      "navShort": "בידוד",
+      "kicker": "Divide and Conquer",
+      "title": "איך לבודד את השכבה התקולה",
+      "description": "כלי החקירה הטובים ביותר של מנהל המוצר: DevTools.",
+      "blocks": [
+        {
+          "type": "card-grid",
+          "title": "4 שלבים לאיתור באג",
+          "columns": 2,
+          "items": [
+            {
+              "eyebrow": "שלב 1: Console",
+              "title": "האם יש שגיאת JavaScript?",
+              "body": "פתח את ה-Console בדפדפן. אדום משמעותו שהקוד בצד הלקוח קרס לפני שהגיע לשרת. הבעיה ב-Frontend."
+            },
+            {
+              "eyebrow": "שלב 2: Network Tab",
+              "title": "האם הבקשה בכלל יצאה?",
+              "body": "בדוק את ה-Network Tab. אם אין בקשה ברשימה, ה-UI לא מתקשר נכון. אם יש בקשה בצבע אדום, הבעיה בשרת."
+            },
+            {
+              "eyebrow": "שלב 3: Payload",
+              "title": "מה ה-UI שלח?",
+              "body": "האם ה-UI שלח את הנתונים הנכונים (למשל, מזהה מטופל שגוי או תאריך בפורמט הפוך)?"
+            },
+            {
+              "eyebrow": "שלב 4: Server Logs",
+              "title": "מה קרה בשרת?",
+              "body": "הבקשה הגיעה לשרת והייתה תקינה, אך השרת החזיר שגיאה (500). גש ללוגים של השרת (Backend Terminal) לקרוא את ה-Stack Trace."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "case-study",
+      "label": "Case Study",
+      "navShort": "מקרה בוחן",
+      "kicker": "Real World Problem",
+      "title": "מקרה בוחן: הפגישה שלא נשמרה",
+      "description": "נטורופתית לחצה 'שמור פגישה'. המסך נטען לנצח.",
+      "blocks": [
+        {
+          "type": "lead",
+          "eyebrow": "The Problem",
+          "title": "הבאג בקליניקה",
+          "text": [
+            "תלמיד בקורס פנה לעזרה: 'הקליניקה שלי שבורה. אני לוחץ על כפתור תיאום הפגישה, הספינר מסתובב, ולא קורה כלום. אמרתי ל-Cursor שזה שבור והוא הרס לי את כל המסך.'",
+            "הפעלנו את שיטת הבידוד: ב-Console לא הייתה שגיאה. ב-Network Tab ראינו שהבקשה נשלחה, ונשארה במצב Pending (ממתינה)."
+          ]
+        },
+        {
+          "type": "callout",
+          "tone": "info",
+          "title": "האבחנה והפרומפט",
+          "text": "מצב Pending אומר שהשרת חושב, אבל מעולם לא מחזיר תשובה. בבדיקת Server Logs התברר שהסוכן השתמש באובייקט 'res' הלא נכון ולא סגר את הבקשה. הפרומפט המנצח: 'The frontend request stays pending. Check the /book-appointment route and make sure you call res.send() or res.json() after saving to the database'."
+        }
+      ]
+    }
+  ]
+};
+
+  const gitPrPage = {
+  "id": "git-pr",
+  "heroEyebrow": "יחידה 11 · Delivery",
+  "title": "Git, PRs, ו-Review Discipline",
+  "subtitle": "כשהסוכן כותב קוד, מישהו צריך לשמור עליו שלא ישרוף את הייצור (Production). מנהל מוצר שאינו יודע לנהל פיצולים (Branches) ימצא את עצמו עם קוד שבור שאי אפשר לחזור ממנו אחורה.",
+  "quickFacts": [
+    {
+      "value": "3",
+      "label": "עקרונות ליבה"
+    },
+    {
+      "value": "1",
+      "label": "חוק ברזל"
+    },
+    {
+      "value": "1",
+      "label": "צ'קליסט"
+    }
+  ],
+  "parts": [
+    {
+      "id": "the-main-branch",
+      "label": "קדושת ה-Main",
+      "navShort": "Main",
+      "kicker": "Source of Truth",
+      "title": "למה אסור לגעת ב-Main Branch",
+      "description": "הענף הראשי (Main) הוא המערכת החיה של הקליניקה. אם הסוכן דוחף אליו קוד עם באג, המטפלת לא תוכל לקבל מטופלים.",
+      "blocks": [
+        {
+          "type": "lead",
+          "eyebrow": "Concept",
+          "title": "ענף ראשי וענפי פיצ'רים",
+          "text": [
+            "ה-Main Branch תמיד חייב להיות במצב פועל ותקין (Deployable). לעולם לא כותבים אליו קוד ישירות.",
+            "כשרוצים להוסיף פיצ'ר חדש (למשל: 'היסטוריית טיפולים'), מנחים את הסוכן לפתוח ענף חדש (Feature Branch). אם הסוכן מתבלבל והורס את הקוד, ה-Main עדיין בטוח וניתן למחוק את הניסוי."
+          ]
+        },
+        {
+          "type": "callout",
+          "tone": "danger",
+          "title": "סכנת Commit כפול",
+          "text": "אל תגיד לסוכן 'תשמור הכל ביחד בסוף'. דרוש ממנו לעשות Atomic Commits - שמירה של כל שינוי לוגי קטן כנקודת חזרה עצמאית. (למשל: קומיט ל-UI, וקומיט נפרד ל-API)."
+        }
+      ]
+    },
+    {
+      "id": "pull-requests",
+      "label": "Pull Requests",
+      "navShort": "PR",
+      "kicker": "The Checkpoint",
+      "title": "ה-Pull Request: התחנה של מנהל המוצר",
+      "description": "ה-PR הוא המקום שבו אתה בודק את הסוכן לפני שהקוד שלו הופך למציאות.",
+      "blocks": [
+        {
+          "type": "card-grid",
+          "title": "מה לבדוק ב-PR של סוכן AI",
+          "columns": 2,
+          "items": [
+            {
+              "eyebrow": "בדיקה 1: Scope",
+              "title": "האם הוא חרג מהמשימה?",
+              "body": "סוכנים נוטים 'לשפר' קבצים לא קשורים (למשל, לעצב מחדש את ההדר של האתר כשביקשת רק לתקן כפתור בפוטר). דחה את ה-PR."
+            },
+            {
+              "eyebrow": "בדיקה 2: Rollback",
+              "title": "האם קל לחזור אחורה?",
+              "body": "אם ה-PR מכיל שינויי ענק ל-Database (Migrations) יחד עם שינויי UI, יהיה קשה מאוד לבטל אותו אם משהו ישתבש."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "case-study-pr",
+      "label": "Case Study",
+      "navShort": "מקרה בוחן",
+      "kicker": "Real World Example",
+      "title": "הסוכן שניסה להחליף את ה-Database",
+      "description": "דוגמה אמיתית למה שקורה כשאין Review Discipline.",
+      "blocks": [
+        {
+          "type": "lead",
+          "eyebrow": "The Mistake",
+          "title": "הסוכן שיצא משליטה",
+          "text": [
+            "ביקשנו מסוכן לשנות את צבע הכפתור במסך הפגישות.",
+            "בטעות, הסוכן החליט שצריך גם לייעל את שאילתות ה-SQL. ב-Pull Request הופיעו 15 קבצים שונו, כולל קובץ החיבור ל-Database.",
+            "מנהל מוצר ללא ידע ב-Git היה לוחץ Approve ומקריס את המערכת. מנהל מוצר שלמד דיסציפלינת PR, סוגר את הבקשה ופוקד: 'Revert all files except button.css'."
+          ]
+        }
+      ]
+    }
+  ]
+};
+
+  const testingPage = {
+  "id": "testing",
+  "heroEyebrow": "יחידה 12 · איכות",
+  "title": "Testing בלי להיות פנאט",
+  "subtitle": "מנהלי מוצר רבים שומעים 'טסטים' ומדמיינים בזבוז זמן אוטומטי שלא נגמר. סוכני AI יכולים לכתוב 100 בדיקות בשנייה, אבל אם הם בודקים את הדברים הלא נכונים - יש לך תחושת ביטחון מזויפת.",
+  "quickFacts": [
+    {
+      "value": "2",
+      "label": "סוגי בדיקות"
+    },
+    {
+      "value": "1",
+      "label": "פילוסופיית חיים"
+    },
+    {
+      "value": "1",
+      "label": "פרקטיקה"
+    }
+  ],
+  "parts": [
+    {
+      "id": "what-to-test",
+      "label": "מה בודקים?",
+      "navShort": "פילוסופיה",
+      "kicker": "The 80/20 Rule",
+      "title": "מה שווה אוטומציה ועל מה אפשר לוותר?",
+      "description": "איך לאמן את הסוכן למקד את הבדיקות שלו ב'לוגיקה העסקית' במקום בצבעים של כפתורים.",
+      "blocks": [
+        {
+          "type": "lead",
+          "eyebrow": "Concept",
+          "title": "בדיקת הלב הפועם",
+          "text": [
+            "אוטומציה עולה כסף בתחזוקה. אם תבקש מ-AI 'תכתוב לי טסטים', הוא ייצר עשרות בדיקות ל-UI שיישברו ברגע שתשנה פיקסל אחד בטופס.",
+            "הכלל: בודקים באוטומציה אך ורק את חוקי העסק הקריטיים וה-API. המראה של האתר ייבדק ידנית."
+          ]
+        },
+        {
+          "type": "card-grid",
+          "title": "דוגמאות מהקליניקה",
+          "columns": 2,
+          "items": [
+            {
+              "eyebrow": "חובה לבדוק (Unit Tests)",
+              "title": "לוגיקת תורים ותשלומים",
+              "body": "טסט שמוודא שאי אפשר לקבוע שתי פגישות על אותה שעה. טסט שמוודא שהנחה עובדת כראוי."
+            },
+            {
+              "eyebrow": "בזבוז זמן אוטומטי",
+              "title": "בדיקת צבע טקסט",
+              "body": "טסט שבודק שהכותרת של הקליניקה מופיעה בפונט הנכון ובירוק מנטה. עדיף לפתוח דפדפן ולראות."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "agent-driven-testing",
+      "label": "טסטים עם סוכנים",
+      "navShort": "AI Tests",
+      "kicker": "Prompting for Quality",
+      "title": "איך לבקש טסטים מסוכן",
+      "description": "הפרומפט הנכון יכול לחסוך לך שעות של דיבאגינג בהמשך.",
+      "blocks": [
+        {
+          "type": "code-block",
+          "language": "text",
+          "title": "הפרומפט המנצח לטסטים",
+          "code": "Write Unit Tests for the /book-appointment service. \nFocus ONLY on business rules:\n1. Rejection of double-booking.\n2. Rejection of invalid patient ID.\nDo NOT test the database connection layer or the UI.\nUse Jest and mock the database."
+        },
+        {
+          "type": "callout",
+          "tone": "info",
+          "title": "TDD (Test Driven Development) לעניים",
+          "text": "לפעמים כדאי לתת ל-AI לכתוב את הטסטים *לפני* שהוא כותב את הקוד. זה מכריח אותו לחשוב על מקרי הקיצון לפני שהוא מתחיל לפלוט קוד ספגטי."
+        }
+      ]
+    }
+  ]
+};
+
+  const performancePage = {
+  "id": "performance",
+  "heroEyebrow": "יחידה 13 · סקייל",
+  "title": "Performance וסקייל מעשי",
+  "subtitle": "מערכת של 10 מטופלים טסה. מערכת של 10,000 מטופלים זוחלת. סוכני AI נוטים לכתוב קוד שעובד נהדר על המחשב שלך, אבל קורס בעולם האמיתי.",
+  "quickFacts": [
+    {
+      "value": "3",
+      "label": "צווארי בקבוק"
+    },
+    {
+      "value": "2",
+      "label": "פתרונות סקייל"
+    },
+    {
+      "value": "1",
+      "label": "חוק זהב"
+    }
+  ],
+  "parts": [
+    {
+      "id": "n-plus-1-problem",
+      "label": "בעיית N+1",
+      "navShort": "N+1",
+      "kicker": "The Silent Killer",
+      "title": "רוצח הביצועים השקט: בעיית N+1",
+      "description": "הטעות הנפוצה ביותר שמקריסה מערכות כשכמות המידע גדלה.",
+      "blocks": [
+        {
+          "type": "lead",
+          "eyebrow": "Use Case",
+          "title": "דאשבורד המטפלת האיטי",
+          "text": [
+            "המטפלת מבקשת לראות את כל 50 המטופלים שלה ואת הפגישה האחרונה של כל אחד.",
+            "סוכן ה-AI עשוי לכתוב קוד ששולף 50 מטופלים (שאילתה 1), ואז רץ בלולאה ושולף פגישה לכל אחד בנפרד (50 שאילתות נוספות). סה\"כ 51 פניות ל-DB. זוהי בעיית N+1."
+          ]
+        },
+        {
+          "type": "callout",
+          "tone": "danger",
+          "title": "הפתרון למנהל המוצר",
+          "text": "כאשר אתה מבקש פיצ'ר שמציג רשימה עם מידע מקושר (למשל: מטופלים והפגישות שלהם), דרוש מהסוכן: 'Fetch the patients and their last appointment in a single optimized query (using JOINs)'."
+        }
+      ]
+    },
+    {
+      "id": "caching-strategies",
+      "label": "אסטרטגיות Caching",
+      "navShort": "Caching",
+      "kicker": "Remember This",
+      "title": "לזכור במקום לחשב",
+      "description": "איך להאיץ את המערכת פי 100 בעזרת זיכרון קצר טווח.",
+      "blocks": [
+        {
+          "type": "card-grid",
+          "title": "איפה שמים קאש?",
+          "columns": 2,
+          "items": [
+            {
+              "eyebrow": "דאטה שלא משתנה",
+              "title": "רשימת טיפולים ושירותים",
+              "body": "אין סיבה לשלוף את מחירון הטיפולים מה-DB בכל טעינת דף. שומרים אותו בזיכרון השרת (Redis) או בדפדפן הלקוח."
+            },
+            {
+              "eyebrow": "דאטה אישי",
+              "title": "יומן פגישות",
+              "body": "אל תשמור יומן בקאש לזמן רב. אם המטפלת ביטלה פגישה, היא חייבת לראות את זה מיד. כאן נשתמש ב-Cache Invalidation אגרסיבי."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "asset-optimization",
+      "label": "כבדות ב-Frontend",
+      "navShort": "Frontend",
+      "kicker": "Bundle Size",
+      "title": "למה האתר שוקל 5 מגה-בייט?",
+      "description": "סוכנים אוהבים לייבא ספריות ענק בשביל פיצ'ר קטן.",
+      "blocks": [
+        {
+          "type": "bullet-list",
+          "title": "איך לשמור על אפליקציה רזה",
+          "items": [
+            "סוכן צריך להציג תאריך? ודא שהוא לא מייבא את ספריית moment.js השמנה. בקש ממנו להשתמש ב-Date.now() או ב-date-fns.",
+            "תמונות: מטופל העלה תמונת פרופיל של 10 מגה? המערכת צריכה לדחוס אותה בזמן ההעלאה, אחרת מסך הרשימה יקרוס.",
+            "Lazy Loading: אין סיבה לטעון את כל רכיב 'הגרף הסטטיסטי המורכב' כשהמטפלת רק פתחה את האפליקציה. בקש מהסוכן לעשות Lazy Load לקומפוננטות כבדות."
+          ]
+        }
+      ]
+    }
+  ]
+};
+
+  const agentWorkPage = {
+  "id": "agent-work",
+  "heroEyebrow": "יחידות 14-15 · Masterclass",
+  "title": "עבודה מתקדמת עם סוכני קוד",
+  "subtitle": "אחרי שהבנו את הארכיטקטורה, הגיע הזמן לפתוח מבערים. נלמד איך לנצח על תזמורת של סוכנים (Cursor Composer, Cline) כדי לבנות פיצ'ר מקצה לקצה.",
+  "quickFacts": [
+    {
+      "value": "2",
+      "label": "שבועות מעשיים"
+    },
+    {
+      "value": "1",
+      "label": "פרויקט רוחב"
+    },
+    {
+      "value": "3",
+      "label": "סוכנים במקביל"
+    }
+  ],
+  "parts": [
+    {
+      "id": "the-composer",
+      "label": "המלחין",
+      "navShort": "Composer",
+      "kicker": "Orchestration",
+      "title": "עבודה עם Cursor Composer",
+      "description": "ה-Composer הוא לא צ'אט, הוא סביבת עבודה שמסוגלת לשנות עשרות קבצים בו-זמנית.",
+      "blocks": [
+        {
+          "type": "lead",
+          "eyebrow": "Concept",
+          "title": "לנהל שינויים רוחביים",
+          "text": [
+            "עד עכשיו עבדנו על קובץ אחד בכל פעם. כעת המטפלת דורשת פיצ'ר רוחבי: 'מערכת תזכורות למטופלים'. זה דורש שינוי ב-Database, ב-Backend, ב-Frontend וב-Cron Jobs.",
+            "במקום לפתוח קובץ-קובץ, אנחנו מעלים ל-Composer את כל ההקשרים הרלוונטיים (Context) במכה אחת, ומבקשים ממנו לייצר את כל השכבות בהתאמה לארכיטקטורה שלנו."
+          ]
+        },
+        {
+          "type": "callout",
+          "tone": "info",
+          "title": "The Rule of Context",
+          "text": "אל תגיד ל-Composer 'תעשה את זה'. תן לו את הכללים: @rules.md, את סכימת ה-DB הקיימת (@schema.sql), ואת קובץ הדוגמה ל-API (@example.ts)."
+        }
+      ]
+    },
+    {
+      "id": "cline-and-autonomous",
+      "label": "סוכנים אוטונומיים",
+      "navShort": "Cline",
+      "kicker": "Let them work",
+      "title": "עבודה עם Cline (לשעבר Claude Dev)",
+      "description": "לתת לסוכן את המפתחות למחשב שלך - בזהירות.",
+      "blocks": [
+        {
+          "type": "card-grid",
+          "title": "ההבדל בין סייען לסוכן אוטונומי",
+          "columns": 2,
+          "items": [
+            {
+              "eyebrow": "סייען (Copilot)",
+              "title": "משלים את המחשבה",
+              "body": "אתה מקליד קוד, והוא משלים את השורה הבאה. טוב לחיסכון בהקלדות."
+            },
+            {
+              "eyebrow": "סוכן אוטונומי (Cline)",
+              "title": "מבצע משימות בטרמינל",
+              "body": "הוא יכול להריץ פקודות בטרמינל (npm install), לקרוא קבצים, לראות שגיאות ולתקן את עצמו. כאן מנהל המוצר הופך להיות מנהל פרויקטים של AI."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "multi-agent-flow",
+      "label": "הזרימה",
+      "navShort": "Workflow",
+      "kicker": "End to End",
+      "title": "פיצ'ר מקצה לקצה: מערכת התזכורות",
+      "description": "התרגיל המסכם לשבועיים אלו.",
+      "blocks": [
+        {
+          "type": "bullet-list",
+          "title": "השלבים (Product Builder Workflow)",
+          "items": [
+            "1. כתיבת מסמך דרישות (PRD) מדויק שמיועד לסוכנים (הגדרת DB, API, ו-UI).",
+            "2. פתיחת Cline כדי שייצור את ה-Migrations במסד הנתונים ויעדכן את מודלי הנתונים.",
+            "3. פתיחת Cursor Composer על ה-Frontend כדי שייבנה את מסך ניהול התזכורות, תוך שימוש ברפרנסים מ-Mobbin.",
+            "4. אימות (QA) בעזרת כלי דיבאגינג מהיחידות הקודמות."
+          ]
+        }
+      ]
+    }
+  ]
+};
+
+  const codeReviewPage = {
+  "id": "code-review",
+  "heroEyebrow": "יחידה 16 · Code Review",
+  "title": "איך לקרוא קוד של סוכן מבלי להיות מתכנת",
+  "subtitle": "אתה לא צריך לדעת לכתוב לולאות ב-React כדי לעשות Code Review. אתה צריך לדעת איפה לחפש את ה'שקרים' והקיצורים שהסוכן עשה כדי לסיים את המשימה מהר.",
+  "quickFacts": [
+    {
+      "value": "3",
+      "label": "דפוסי רמאות"
+    },
+    {
+      "value": "2",
+      "label": "כללי אצבע"
+    },
+    {
+      "value": "1",
+      "label": "פרומפט מנצח"
+    }
+  ],
+  "parts": [
+    {
+      "id": "ai-shortcuts",
+      "label": "קיצורי הדרך",
+      "navShort": "קיצורים",
+      "kicker": "The Lazy AI",
+      "title": "קיצורי הדרך הקלאסיים של סוכני AI",
+      "description": "סוכנים רוצים לסמן 'וי' על המשימה. הנה מה שהם יקריבו בדרך.",
+      "blocks": [
+        {
+          "type": "card-grid",
+          "title": "שלושת חטאי הסוכן",
+          "columns": 2,
+          "items": [
+            {
+              "eyebrow": "Hardcoding",
+              "title": "נתונים צרובים",
+              "body": "ביקשת להראות רשימת פגישות, הסוכן פשוט כתב 3 פגישות קבועות בקוד במקום להתחבר ל-Database."
+            },
+            {
+              "eyebrow": "Swallowing Errors",
+              "title": "בליעת שגיאות",
+              "body": "הסוכן מוסיף בלוק try-catch אבל ב-catch כותב console.log וממשיך כאילו לא קרה כלום. הלקוח לא מקבל שום חיווי."
+            },
+            {
+              "eyebrow": "Any Type",
+              "title": "ויתור על טיפוסיות",
+              "body": "ב-TypeScript, הסוכן משתמש בטיפוס 'any' כדי לעקוף שגיאות קומפילציה, מה שהורס את כל רשת הביטחון."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "how-to-review",
+      "label": "איך לסקור",
+      "navShort": "סקירה",
+      "kicker": "The Product Review",
+      "title": "קריאת הקוד מנקודת מבט מוצרית",
+      "description": "הפוקוס שלך צריך להיות על הלוגיקה והמצבים הקיצוניים (Edge Cases).",
+      "blocks": [
+        {
+          "type": "lead",
+          "eyebrow": "Concept",
+          "title": "חפש את ה-Ifs",
+          "text": [
+            "כשאתה קורא את הקוד, אל תתעכב על איך הוא צייר את הכפתור. חפש את משפטי התנאי (If).",
+            "האם יש טיפול במקרה שבו למטופל אין כרטיס אשראי בתוקף? האם יש תנאי שבודק שהפגישה היא בעתיד ולא בעבר?"
+          ]
+        },
+        {
+          "type": "callout",
+          "tone": "info",
+          "title": "פרומפט סקירה",
+          "text": "לפני שאתה מאשר PR, השתמש בסוכן נוסף (כמו Claude Sonnet) ובקש ממנו: 'Act as a Senior Principal Engineer. Review this code for edge cases, security flaws, and unhandled errors. Be brutal'."
+        }
+      ]
+    }
+  ]
+};
+
+  const capstonePage = {
+  "id": "capstone",
+  "heroEyebrow": "יחידה 17 · סיום הקורס",
+  "title": "פרויקט הגמר: The Product Builder",
+  "subtitle": "כל מה שלמדנו מתחבר יחד לנקודה אחת - השקת אפליקציה אמיתית שפותרת בעיה אמיתית בארכיטקטורה נכונה. זה המבחן המסכם שלך כמנהל מוצר בעידן ה-AI.",
+  "quickFacts": [
+    {
+      "value": "1",
+      "label": "פרויקט סיכום"
+    },
+    {
+      "value": "100%",
+      "label": "אחריות"
+    },
+    {
+      "value": "∞",
+      "label": "אפשרויות"
+    }
+  ],
+  "parts": [
+    {
+      "id": "capstone-brief",
+      "label": "הבריף",
+      "navShort": "בריף",
+      "kicker": "The Challenge",
+      "title": "דרישות לפרויקט הגמר",
+      "description": "החוקים להגשת פרויקט ה-Capstone.",
+      "blocks": [
+        {
+          "type": "lead",
+          "eyebrow": "Requirements",
+          "title": "לא עוד To-Do App",
+          "text": [
+            "הפרויקט המסכם אינו אפליקציית הדגמה. הוא צריך להיות מוצר שניתן לשימוש (Production Ready) שפותר בעיה ספציפית.",
+            "ניתן להמשיך לפתח את אפליקציית הנטורופתית לרמת שלמות, או לבחור מקרה בוחן חדש מהתעשייה שלך."
+          ]
+        },
+        {
+          "type": "bullet-list",
+          "title": "צ'קליסט הגשה חובה",
+          "items": [
+            "ארכיטקטורה: הפרדה ברורה בין צד לקוח (UI) ללוגיקה (Backend).",
+            "מסד נתונים: שמירת נתונים אמיתית ב-Supabase או ב-Firebase.",
+            "עיצוב מוקפד: שימוש ברפרנסים מספריות (Shadcn/21st) עם עיצוב אישי ולא גנרי.",
+            "אבטחה והרשאות: מערכת Auth עובדת וחסימת גישה לנתונים רגישים.",
+            "ניהול קוד: הפרויקט מנוהל ב-GitHub בשיטת Pull Requests."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "final-thoughts",
+      "label": "סיכום",
+      "navShort": "סיכום",
+      "kicker": "The Future",
+      "title": "מנהל המוצר החדש",
+      "description": "כמה מילות סיכום על התפקיד שהשתנה לנצח.",
+      "blocks": [
+        {
+          "type": "lead",
+          "eyebrow": "Epilogue",
+          "title": "הכוח נמצא בידיים שלך",
+          "text": [
+            "עד לא מזמן, מנהל מוצר היה צריך לבקש אישור, תקציב וזמן פיתוח כדי לראות אם רעיון עובד. היום, המרחק בין רעיון למוצר חי הוא פרומפט אחד.",
+            "אבל כפי שלמדנו בקורס, הפרומפט הוא החלק הקל. הניהול, הארכיטקטורה, ובקרת האיכות הם מה שהופכים אותך מ'כותב טקסטים' ל-Technical Product Builder אולטימטיבי."
+          ]
+        }
+      ]
+    }
+  ]
+};
 
   const legacyUnitAliases = {
     "git-prs": "git-pr",
@@ -2871,6 +3935,17 @@ Deliver:
     "world-map": worldMapPage,
     "http-api": httpApiPage,
     "data-modeling": dataModelingPage,
+    "business-logic": businessLogicPage,
+    "frontend-architecture": frontendArchitecturePage,
+    "backend-architecture": backendArchitecturePage,
+    "security": securityPage,
+    "debugging": debuggingPage,
+    "git-pr": gitPrPage,
+    "testing": testingPage,
+    "performance": performancePage,
+    "agent-work": agentWorkPage,
+    "code-review": codeReviewPage,
+    "capstone": capstonePage,
     "design-templates-21st": designTemplatesPage
   };
 

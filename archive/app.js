@@ -933,6 +933,8 @@ function cacheElements() {
   elements.heroCompletedStat = document.querySelector("#heroCompletedStat");
   elements.heroRhythm = document.querySelector("#heroRhythm");
   elements.heroSyllabusDropdown = document.querySelector("#heroSyllabusDropdown");
+  elements.heroToc = document.querySelector("#heroToc");
+  elements.heroLedger = document.querySelector("#heroLedger");
   elements.heroShaderCanvas = document.querySelector("#heroShaderCanvas");
   elements.themePresetChips = document.querySelector("#themePresetChips");
   elements.statsGrid = document.querySelector("#statsGrid");
@@ -1256,7 +1258,7 @@ function renderHeroCta() {
 
   if (elements.heroResumeCta) {
     elements.heroResumeCta.href = url;
-    elements.heroResumeCta.textContent = `המשך ללמוד ←`;
+    elements.heroResumeCta.textContent = `המשך ללמוד →`;
   }
 
   // Update completed stat
@@ -1265,6 +1267,87 @@ function renderHeroCta() {
     const strong = elements.heroCompletedStat.querySelector("strong");
     if (strong) strong.textContent = String(completedCount);
   }
+
+  renderHeroLedger(nextUnit);
+  renderHeroMarginalia();
+}
+
+// Parse the first number out of a Hebrew weekLabel like "שבוע 1" or "שבועות 3-4".
+function weekNumbersFromLabel(label) {
+  if (!label) return [];
+  const matches = String(label).match(/\d+/g);
+  if (!matches) return [];
+  return matches.map((n) => parseInt(n, 10)).filter((n) => n >= 1 && n <= 17);
+}
+
+function renderHeroLedger(nextUnit) {
+  if (!elements.heroLedger) return;
+
+  const completedWeeks = new Set();
+  syllabusData.units.forEach((unit) => {
+    if (state.unitProgress[unit.id]) {
+      weekNumbersFromLabel(unit.weekLabel).forEach((w) => completedWeeks.add(w));
+    }
+  });
+
+  const activeWeeks = new Set(weekNumbersFromLabel(nextUnit && nextUnit.weekLabel));
+  if (activeWeeks.size === 0) activeWeeks.add(1);
+
+  // Match each week 1..17 to a unit so the tick links somewhere useful.
+  const unitForWeek = {};
+  syllabusData.units.forEach((unit) => {
+    weekNumbersFromLabel(unit.weekLabel).forEach((w) => {
+      if (!unitForWeek[w]) unitForWeek[w] = unit;
+    });
+  });
+
+  let html = "";
+  for (let w = 1; w <= 17; w += 1) {
+    let cls = "upcoming";
+    if (completedWeeks.has(w)) cls = "completed";
+    else if (activeWeeks.has(w)) cls = "active";
+    const num = String(w).padStart(2, "0");
+    const targetUnit = unitForWeek[w];
+    const href = targetUnit ? buildUnitPageUrl(targetUnit.id, "overview") : "#";
+    const titleAttr = targetUnit ? `${targetUnit.weekLabel} — ${targetUnit.title}` : `שבוע ${w}`;
+    html += `
+      <li class="hero-week-tick ${cls}">
+        <a href="${escapeAttribute(href)}" title="${escapeAttribute(titleAttr)}" aria-label="${escapeAttribute(titleAttr)}">
+          <span class="hero-week-num">${num}</span>
+          <span class="hero-week-bar" aria-hidden="true"></span>
+        </a>
+      </li>`;
+  }
+  elements.heroLedger.innerHTML = html;
+}
+
+function renderHeroMarginalia() {
+  if (!elements.heroToc) return;
+
+  const catalog = getUnitPagesCatalog();
+  const deepUnits = syllabusData.units.filter((unit) => {
+    const page = catalog ? catalog.getUnitPage(unit.id) : null;
+    if (!page) return false;
+    return !(page.quickFacts || []).some((fact) => ["Code", "Soon"].includes(String(fact.value)));
+  }).slice(0, 5);
+
+  // Fallback: if catalog hasn't tagged anything as deep, take the first 5.
+  const picks = deepUnits.length ? deepUnits : syllabusData.units.slice(0, 5);
+
+  elements.heroToc.innerHTML = picks
+    .map((unit) => {
+      const num = String(weekNumbersFromLabel(unit.weekLabel)[0] || 0).padStart(2, "0");
+      const href = buildUnitPageUrl(unit.id, "overview");
+      return `
+        <li>
+          <a href="${escapeAttribute(href)}">
+            <span class="hero-toc-num">§ ${escapeHtml(num)}</span>
+            <span class="hero-toc-leader" aria-hidden="true"></span>
+            <span class="hero-toc-title">${escapeHtml(unit.title)}</span>
+          </a>
+        </li>`;
+    })
+    .join("");
 }
 
 function renderHeroSyllabusDropdown() {
@@ -3246,5 +3329,5 @@ void main(void) {
     col = mix(col, vec3(bg * 0.25, bg * 0.137, bg * 0.05), d);
   }
 
-  O = vec4(col, 1.0);
+  O = vec4(1.0 - col, 1.0);
 }`;
