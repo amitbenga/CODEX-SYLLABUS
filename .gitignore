@@ -1,9 +1,14 @@
 .env.local
 server.log
 server.err.log
+.DS_Store
+.claude/
 
 # wrangler files
 .wrangler
 .dev.vars*
 !.dev.vars.example
 !.env.example
+
+# external tools
+notebooklm-mcp/
