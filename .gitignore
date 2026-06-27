@@ -9,6 +9,3 @@ server.err.log
 .dev.vars*
 !.dev.vars.example
 !.env.example
-
-# external tools
-notebooklm-mcp/
