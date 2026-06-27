@@ -10,5 +10,6 @@ server.err.log
 !.dev.vars.example
 !.env.example
 
-# external tools
-notebooklm-mcp/
+# external tools build artifacts
+notebooklm-mcp/node_modules/
+notebooklm-mcp/dist/
